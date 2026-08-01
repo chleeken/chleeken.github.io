@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>奕豪网址导航</title>
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Microsoft Yahei", sans-serif;
+}
+
+body {
+    background-color: #f5f7fa;
+    padding: 40px 20px;
+}
+
+.box {
+    width: 68%;
+    margin: 0 auto;
+}
+
+.top {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.top h1 {
+    font-size: 32px;
+    color: #222;
+    margin-bottom: 8px;
+}
+
+.top p {
+    color: #666;
+    font-size: 15px;
+}
+
+.wrap {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 12px;
+}
+
+.item {
+    background: #fff;
+    border-radius: 8px;
+    padding: 10px 0;
+    text-align: center;
+    border: 1px solid #eee;
+    transition: 0.25s ease;
+}
+
+.item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px #e0e9ff;
+    background: #f6f9ff;
+    border-color: #d7e7ff;
+}
+
+.item a {
+    font-size: 16px;
+    color: #333;
+    text-decoration: none;
+}
+
+/* 左右悬浮广告位 */
+.ad-left, .ad-right {
+    width: 200px;
+    height: 200px;
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 1px solid #f5f7fa;
+    background: #f5f7fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color:#888;
+}
+.ad-left {
+    left: 0;
+}
+.ad-right {
+    right: 0;
+}
+
+/* 响应式适配 */
+@media (max-width:1400px) {
+    .wrap { grid-template-columns: repeat(8,1fr); }
+}
+@media (max-width:1100px) {
+    .wrap { grid-template-columns: repeat(6,1fr); }
+}
+@media (max-width:768px) {
+    .wrap { grid-template-columns: repeat(4,1fr); }
+    .box { width: 95%; }
+    /* 手机端隐藏广告 */
+    .ad-left,.ad-right{
+        display:none;
+    }
+}
+@media (max-width:480px) {
+    .wrap { grid-template-columns: repeat(2,1fr); }
+}
+</style>
+</head>
+<body>
+<!-- 左右广告占位 -->
+<div class="ad-left">左侧广告 200*200</div>
+<div class="ad-right">右侧广告 200*200</div>
+
+<div class="box">
+    <div class="top">
+        <h1>奕豪网址导航</h1>
+        <p>极简静态网址导航 · 绿色纯净版版</p>
+    </div>
+    <div class="wrap">
+        <!-- 搜索工具 -->
+        <div class="item"><a href="https://www.baidu.com" target="_blank">百度</a></div>
+        <div class="item"><a href="https://www.bing.com" target="_blank">必应</a></div>
+        <div class="item"><a href="https://www.sogou.com" target="_blank">搜狗搜索</a></div>
+        <div class="item"><a href="https://www.so.com" target="_blank">360搜索</a></div>
+        <div class="item"><a href="https://xueshu.baidu.com" target="_blank">百度学术</a></div>
+        <div class="item"><a href="https://www.cnki.net" target="_blank">知网</a></div>
+        <div class="item"><a href="https://www.wanfangdata.com.cn" target="_blank">万方数据</a></div>
+        <div class="item"><a href="https://www.cqvip.com" target="_blank">维普资讯</a></div>
+        <div class="item"><a href="https://www.pansoso.com" target="_blank">盘搜搜</a></div>
+        <div class="item"><a href="https://scholar.google.com" target="_blank">谷歌学术</a></div>
+
+        <!-- 社交社区 -->
+        <div class="item"><a href="https://weibo.com" target="_blank">微博</a></div>
+        <div class="item"><a href="https://www.zhihu.com" target="_blank">知乎</a></div>
+        <div class="item"><a href="https://www.douban.com" target="_blank">豆瓣</a></div>
+        <div class="item"><a href="https://tieba.baidu.com" target="_blank">百度贴吧</a></div>
+        <div class="item"><a href="https://hupu.com" target="_blank">虎扑社区</a></div>
+        <div class="item"><a href="https://bbs.nga.cn" target="_blank">NGA论坛</a></div>
+        <div class="item"><a href="https://t.bilibili.com" target="_blank">B站动态</a></div>
+        <div class="item"><a href="https://jike.com" target="_blank">即刻</a></div>
+        <div class="item"><a href="https://lofter.com" target="_blank">LOFTER</a></div>
+        <div class="item"><a href="https://blog.sina.com.cn" target="_blank">新浪博客</a></div>
+
+        <!-- 视频影视 -->
+        <div class="item"><a href="https://www.bilibili.com" target="_blank">哔哩哔哩</a></div>
+        <div class="item"><a href="https://v.qq.com" target="_blank">腾讯视频</a></div>
+        <div class="item"><a href="https://www.iqiyi.com" target="_blank">爱奇艺</a></div>
+        <div class="item"><a href="https://youku.com" target="_blank">优酷视频</a></div>
+        <div class="item"><a href="https://mgtv.com" target="_blank">芒果TV</a></div>
+        <div class="item"><a href="https://v.sohu.com" target="_blank">搜狐视频</a></div>
+        <div class="item"><a href="https://xigua.com" target="_blank">西瓜视频</a></div>
+        <div class="item"><a href="https://douyin.com" target="_blank">抖音网页版</a></div>
+        <div class="item"><a href="https://kuaishou.com" target="_blank">快手网页版</a></div>
+        <div class="item"><a href="https://acfun.cn" target="_blank">Acfun</a></div>
+
+        <!-- 购物电商 -->
+        <div class="item"><a href="https://www.taobao.com" target="_blank">淘宝</a></div>
+        <div class="item"><a href="https://jd.com" target="_blank">京东</a></div>
+        <div class="item"><a href="https://pinduoduo.com" target="_blank">拼多多</a></div>
+        <div class="item"><a href="https://tmall.com" target="_blank">天猫</a></div>
+        <div class="item"><a href="https://vip.com" target="_blank">唯品会</a></div>
+        <div class="item"><a href="https://suning.com" target="_blank">苏宁易购</a></div>
+        <div class="item"><a href="https://mi.com" target="_blank">小米商城</a></div>
+        <div class="item"><a href="https://vmall.com" target="_blank">华为商城</a></div>
+        <div class="item"><a href="https://1688.com" target="_blank">1688批发</a></div>
+        <div class="item"><a href="https://dewu.com" target="_blank">得物</a></div>
+
+        <!-- 网盘工具 -->
+        <div class="item"><a href="https://pan.baidu.com" target="_blank">百度网盘</a></div>
+        <div class="item"><a href="https://aliyundrive.com" target="_blank">阿里云盘</a></div>
+        <div class="item"><a href="https://share.weiyun.com" target="_blank">腾讯微云</a></div>
+        <div class="item"><a href="https://cloud.189.cn" target="_blank">天翼云盘</a></div>
+        <div class="item"><a href="https://pan.xunlei.com" target="_blank">迅雷云盘</a></div>
+        <div class="item"><a href="https://pan.quark.cn" target="_blank">夸克网盘</a></div>
+        <div class="item"><a href="https://jianguoyun.com" target="_blank">坚果云</a></div>
+        <div class="item"><a href="https://123pan.com" target="_blank">123云盘</a></div>
+        <div class="item"><a href="https://lanzouy.com" target="_blank">蓝奏云</a></div>
+        <div class="item"><a href="https://e.10086.cn" target="_blank">移动云盘</a></div>
+
+        <!-- 邮箱办公 -->
+        <div class="item"><a href="https://mail.qq.com" target="_blank">QQ邮箱</a></div>
+        <div class="item"><a href="https://mail.163.com" target="_blank">网易邮箱</a></div>
+        <div class="item"><a href="https://mail.sina.com.cn" target="_blank">新浪邮箱</a></div>
+        <div class="item"><a href="https://outlook.live.com" target="_blank">Outlook邮箱</a></div>
+        <div class="item"><a href="https://docs.qq.com" target="_blank">腾讯文档</a></div>
+        <div class="item"><a href="https://shimo.im" target="_blank">石墨文档</a></div>
+        <div class="item"><a href="https://kdocs.cn" target="_blank">金山文档</a></div>
+        <div class="item"><a href="https://docin.feishu.cn" target="_blank">飞书文档</a></div>
+        <div class="item"><a href="https://yuque.com" target="_blank">语雀</a></div>
+        <div class="item"><a href="https://yinxiang.com" target="_blank">印象笔记</a></div>
+
+        <!-- 新闻资讯 -->
+        <div class="item"><a href="https://toutiao.com" target="_blank">今日头条</a></div>
+        <div class="item"><a href="https://news.sina.com.cn" target="_blank">新浪新闻</a></div>
+        <div class="item"><a href="https://news.qq.com" target="_blank">腾讯新闻</a></div>
+        <div class="item"><a href="https://news.163.com" target="_blank">网易新闻</a></div>
+        <div class="item"><a href="https://news.sohu.com" target="_blank">搜狐新闻</a></div>
+        <div class="item"><a href="https://ifeng.com" target="_blank">凤凰新闻</a></div>
+        <div class="item"><a href="https://news.cctv.com" target="_blank">央视新闻</a></div>
+        <div class="item"><a href="https://people.com.cn" target="_blank">人民网</a></div>
+        <div class="item"><a href="https://xinhuanet.com" target="_blank">新华网</a></div>
+        <div class="item"><a href="https://thepaper.cn" target="_blank">澎湃新闻</a></div>
+
+        <!-- 工具素材 -->
+        <div class="item"><a href="https://toolnb.com" target="_blank">菜鸟工具</a></div>
+        <div class="item"><a href="https://tool.oschina.net" target="_blank">在线工具</a></div>
+        <div class="item"><a href="https://convertio.co" target="_blank">格式转换</a></div>
+        <div class="item"><a href="https://yasuotu.com" target="_blank">压缩图</a></div>
+        <div class="item"><a href="https://gaoding.com" target="_blank">稿定设计</a></div>
+        <div class="item"><a href="https://chuangkit.com" target="_blank">创客贴</a></div>
+        <div class="item"><a href="https://pixabay.com" target="_blank">Pixabay图库</a></div>
+        <div class="item"><a href="https://pexels.com" target="_blank">Pexels图库</a></div>
+        <div class="item"><a href="https://unsplash.com" target="_blank">无版权图库</a></div>
+        <div class="item"><a href="https://iconfont.cn" target="_blank">阿里图标库</a></div>
+
+        <!-- 开发技术 -->
+        <div class="item"><a href="https://github.com" target="_blank">GitHub</a></div>
+        <div class="item"><a href="https://gitee.com" target="_blank">Gitee码云</a></div>
+        <div class="item"><a href="https://csdn.net" target="_blank">CSDN</a></div>
+        <div class="item"><a href="https://juejin.cn" target="_blank">掘金</a></div>
+        <div class="item"><a href="https://stackoverflow.com" target="_blank">StackOverflow</a></div>
+        <div class="item"><a href="https://developer.mozilla.org" target="_blank">MDN文档</a></div>
+        <div class="item"><a href="https://w3school.com" target="_blank">W3School</a></div>
+        <div class="item"><a href="https://runoob.com" target="_blank">菜鸟教程</a></div>
+        <div class="item"><a href="https://python.org" target="_blank">Python官网</a></div>
+        <div class="item"><a href="https://bootcdn.cn" target="_blank">BootCDN</a></div>
+
+        <!-- 云服务 -->
+        <div class="item"><a href="https://aliyun.com" target="_blank">阿里云</a></div>
+        <div class="item"><a href="https://cloud.tencent.com" target="_blank">腾讯云</a></div>
+        <div class="item"><a href="https://cloud.huawei.com" target="_blank">华为云</a></div>
+        <div class="item"><a href="https://cloud.baidu.com" target="_blank">百度智能云</a></div>
+        <div class="item"><a href="https://cloud.jd.com" target="_blank">京东云</a></div>
+        <div class="item"><a href="https://ksyun.com" target="_blank">金山云</a></div>
+        <div class="item"><a href="https://ctyun.cn" target="_blank">天翼云</a></div>
+        <div class="item"><a href="https://ecloud.10086.cn" target="_blank">移动云</a></div>
+        <div class="item"><a href="https://aws.amazon.com" target="_blank">AWS云服务</a></div>
+        <div class="item"><a href="https://dns.aliyun.com" target="_blank">阿里云DNS</a></div>
+
+        <!-- 学习教育 -->
+        <div class="item"><a href="https://study.bilibili.com" target="_blank">B站学习</a></div>
+        <div class="item"><a href="https://icourse163.org" target="_blank">中国大学MOOC</a></div>
+        <div class="item"><a href="https://xuetangx.com" target="_blank">学堂在线</a></div>
+        <div class="item"><a href="https://ke.qq.com" target="_blank">腾讯课堂</a></div>
+        <div class="item"><a href="https://study.163.com" target="_blank">网易云课堂</a></div>
+        <div class="item"><a href="https://ke.youdao.com" target="_blank">有道精品课</a></div>
+        <div class="item"><a href="https://shanbay.com" target="_blank">扇贝单词</a></div>
+        <div class="item"><a href="https://baicizhan.com" target="_blank">百词斩</a></div>
+        <div class="item"><a href="https://dedao.cn" target="_blank">得到课程</a></div>
+        <div class="item"><a href="https://chaoxing.com" target="_blank">超星学习通</a></div>
+
+        <!-- 生活便民 -->
+        <div class="item"><a href="https://12306.cn" target="_blank">12306购票</a></div>
+        <div class="item"><a href="https://sf-express.com" target="_blank">顺丰速运</a></div>
+        <div class="item"><a href="https://yto.net.cn" target="_blank">圆通快递</a></div>
+        <div class="item"><a href="https://zto.com" target="_blank">中通快递</a></div>
+        <div class="item"><a href="https://ditu.amap.com" target="_blank">高德地图</a></div>
+        <div class="item"><a href="https://map.baidu.com" target="_blank">百度地图</a></div>
+        <div class="item"><a href="https://tianqi.com" target="_blank">天气网</a></div>
+        <div class="item"><a href="https://wannianli.com" target="_blank">万年历</a></div>
+        <div class="item"><a href="https://kuaidi100.com" target="_blank">快递100</a></div>
+        <div class="item"><a href="https://meituan.com" target="_blank">美团</a></div>
+
+        <!-- 金融财经 -->
+        <div class="item"><a href="https://auth.alipay.com" target="_blank">支付宝网页版</a></div>
+        <div class="item"><a href="https://pay.weixin.qq.com" target="_blank">微信支付</a></div>
+        <div class="item"><a href="https://boc.cn" target="_blank">中国银行</a></div>
+        <div class="item"><a href="https://icbc.com.cn" target="_blank">工商银行</a></div>
+        <div class="item"><a href="https://ccb.com" target="_blank">建设银行</a></div>
+        <div class="item"><a href="https://abchina.com" target="_blank">农业银行</a></div>
+        <div class="item"><a href="https://eastmoney.com" target="_blank">东方财富网</a></div>
+        <div class="item"><a href="https://10jqka.com.cn" target="_blank">同花顺财经</a></div>
+        <div class="item"><a href="https://xueqiu.com" target="_blank">雪球投资</a></div>
+        <div class="item"><a href="https://finance.sina.com.cn" target="_blank">新浪财经</a></div>
+
+        <!-- 游戏娱乐 -->
+        <div class="item"><a href="https://store.steampowered.com" target="_blank">Steam商店</a></div>
+        <div class="item"><a href="https://epicgames.com" target="_blank">Epic游戏</a></div>
+        <div class="item"><a href="https://wegame.qq.com" target="_blank">WeGame</a></div>
+        <div class="item"><a href="https://blizzard.com" target="_blank">暴雪娱乐</a></div>
+        <div class="item"><a href="https://gamersky.com" target="_blank">游民星空</a></div>
+        <div class="item"><a href="https://3dmgame.com" target="_blank">3DM游戏网</a></div>
+        <div class="item"><a href="https://huya.com" target="_blank">虎牙直播</a></div>
+        <div class="item"><a href="https://douyu.com" target="_blank">斗鱼直播</a></div>
+        <div class="item"><a href="https://cc.163.com" target="_blank">CC直播</a></div>
+        <div class="item"><a href="https://live.bilibili.com" target="_blank">B站直播</a></div>
+        <!-- 搜索工具 -->
+        <div class="item"><a href="https://www.baidu.com" target="_blank">百度</a></div>
+        <div class="item"><a href="https://www.bing.com" target="_blank">必应</a></div>
+        <div class="item"><a href="https://www.sogou.com" target="_blank">搜狗搜索</a></div>
+        <div class="item"><a href="https://www.so.com" target="_blank">360搜索</a></div>
+        <div class="item"><a href="https://xueshu.baidu.com" target="_blank">百度学术</a></div>
+        <div class="item"><a href="https://www.cnki.net" target="_blank">知网</a></div>
+        <div class="item"><a href="https://www.wanfangdata.com.cn" target="_blank">万方数据</a></div>
+        <div class="item"><a href="https://www.cqvip.com" target="_blank">维普资讯</a></div>
+        <div class="item"><a href="https://www.pansoso.com" target="_blank">盘搜搜</a></div>
+        <div class="item"><a href="https://scholar.google.com" target="_blank">谷歌学术</a></div>
+
+        <!-- 社交社区 -->
+        <div class="item"><a href="https://weibo.com" target="_blank">微博</a></div>
+        <div class="item"><a href="https://www.zhihu.com" target="_blank">知乎</a></div>
+        <div class="item"><a href="https://www.douban.com" target="_blank">豆瓣</a></div>
+        <div class="item"><a href="https://tieba.baidu.com" target="_blank">百度贴吧</a></div>
+        <div class="item"><a href="https://hupu.com" target="_blank">虎扑社区</a></div>
+        <div class="item"><a href="https://bbs.nga.cn" target="_blank">NGA论坛</a></div>
+        <div class="item"><a href="https://t.bilibili.com" target="_blank">B站动态</a></div>
+        <div class="item"><a href="https://jike.com" target="_blank">即刻</a></div>
+        <div class="item"><a href="https://lofter.com" target="_blank">LOFTER</a></div>
+        <div class="item"><a href="https://blog.sina.com.cn" target="_blank">新浪博客</a></div>
+
+        <!-- 视频影视 -->
+        <div class="item"><a href="https://www.bilibili.com" target="_blank">哔哩哔哩</a></div>
+        <div class="item"><a href="https://v.qq.com" target="_blank">腾讯视频</a></div>
+        <div class="item"><a href="https://www.iqiyi.com" target="_blank">爱奇艺</a></div>
+        <div class="item"><a href="https://youku.com" target="_blank">优酷视频</a></div>
+        <div class="item"><a href="https://mgtv.com" target="_blank">芒果TV</a></div>
+        <div class="item"><a href="https://v.sohu.com" target="_blank">搜狐视频</a></div>
+        <div class="item"><a href="https://xigua.com" target="_blank">西瓜视频</a></div>
+        <div class="item"><a href="https://douyin.com" target="_blank">抖音网页版</a></div>
+        <div class="item"><a href="https://kuaishou.com" target="_blank">快手网页版</a></div>
+        <div class="item"><a href="https://acfun.cn" target="_blank">Acfun</a></div>
+
+        <!-- 购物电商 -->
+        <div class="item"><a href="https://www.taobao.com" target="_blank">淘宝</a></div>
+        <div class="item"><a href="https://jd.com" target="_blank">京东</a></div>
+        <div class="item"><a href="https://pinduoduo.com" target="_blank">拼多多</a></div>
+        <div class="item"><a href="https://tmall.com" target="_blank">天猫</a></div>
+        <div class="item"><a href="https://vip.com" target="_blank">唯品会</a></div>
+        <div class="item"><a href="https://suning.com" target="_blank">苏宁易购</a></div>
+        <div class="item"><a href="https://mi.com" target="_blank">小米商城</a></div>
+        <div class="item"><a href="https://vmall.com" target="_blank">华为商城</a></div>
+        <div class="item"><a href="https://1688.com" target="_blank">1688批发</a></div>
+        <div class="item"><a href="https://dewu.com" target="_blank">得物</a></div>
+
+        <!-- 网盘工具 -->
+        <div class="item"><a href="https://pan.baidu.com" target="_blank">百度网盘</a></div>
+        <div class="item"><a href="https://aliyundrive.com" target="_blank">阿里云盘</a></div>
+        <div class="item"><a href="https://share.weiyun.com" target="_blank">腾讯微云</a></div>
+        <div class="item"><a href="https://cloud.189.cn" target="_blank">天翼云盘</a></div>
+        <div class="item"><a href="https://pan.xunlei.com" target="_blank">迅雷云盘</a></div>
+        <div class="item"><a href="https://pan.quark.cn" target="_blank">夸克网盘</a></div>
+        <div class="item"><a href="https://jianguoyun.com" target="_blank">坚果云</a></div>
+        <div class="item"><a href="https://123pan.com" target="_blank">123云盘</a></div>
+        <div class="item"><a href="https://lanzouy.com" target="_blank">蓝奏云</a></div>
+        <div class="item"><a href="https://e.10086.cn" target="_blank">移动云盘</a></div>
+
+        <!-- 邮箱办公 -->
+        <div class="item"><a href="https://mail.qq.com" target="_blank">QQ邮箱</a></div>
+        <div class="item"><a href="https://mail.163.com" target="_blank">网易邮箱</a></div>
+        <div class="item"><a href="https://mail.sina.com.cn" target="_blank">新浪邮箱</a></div>
+        <div class="item"><a href="https://outlook.live.com" target="_blank">Outlook邮箱</a></div>
+        <div class="item"><a href="https://docs.qq.com" target="_blank">腾讯文档</a></div>
+        <div class="item"><a href="https://shimo.im" target="_blank">石墨文档</a></div>
+        <div class="item"><a href="https://kdocs.cn" target="_blank">金山文档</a></div>
+        <div class="item"><a href="https://docin.feishu.cn" target="_blank">飞书文档</a></div>
+        <div class="item"><a href="https://yuque.com" target="_blank">语雀</a></div>
+        <div class="item"><a href="https://yinxiang.com" target="_blank">印象笔记</a></div>
+
+        <!-- 新闻资讯 -->
+        <div class="item"><a href="https://toutiao.com" target="_blank">今日头条</a></div>
+        <div class="item"><a href="https://news.sina.com.cn" target="_blank">新浪新闻</a></div>
+        <div class="item"><a href="https://news.qq.com" target="_blank">腾讯新闻</a></div>
+        <div class="item"><a href="https://news.163.com" target="_blank">网易新闻</a></div>
+        <div class="item"><a href="https://news.sohu.com" target="_blank">搜狐新闻</a></div>
+        <div class="item"><a href="https://ifeng.com" target="_blank">凤凰新闻</a></div>
+        <div class="item"><a href="https://news.cctv.com" target="_blank">央视新闻</a></div>
+        <div class="item"><a href="https://people.com.cn" target="_blank">人民网</a></div>
+        <div class="item"><a href="https://xinhuanet.com" target="_blank">新华网</a></div>
+        <div class="item"><a href="https://thepaper.cn" target="_blank">澎湃新闻</a></div>
+
+        <!-- 工具素材 -->
+        <div class="item"><a href="https://toolnb.com" target="_blank">菜鸟工具</a></div>
+        <div class="item"><a href="https://tool.oschina.net" target="_blank">在线工具</a></div>
+        <div class="item"><a href="https://convertio.co" target="_blank">格式转换</a></div>
+        <div class="item"><a href="https://yasuotu.com" target="_blank">压缩图</a></div>
+        <div class="item"><a href="https://gaoding.com" target="_blank">稿定设计</a></div>
+        <div class="item"><a href="https://chuangkit.com" target="_blank">创客贴</a></div>
+        <div class="item"><a href="https://pixabay.com" target="_blank">Pixabay图库</a></div>
+        <div class="item"><a href="https://pexels.com" target="_blank">Pexels图库</a></div>
+        <div class="item"><a href="https://unsplash.com" target="_blank">无版权图库</a></div>
+        <div class="item"><a href="https://iconfont.cn" target="_blank">阿里图标库</a></div>
+
+        <!-- 开发技术 -->
+        <div class="item"><a href="https://github.com" target="_blank">GitHub</a></div>
+        <div class="item"><a href="https://gitee.com" target="_blank">Gitee码云</a></div>
+        <div class="item"><a href="https://csdn.net" target="_blank">CSDN</a></div>
+        <div class="item"><a href="https://juejin.cn" target="_blank">掘金</a></div>
+        <div class="item"><a href="https://stackoverflow.com" target="_blank">StackOverflow</a></div>
+        <div class="item"><a href="https://developer.mozilla.org" target="_blank">MDN文档</a></div>
+        <div class="item"><a href="https://w3school.com" target="_blank">W3School</a></div>
+        <div class="item"><a href="https://runoob.com" target="_blank">菜鸟教程</a></div>
+        <div class="item"><a href="https://python.org" target="_blank">Python官网</a></div>
+        <div class="item"><a href="https://bootcdn.cn" target="_blank">BootCDN</a></div>
+
+        <!-- 云服务 -->
+        <div class="item"><a href="https://aliyun.com" target="_blank">阿里云</a></div>
+        <div class="item"><a href="https://cloud.tencent.com" target="_blank">腾讯云</a></div>
+        <div class="item"><a href="https://cloud.huawei.com" target="_blank">华为云</a></div>
+        <div class="item"><a href="https://cloud.baidu.com" target="_blank">百度智能云</a></div>
+        <div class="item"><a href="https://cloud.jd.com" target="_blank">京东云</a></div>
+        <div class="item"><a href="https://ksyun.com" target="_blank">金山云</a></div>
+        <div class="item"><a href="https://ctyun.cn" target="_blank">天翼云</a></div>
+        <div class="item"><a href="https://ecloud.10086.cn" target="_blank">移动云</a></div>
+        <div class="item"><a href="https://aws.amazon.com" target="_blank">AWS云服务</a></div>
+        <div class="item"><a href="https://dns.aliyun.com" target="_blank">阿里云DNS</a></div>
+
+        <!-- 学习教育 -->
+        <div class="item"><a href="https://study.bilibili.com" target="_blank">B站学习</a></div>
+        <div class="item"><a href="https://icourse163.org" target="_blank">中国大学MOOC</a></div>
+        <div class="item"><a href="https://xuetangx.com" target="_blank">学堂在线</a></div>
+        <div class="item"><a href="https://ke.qq.com" target="_blank">腾讯课堂</a></div>
+        <div class="item"><a href="https://study.163.com" target="_blank">网易云课堂</a></div>
+        <div class="item"><a href="https://ke.youdao.com" target="_blank">有道精品课</a></div>
+        <div class="item"><a href="https://shanbay.com" target="_blank">扇贝单词</a></div>
+        <div class="item"><a href="https://baicizhan.com" target="_blank">百词斩</a></div>
+        <div class="item"><a href="https://dedao.cn" target="_blank">得到课程</a></div>
+        <div class="item"><a href="https://chaoxing.com" target="_blank">超星学习通</a></div>
+
+        <!-- 生活便民 -->
+        <div class="item"><a href="https://12306.cn" target="_blank">12306购票</a></div>
+        <div class="item"><a href="https://sf-express.com" target="_blank">顺丰速运</a></div>
+        <div class="item"><a href="https://yto.net.cn" target="_blank">圆通快递</a></div>
+        <div class="item"><a href="https://zto.com" target="_blank">中通快递</a></div>
+        <div class="item"><a href="https://ditu.amap.com" target="_blank">高德地图</a></div>
+        <div class="item"><a href="https://map.baidu.com" target="_blank">百度地图</a></div>
+        <div class="item"><a href="https://tianqi.com" target="_blank">天气网</a></div>
+        <div class="item"><a href="https://wannianli.com" target="_blank">万年历</a></div>
+        <div class="item"><a href="https://kuaidi100.com" target="_blank">快递100</a></div>
+        <div class="item"><a href="https://meituan.com" target="_blank">美团</a></div>
+
+        <!-- 金融财经 -->
+        <div class="item"><a href="https://auth.alipay.com" target="_blank">支付宝网页版</a></div>
+        <div class="item"><a href="https://pay.weixin.qq.com" target="_blank">微信支付</a></div>
+        <div class="item"><a href="https://boc.cn" target="_blank">中国银行</a></div>
+        <div class="item"><a href="https://icbc.com.cn" target="_blank">工商银行</a></div>
+        <div class="item"><a href="https://ccb.com" target="_blank">建设银行</a></div>
+        <div class="item"><a href="https://abchina.com" target="_blank">农业银行</a></div>
+        <div class="item"><a href="https://eastmoney.com" target="_blank">东方财富网</a></div>
+        <div class="item"><a href="https://10jqka.com.cn" target="_blank">同花顺财经</a></div>
+        <div class="item"><a href="https://xueqiu.com" target="_blank">雪球投资</a></div>
+        <div class="item"><a href="https://finance.sina.com.cn" target="_blank">新浪财经</a></div>
+
+        <!-- 游戏娱乐 -->
+        <div class="item"><a href="https://store.steampowered.com" target="_blank">Steam商店</a></div>
+        <div class="item"><a href="https://epicgames.com" target="_blank">Epic游戏</a></div>
+        <div class="item"><a href="https://wegame.qq.com" target="_blank">WeGame</a></div>
+        <div class="item"><a href="https://blizzard.com" target="_blank">暴雪娱乐</a></div>
+        <div class="item"><a href="https://gamersky.com" target="_blank">游民星空</a></div>
+        <div class="item"><a href="https://3dmgame.com" target="_blank">3DM游戏网</a></div>
+        <div class="item"><a href="https://huya.com" target="_blank">虎牙直播</a></div>
+        <div class="item"><a href="https://douyu.com" target="_blank">斗鱼直播</a></div>
+        <div class="item"><a href="https://cc.163.com" target="_blank">CC直播</a></div>
+        <div class="item"><a href="https://live.bilibili.com" target="_blank">B站直播</a></div>
+
+    </div>
+</div>
+</body>
+</html>
