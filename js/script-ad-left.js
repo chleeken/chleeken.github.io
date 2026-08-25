@@ -1,0 +1,1 @@
+document.querySelector('.ad-left').innerHTML = '<div style="text-align:center;color:#999;font-size:14px;padding:20px;"><a href="https://chleeken.github.io/" target="_blank">chleeken的page主页</a><br><span style="font-size:12px"></span></div>';
