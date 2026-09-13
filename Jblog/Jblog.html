@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jblog-奕豪WebBuilder - 博客文章编辑器与静态网站生成器</title>
+<meta name="description" content="Jblog-奕豪WebBuilder v3.05.1029，一款基于 Python + Tkinter 的桌面博客文章编辑器与静态网站生成器，集文章编辑、图片处理、关键词插入、HTML 发布、首页生成、sitemap 管理于一体。">
+<meta name="keywords" content="Jblog,奕豪WebBuilder,博客编辑器,静态网站生成器,Tkinter,Python,靳好宝">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: #0f172a;
+  color: #e2e8f0;
+  line-height: 1.7;
+}
+.hero {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #1e3a5f 100%);
+  padding: 80px 24px 60px;
+  text-align: center;
+  border-bottom: 1px solid #334155;
+}
+.hero h1 {
+  font-size: 2.8rem;
+  font-weight: 800;
+  background: linear-gradient(90deg, #38bdf8, #818cf8, #c084fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 12px;
+}
+.hero .version {
+  display: inline-block;
+  background: #1e3a5f;
+  color: #7dd3fc;
+  padding: 4px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+.hero .subtitle {
+  font-size: 1.15rem;
+  color: #94a3b8;
+  max-width: 680px;
+  margin: 0 auto;
+}
+.hero .meta {
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+.hero .meta-item {
+  text-align: center;
+}
+.hero .meta-item .label {
+  font-size: 0.75rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.hero .meta-item .value {
+  font-size: 1rem;
+  color: #cbd5e1;
+  font-weight: 600;
+  margin-top: 4px;
+}
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 48px 24px;
+}
+.nav-toc {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 24px 28px;
+  margin-bottom: 48px;
+}
+.nav-toc h2 {
+  font-size: 1rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 16px;
+}
+.nav-toc ul {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 8px;
+}
+.nav-toc a {
+  color: #94a3b8;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  transition: all 0.2s;
+  font-size: 0.95rem;
+}
+.nav-toc a:hover {
+  background: #334155;
+  color: #38bdf8;
+}
+.nav-toc a::before {
+  content: "→";
+  color: #38bdf8;
+  font-weight: 700;
+}
+section {
+  margin-bottom: 56px;
+}
+section h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #1e3a5f;
+  position: relative;
+}
+section h2::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, #38bdf8, #818cf8);
+}
+section h3 {
+  font-size: 1.15rem;
+  color: #7dd3fc;
+  margin: 24px 0 12px;
+  font-weight: 600;
+}
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+  gap: 16px;
+}
+.card {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.25s;
+}
+.card:hover {
+  border-color: #38bdf8;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(56, 189, 248, 0.1);
+}
+.card .card-title {
+  font-weight: 700;
+  color: #f1f5f9;
+  font-size: 1rem;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.card .card-title .icon {
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, #1e3a5f, #312e81);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+.card ul {
+  list-style: none;
+}
+.card ul li {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  padding: 3px 0;
+  padding-left: 14px;
+  position: relative;
+}
+.card ul li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: #38bdf8;
+}
+.card ul li strong {
+  color: #cbd5e1;
+  font-weight: 600;
+}
+.code-block {
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 10px;
+  padding: 20px;
+  overflow-x: auto;
+  font-family: "Cascadia Code", "Fira Code", "JetBrains Mono", monospace;
+  font-size: 0.85rem;
+  line-height: 1.8;
+  color: #94a3b8;
+  margin: 16px 0;
+  white-space: pre;
+}
+.code-block .hl { color: #38bdf8; }
+.code-block .cm { color: #64748b; }
+.code-block .str { color: #a78bfa; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  font-size: 0.9rem;
+}
+table th {
+  background: #1e293b;
+  color: #7dd3fc;
+  font-weight: 600;
+  text-align: left;
+  padding: 12px 16px;
+  border-bottom: 2px solid #334155;
+}
+table td {
+  padding: 10px 16px;
+  border-bottom: 1px solid #1e293b;
+  color: #cbd5e1;
+}
+table tr:hover td {
+  background: #1e293b40;
+}
+.steps {
+  counter-reset: step;
+}
+.step {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+  align-items: flex-start;
+}
+.step-num {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #1e3a5f, #312e81);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  color: #7dd3fc;
+  flex-shrink: 0;
+  font-size: 1rem;
+}
+.step-content {
+  flex: 1;
+}
+.step-content .step-title {
+  font-weight: 700;
+  color: #f1f5f9;
+  margin-bottom: 6px;
+}
+.step-content p {
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+.tech-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+}
+.tech-item {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+  transition: all 0.2s;
+}
+.tech-item:hover {
+  border-color: #818cf8;
+  transform: translateY(-2px);
+}
+.tech-item .tech-name {
+  font-weight: 700;
+  color: #f1f5f9;
+  font-size: 1rem;
+}
+.tech-item .tech-desc {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-top: 4px;
+}
+.footer {
+  text-align: center;
+  padding: 40px 24px;
+  color: #475569;
+  font-size: 0.85rem;
+  border-top: 1px solid #1e293b;
+}
+.footer a {
+  color: #7dd3fc;
+  text-decoration: none;
+}
+.footer a:hover {
+  text-decoration: underline;
+}
+.badge {
+  display: inline-block;
+  background: #1e3a5f;
+  color: #7dd3fc;
+  font-size: 0.75rem;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+@media (max-width: 640px) {
+  .hero h1 { font-size: 1.8rem; }
+  .card-grid { grid-template-columns: 1fr; }
+  .tech-grid { grid-template-columns: repeat(2, 1fr); }
+  .hero .meta { gap: 16px; }
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="version">v-3.05.1029</div>
+  <h1>Jblog-奕豪WebBuilder</h1>
+  <p class="subtitle">一款基于 Python + Tkinter 的桌面博客文章编辑器与静态网站生成器。集文章编辑、图片处理、关键词插入、HTML 发布、首页生成、sitemap 管理于一体，无需服务器即可完成从写作到发布的完整流程。</p>
+  <div class="meta">
+    <div class="meta-item">
+      <div class="label">作者</div>
+      <div class="value">靳好宝</div>
+    </div>
+    <div class="meta-item">
+      <div class="label">Email</div>
+      <div class="value">uulov@qq.com</div>
+    </div>
+    <div class="meta-item">
+      <div class="label">技术栈</div>
+      <div class="value">Python 3.10+</div>
+    </div>
+    <div class="meta-item">
+      <div class="label">GUI</div>
+      <div class="value">Tkinter</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<nav class="nav-toc">
+  <h2>目录</h2>
+  <ul>
+    <li><a href="#features">功能特性</a></li>
+    <li><a href="#structure">项目结构</a></li>
+    <li><a href="#install">安装与依赖</a></li>
+    <li><a href="#usage">使用方法</a></li>
+    <li><a href="#config">配置文件说明</a></li>
+    <li><a href="#dirs">目录结构约定</a></li>
+    <li><a href="#output">生成文件说明</a></li>
+    <li><a href="#packaging">打包为 exe</a></li>
+    <li><a href="#faq">常见问题</a></li>
+    <li><a href="#tech">技术栈</a></li>
+  </ul>
+</nav>
+
+<section id="features">
+  <h2>功能特性</h2>
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-title"><span class="icon">✏</span> 文章编辑</div>
+      <ul>
+        <li>所见即所得式纯文本编辑区，支持<strong>撤销/重做</strong>（最多 3 层撤销栈）</li>
+        <li>快捷插入按钮：<code>&lt;p&gt;</code>、<code>&lt;br&gt;</code>、<code>#</code>、<code>%</code>、<code>@</code>、<code>*</code>、<code>_</code>、括号等常用字符</li>
+        <li>一键插入<strong>当前时间</strong></li>
+        <li>导入 TXT 文件到编辑区</li>
+        <li>全复制 / 清除内容（带确认）</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="icon">🖼</span> 图片处理</div>
+      <ul>
+        <li><strong>本地图片</strong>：自动转 WebP，宽度超 600px 自动等比缩放，中文字符转拼音</li>
+        <li><strong>网图</strong>：粘贴 URL 自动下载转 WebP，插入对应栏目 image 目录</li>
+        <li>自动填充 <code>alt</code>、<code>width</code>、<code>height</code> 属性</li>
+        <li>无 PIL 时降级为直接复制原始文件</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="icon">📝</span> 文本格式化</div>
+      <ul>
+        <li><strong>删行首</strong>：删除每行行首空格</li>
+        <li><strong>删空行</strong>：删除所有空行</li>
+        <li><strong>删空格</strong>：删除行内所有空格和制表符</li>
+        <li><strong>规范</strong>：按行首空格识别段落，自动包裹 <code>&lt;p&gt;&amp;nbsp;&amp;nbsp;...</code> 标签</li>
+        <li><strong>规范行首</strong>：给有空行或行首空格的行前添加两个空格</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="icon">🔗</span> 关键词与链接</div>
+      <ul>
+        <li><strong>整理</strong>：基于 jieba 分词提取高频词，随机插入 3 个关键词、2 个已有链接、最多 6 个尾随链接</li>
+        <li><strong>关键词下拉框</strong>：从 关键词.txt 读取，选择后随机插入 3 个关键词</li>
+        <li><strong>栏目下拉框</strong>：从栏目 url.txt 随机插入最多 5 条链接</li>
+        <li><strong>链接插入</strong>：手动输入 URL 后自动生成 <code>&lt;a&gt;</code> 标签并存入栏目链接文件</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="icon">📊</span> 字数统计</div>
+      <ul>
+        <li>实时统计<strong>汉字、字母、数字</strong>及总数</li>
+        <li>自动将文章链接（Markdown 格式）追加到 <code>{栏目}_url.txt</code></li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="icon">🚀</span> 发布</div>
+      <ul>
+        <li>基于 <code>demo/demo.html</code> 模板生成单篇文章 HTML</li>
+        <li>自动填充标题、日期、作者、栏目、分类、描述、关键词</li>
+        <li>文末插入最近 5 条同栏目链接和最近 8 条全站链接</li>
+        <li>自动维护 url.txt、sitemap.xml（栏目级 + 全局）</li>
+        <li>发布前自动执行 txt 保存 + 整理流程</li>
+        <li>去重机制：标题/正文/文件名重复均会跳过</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="icon">🏠</span> 首页生成</div>
+      <ul>
+        <li>基于 <code>demo/index.html</code> 生成栏目首页 <code>index.html</code></li>
+        <li>每 30 条为一页，超出自动生成分页文件</li>
+        <li>自动清理超出当前页数的旧分页文件</li>
+        <li>随机填充侧栏链接（最多 6 条）</li>
+        <li><strong>程序首页</strong>：基于 index_url_all.md 生成全局 index.html 及分页文件</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="icon">⚙</span> 其他</div>
+      <ul>
+        <li>窗口置顶切换</li>
+        <li>操作日志面板：实时显示成功/失败/提示信息，支持清空和复制</li>
+        <li>多编码兼容读取：自动检测 BOM，无 BOM 时依次尝试 chardet 和 7 种编码</li>
+        <li>文件路径管理：兼容开发态、PyInstaller 打包态、Nuitka 编译态</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="structure">
+  <h2>项目结构</h2>
+  <div class="code-block">Jblogpro/
+├── Jblogpro.py          <span class="cm"># 主程序（单文件，含全部功能）</span>
+├── icon.ico             <span class="cm"># 程序图标</span>
+├── AGENTS.md            <span class="cm"># AI 编码规范（供 AI 工具使用）</span>
+├── CLAUDE.md            <span class="cm"># Claude 编码规范</span>
+├── .gitignore           <span class="cm"># Git 忽略规则</span>
+├── readme.md            <span class="cm"># 本文档</span>
+├── demo/                <span class="cm"># HTML 模板目录（需手动创建）</span>
+│   ├── demo.html        <span class="cm"># 文章页模板</span>
+│   └── index.html       <span class="cm"># 首页模板</span>
+├── domain.txt           <span class="cm"># 域名配置（第一行为默认域名）</span>
+├── 关键词.txt            <span class="cm"># 关键词文件名列表</span>
+├── 栏目.txt             <span class="cm"># 栏目名称列表</span>
+├── 整理.txt             <span class="cm"># 批量替换规则（旧 新 每行一条）</span>
+├── 作者.txt             <span class="cm"># 作者名称列表</span>
+├── 分类.txt             <span class="cm"># 分类名称列表</span>
+├── 整理/               <span class="cm"># 整理.txt 对应的替换记录（按需生成）</span>
+│
+├── <span class="hl">{栏目名}</span>/            <span class="cm"># 各栏目文章输出目录</span>
+│   ├── <span class="hl">{拼音}</span>.html      <span class="cm"># 文章 HTML 文件</span>
+│   ├── image/           <span class="cm"># 栏目图片目录</span>
+│   ├── url.txt          <span class="cm"># 栏目链接清单</span>
+│   ├── index.html       <span class="cm"># 栏目首页</span>
+│   └── sitemap.xml      <span class="cm"># 栏目 sitemap</span>
+│
+├── <span class="hl">{栏目名}</span>-txt/        <span class="cm"># 各栏目 TXT 原文备份</span>
+│   └── 标题_作者_栏目_分类_序号_日期.txt
+│
+├── url.txt              <span class="cm"># 全站文章链接清单</span>
+├── index_url_all.md     <span class="cm"># 全站文章 Markdown 摘要</span>
+├── index.html           <span class="cm"># 全局首页</span>
+├── <span class="hl">{域名}</span>_index_<span class="hl">{id}</span>.html   <span class="cm"># 全局分页文件</span>
+├── <span class="hl">{域名}</span>_<span class="hl">{栏目}</span>_index_<span class="hl">{id}</span>.html  <span class="cm"># 栏目分页文件</span>
+├── sitemap.xml          <span class="cm"># 全局 sitemap</span>
+└── sitemap.txt          <span class="cm"># 全站链接（纯文本）</span></div>
+</section>
+
+<section id="install">
+  <h2>安装与依赖</h2>
+  <p style="color:#94a3b8; margin-bottom:16px;">启动后自动在程序目录创建缺失的配置文件（domain.txt、关键词.txt、栏目.txt、整理.txt、作者.txt、分类.txt）。</p>
+  <div class="tech-grid">
+    <div class="tech-item"><div class="tech-name">Python</div><div class="tech-desc">3.10+</div></div>
+    <div class="tech-item"><div class="tech-name">jieba</div><div class="tech-desc">中文分词</div></div>
+    <div class="tech-item"><div class="tech-name">pypinyin</div><div class="tech-desc">拼音转换</div></div>
+    <div class="tech-item"><div class="tech-name">Pillow</div><div class="tech-desc">图片处理</div></div>
+    <div class="tech-item"><div class="tech-name">chardet</div><div class="tech-desc">编码检测（可选）</div></div>
+  </div>
+  <div class="code-block" style="margin-top:16px;">pip install jieba pypinyin Pillow chardet</div>
+</section>
+
+<section id="usage">
+  <h2>使用方法</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <div class="step-title">配置基础信息</div>
+        <p>编辑程序目录下的 txt 配置文件：<br>
+        <strong>domain.txt</strong>：写入域名，如 <code>https://chleeken.github.io/</code><br>
+        <strong>栏目.txt</strong>：每行一个栏目名，如 blog；Jblog；theme，medical，site，page，html，archives，web<br>
+        <strong>作者.txt</strong>：每行一个作者名，如：靳好宝<br>
+        <strong>分类.txt</strong>：每行一个分类名，如 <code>技术</code>、<code>生活</code><br>
+        <strong>关键词.txt</strong>：写入关键词文件名（不含 .txt 后缀），每个对应一个 xxx.txt 关键词列表文件<br>
+        <strong>整理.txt</strong>：每行一条替换规则，格式为 <code>旧内容 新内容</code>（空格分隔），英文自动忽略大小写</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <div class="step-title">创建 HTML 模板</div>
+        <p>在 <code>demo/</code> 目录下创建两个模板文件：</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>demo/demo.html（文章模板）</h3>
+  <div class="code-block">&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;<span class="hl">title_name</span>&lt;/title&gt;  <span class="cm">&lt;!-- 替换为文章标题 --&gt;</span>
+&lt;/head&gt;
+&lt;body&gt;
+&lt;h1&gt;文章标题&lt;/h1&gt;          <span class="cm">&lt;!-- 替换为标题 + 日期/作者/栏目/分类信息 --&gt;</span>
+<span class="cm">&lt;!-- 描述：自动填充 --&gt;</span>
+<span class="cm">&lt;!-- 关键词：自动填充 --&gt;</span>
+<span class="cm">&lt;!-- site_page_begin --&gt;</span>
+<span class="cm">&lt;!-- 文章正文由程序自动插入到这里 --&gt;</span>
+<span class="cm">&lt;!-- site_page_end --&gt;</span>
+<span class="cm">&lt;!-- page_nav_link--&gt;</span>       <span class="cm">&lt;!-- 自动填充下一页链接 --&gt;</span>
+<span class="cm">&lt;!-- new_link_name_start--&gt;</span>
+<span class="cm">&lt;!-- new_link_name_end--&gt;</span>   <span class="cm">&lt;!-- 自动填充最近 8 条链接 --&gt;</span>
+&lt;/body&gt;
+&lt;/html&gt;</div>
+
+  <h3>demo/index.html（首页模板）</h3>
+  <div class="code-block">&lt;body&gt;
+<span class="cm">&lt;!-- site_page_begin --&gt;</span>
+<span class="cm">&lt;!-- 文章卡片由程序自动插入到这里 --&gt;</span>
+<span class="cm">&lt;!-- site_page_end --&gt;</span>
+<span class="cm">&lt;!-- page_nav_link--&gt;</span>       <span class="cm">&lt;!-- 分页导航 --&gt;</span>
+<span class="cm">&lt;!-- new_link_name_start--&gt;</span>
+<span class="cm">&lt;!-- new_link_name_end--&gt;</span>   <span class="cm">&lt;!-- 侧栏链接 --&gt;</span>
+&lt;/body&gt;</div>
+
+  <div class="steps" style="counter-reset: step; margin-top: 32px;">
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <div class="step-title">编辑文章</div>
+        <p>在顶部工具栏的「栏目」下拉框选择目标栏目 → 在「标题」输入框填写文章标题（自动去除空格）→ 在「域名」「作者」「分类」下拉框选择或填写对应信息 → 在编辑区粘贴或输入文章正文（纯文本，段落间留空行或用行首空格分隔）→ 需要时点击「规范」按钮自动包裹 <code>&lt;p&gt;</code> 标签</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <div class="step-title">整理与关键词</div>
+        <p>点击「整理」：自动格式化段落、随机插入 3 个高频关键词、插入已有链接、文末追加关键词列表。或在「关键词」下拉框选择关键词文件后点击「确定」，手动插入指定关键词。</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <div class="step-title">发布</div>
+        <p>确认所有信息无误 → 点击「发布」按钮。程序自动执行：保存 TXT 原文到 <code>{栏目}-txt/</code> 目录 → 执行整理流程 → 生成 HTML 文件到 <code>{栏目}/{拼音}.html</code> → 更新 url.txt、{栏目}_url.txt、{栏目}_index_url.txt → 更新 {栏目}_index_url.md、index_url_all.md → 更新 sitemap.xml（栏目 + 全局）和 sitemap.txt。发布成功后「发布」按钮变绿。</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">6</div>
+      <div class="step-content">
+        <div class="step-title">生成首页</div>
+        <p>确认 <code>demo/index.html</code> 存在 → 点击「首页」按钮，生成当前栏目的 <code>index.html</code>。超过 30 条时自动生成分页文件。</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">7</div>
+      <div class="step-content">
+        <div class="step-title">生成程序首页</div>
+        <p>点击「程序首页」按钮 → 基于 <code>index_url_all.md</code> 生成全局 <code>index.html</code> 及分页文件 → 输出到程序根目录。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="config">
+  <h2>配置文件说明</h2>
+  <h3>程序自动创建的配置文件</h3>
+  <table>
+    <thead>
+      <tr><th>文件</th><th>默认内容</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>domain.txt</td><td>localhost</td></tr>
+      <tr><td>关键词.txt</td><td>默认关键词</td></tr>
+      <tr><td>栏目.txt</td><td>默认栏目</td></tr>
+      <tr><td>整理.txt</td><td>（空）</td></tr>
+      <tr><td>作者.txt</td><td>靳好宝</td></tr>
+      <tr><td>分类.txt</td><td>默认分类</td></tr>
+    </tbody>
+  </table>
+  <h3>整理.txt 格式</h3>
+  <p style="color:#94a3b8; margin-bottom:8px;">每行一条替换规则，<code>旧内容</code> 和 <code>新内容</code> 之间用空格分隔：</p>
+  <div class="code-block">旧词 新词
+another 再一个
+ABC abc</div>
+  <ul style="list-style:none; margin-top:12px;">
+    <li style="color:#94a3b8; padding:4px 0; padding-left:14px; position:relative;"><span style="position:absolute;left:0;color:#38bdf8;">•</span>纯英文（字母）旧词自动忽略大小写替换</li>
+    <li style="color:#94a3b8; padding:4px 0; padding-left:14px; position:relative;"><span style="position:absolute;left:0;color:#38bdf8;">•</span>中文旧词精确匹配</li>
+    <li style="color:#94a3b8; padding:4px 0; padding-left:14px; position:relative;"><span style="position:absolute;left:0;color:#38bdf8;">•</span>英文字符串自动用正则 <code>re.escape</code> 转义</li>
+  </ul>
+</section>
+
+<section id="dirs">
+  <h2>目录结构约定</h2>
+  <h3>程序目录（固定）</h3>
+  <p style="color:#94a3b8; margin-bottom:12px;">所有配置文件和生成文件均保存在<strong style="color:#f1f5f9;">程序所在目录</strong>，不随打开位置变化：</p>
+  <ul style="list-style:none; margin-bottom:24px;">
+    <li style="color:#94a3b8; padding:4px 0; padding-left:14px; position:relative;"><span style="position:absolute;left:0;color:#38bdf8;">•</span><strong>开发态</strong>：<code>Jblogpro.py</code> 所在目录</li>
+    <li style="color:#94a3b8; padding:4px 0; padding-left:14px; position:relative;"><span style="position:absolute;left:0;color:#38bdf8;">•</span><strong>PyInstaller 打包</strong>：exe 所在目录</li>
+    <li style="color:#94a3b8; padding:4px 0; padding-left:14px; position:relative;"><span style="position:absolute;left:0;color:#38bdf8;">•</span><strong>Nuitka 编译</strong>：exe 所在目录（自动识别，不使用临时解压目录）</li>
+  </ul>
+  <h3>栏目目录</h3>
+  <p style="color:#94a3b8; margin-bottom:12px;">每个栏目对应一个子目录，目录名与 栏目.txt 中的条目一致：</p>
+  <div class="code-block"><span class="hl">{栏目}</span>/
+├── image/          <span class="cm"># 图片目录</span>
+├── url.txt         <span class="cm"># 链接清单</span>
+├── <span class="hl">{拼音}</span>.html     <span class="cm"># 文章文件</span>
+└── sitemap.xml     <span class="cm"># 栏目 sitemap</span></div>
+  <h3>TXT 备份目录</h3>
+  <div class="code-block"><span class="hl">{栏目}</span>-txt/
+└── 标题_作者_栏目_分类_全局序号_日期.txt</div>
+  <ul style="list-style:none; margin-top:12px;">
+    <li style="color:#94a3b8; padding:4px 0; padding-left:14px; position:relative;"><span style="position:absolute;left:0;color:#38bdf8;">•</span>全局序号扫描该目录下所有 txt 文件，取最大序号 + 1</li>
+    <li style="color:#94a3b8; padding:4px 0; padding-left:14px; position:relative;"><span style="position:absolute;left:0;color:#38bdf8;">•</span>标题重复时自动跳过保存</li>
+  </ul>
+</section>
+
+<section id="output">
+  <h2>生成文件说明</h2>
+  <table>
+    <thead>
+      <tr><th>文件</th><th>位置</th><th>说明</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>{栏目}/{拼音}.html</td><td>栏目目录</td><td>单篇文章 HTML</td></tr>
+      <tr><td>{栏目}/index.html</td><td>栏目目录</td><td>栏目首页（前 30 条）</td></tr>
+      <tr><td>{域名}_{栏目}_index_{id}.html</td><td>栏目目录</td><td>栏目分页（第 2 页起）</td></tr>
+      <tr><td>index.html</td><td>程序根目录</td><td>全局首页（前 30 条）</td></tr>
+      <tr><td>{域名}_index_{id}.html</td><td>程序根目录</td><td>全局分页（第 2 页起）</td></tr>
+      <tr><td>url.txt</td><td>程序根目录</td><td>全站文章链接（Markdown 格式，最新在前）</td></tr>
+      <tr><td>sitemap.xml</td><td>程序根目录 + 栏目目录</td><td>XML sitemap</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="packaging">
+  <h2>打包为 exe</h2>
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-title"><span class="icon">📦</span> PyInstaller</div>
+      <ul>
+        <li>标准打包方式，生成 exe 及依赖文件目录</li>
+        <li>配置文件保存在 exe 所在目录</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="icon">⚡</span> Nuitka</div>
+      <ul>
+        <li>编译为原生 exe，启动更快</li>
+        <li>自动识别程序目录，不使用临时解压目录</li>
+        <li>配合 <code>--nofollow-import-to</code> 可大幅减小体积</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <h2>常见问题</h2>
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-title">文件编码乱码</div>
+      <p style="color:#94a3b8;font-size:0.9rem;">程序自动检测 BOM（UTF-8/UTF-16），无 BOM 时依次尝试 chardet 检测和 7 种编码（utf-8/gbk/gb2312/gb18030/big5/utf-16/ascii），覆盖绝大多数场景。</p>
+    </div>
+    <div class="card">
+      <div class="card-title">图片未转换 WebP</div>
+      <p style="color:#94a3b8;font-size:0.9rem;">未安装 Pillow（PIL）时，程序降级为直接复制原始文件，不做格式转换。安装 <code>pip install Pillow</code> 即可启用 WebP 转换。</p>
+    </div>
+    <div class="card">
+      <div class="card-title">标题重复</div>
+      <p style="color:#94a3b8;font-size:0.9rem;">发布时检测到标题、正文或文件名重复会自动跳过并提示，需修改内容后重新发布。</p>
+    </div>
+    <div class="card">
+      <div class="card-title">找不到 demo 模板</div>
+      <p style="color:#94a3b8;font-size:0.9rem;">需手动在程序目录下创建 <code>demo/</code> 目录及 <code>demo.html</code>、<code>index.html</code> 两个模板文件，参考使用方法第 2 步的占位符规范。</p>
+    </div>
+  </div>
+</section>
+
+<section id="tech">
+  <h2>技术栈</h2>
+  <div class="tech-grid">
+    <div class="tech-item"><div class="tech-name">Python</div><div class="tech-desc">3.10+</div></div>
+    <div class="tech-item"><div class="tech-name">Tkinter</div><div class="tech-desc">标准库 GUI</div></div>
+    <div class="tech-item"><div class="tech-name">jieba</div><div class="tech-desc">中文分词</div></div>
+    <div class="tech-item"><div class="tech-name">pypinyin</div><div class="tech-desc">拼音转换</div></div>
+    <div class="tech-item"><div class="tech-name">Pillow</div><div class="tech-desc">图片处理</div></div>
+    <div class="tech-item"><div class="tech-name">chardet</div><div class="tech-desc">编码检测（可选）</div></div>
+    <div class="tech-item"><div class="tech-name">PyInstaller</div><div class="tech-desc">打包工具</div></div>
+    <div class="tech-item"><div class="tech-name">Nuitka</div><div class="tech-desc">编译打包</div></div>
+  </div>
+</section>
+
+</div>
+
+<footer class="footer">
+  <p>本项目为个人项目，作者保留所有权利。</p>
+  <p style="margin-top:8px;">Jblog-奕豪WebBuilder <span class="badge">v-3.05.1029</span> · 靳好宝 · <a href="mailto:uulov@qq.com">uulov@qq.com</a></p>
+</footer>
+
+</body>
+</html>

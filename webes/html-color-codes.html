@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WEB常用HTML颜色代码表</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:linear-gradient(135deg,#f5f7fa 0%,#e4e8ec 100%);min-height:100vh;color:#333}
+.container{max-width:1200px;margin:0 auto;padding:20px}
+header{background:#fff;padding:20px;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.08);margin-bottom:30px;display:flex;flex-wrap:wrap;align-items:center;gap:15px}
+h1{font-size:28px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;flex:1}
+.search-box{padding:12px 20px;border:2px solid #e0e0e0;border-radius:25px;font-size:14px;width:300px;transition:all 0.3s}
+.search-box:focus{outline:none;border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,0.1)}
+.category-filters{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px}
+.filter-btn{padding:8px 16px;border:2px solid #e0e0e0;border-radius:20px;background:#fff;cursor:pointer;font-size:14px;transition:all 0.3s}
+.filter-btn:hover,.filter-btn.active{border-color:#667eea;background:#667eea;color:#fff}
+.colors-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:15px}
+.color-card{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,0.08);transition:transform 0.2s,box-shadow 0.2s;cursor:pointer}
+.color-card:hover{transform:translateY(-3px);box-shadow:0 8px 25px rgba(0,0,0,0.12)}
+.color-preview{height:100px;width:100%;position:relative}
+.color-info{padding:12px}
+.color-name{font-weight:600;font-size:14px;margin-bottom:8px;color:#333}
+.color-values{font-size:11px;color:#666;font-family:monospace}
+.color-values div{display:flex;justify-content:space-between;align-items:center;padding:3px 0;border-bottom:1px dashed #eee}
+.color-values div:last-child{border-bottom:none}
+.copy-btn{background:none;border:none;cursor:pointer;padding:2px 6px;border-radius:4px;font-size:10px;color:#667eea}
+.copy-btn:hover{background:#f0f0f0}
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:12px 24px;border-radius:8px;font-size:14px;opacity:0;transition:opacity 0.3s;pointer-events:none;z-index:1000}
+.toast.show{opacity:1}
+.category-title{font-size:20px;font-weight:700;margin:30px 0 15px;color:#333;border-left:4px solid #667eea;padding-left:12px}
+.footer{text-align:center;padding:40px 20px;color:#999;font-size:14px}
+@media(max-width:768px){header{flex-direction:column;align-items:stretch}h1{text-align:center}.search-box{width:100%}.colors-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+<h1>WEB常用HTML颜色代码表</h1>
+<input type="text" class="search-box" id="searchBox" placeholder="按名称或代码搜索颜色...">
+</header>
+<div class="category-filters" id="categoryFilters">
+<button class="filter-btn active" data-category="all">所有颜色</button>
+<button class="filter-btn" data-category="basic">基本</button>
+<button class="filter-btn" data-category="reds">红色系</button>
+<button class="filter-btn" data-category="oranges">橙色系</button>
+<button class="filter-btn" data-category="yellows">黄色系</button>
+<button class="filter-btn" data-category="greens">绿色系</button>
+<button class="filter-btn" data-category="blues">蓝色系</button>
+<button class="filter-btn" data-category="purples">紫色系</button>
+<button class="filter-btn" data-category="pinks">粉色系</button>
+<button class="filter-btn" data-category="browns">棕色系</button>
+<button class="filter-btn" data-category="grays">灰色系</button>
+<button class="filter-btn" data-category="whites">白色系</button>
+</div>
+<div id="colorsContainer"></div>
+<div class="footer">
+<p>点击任意颜色卡片复制HEX代码 | 支持搜索和分类筛选</p>
+</div>
+</div>
+<div class="toast" id="toast">已复制到剪贴板！</div>
+
+<script>
+const colors = [
+{name:"Black",hex:"#000000",rgb:[0,0,0],hsl:[0,0,0],category:"basic"},
+{name:"White",hex:"#FFFFFF",rgb:[255,255,255],hsl:[0,0,100],category:"basic"},
+{name:"Red",hex:"#FF0000",rgb:[255,0,0],hsl:[0,100,50],category:"basic"},
+{name:"Green",hex:"#008000",rgb:[0,128,0],hsl:[120,100,25],category:"basic"},
+{name:"Blue",hex:"#0000FF",rgb:[0,0,255],hsl:[240,100,50],category:"basic"},
+{name:"Yellow",hex:"#FFFF00",rgb:[255,255,0],hsl:[60,100,50],category:"basic"},
+{name:"Cyan",hex:"#00FFFF",rgb:[0,255,255],hsl:[180,100,50],category:"basic"},
+{name:"Magenta",hex:"#FF00FF",rgb:[255,0,255],hsl:[300,100,50],category:"basic"},
+{name:"Silver",hex:"#C0C0C0",rgb:[192,192,192],hsl:[0,0,75],category:"basic"},
+{name:"Gray",hex:"#808080",rgb:[128,128,128],hsl:[0,0,50],category:"basic"},
+{name:"Maroon",hex:"#800000",rgb:[128,0,0],hsl:[0,100,25],category:"basic"},
+{name:"Olive",hex:"#808000",rgb:[128,128,0],hsl:[60,100,25],category:"basic"},
+{name:"Teal",hex:"#008080",rgb:[0,128,128],hsl:[180,100,25],category:"basic"},
+{name:"Navy",hex:"#000080",rgb:[0,0,128],hsl:[240,100,25],category:"basic"},
+{name:"Fuchsia",hex:"#FF00FF",rgb:[255,0,255],hsl:[300,100,50],category:"basic"},
+{name:"Aqua",hex:"#00FFFF",rgb:[0,255,255],hsl:[180,100,50],category:"basic"},
+{name:"AliceBlue",hex:"#F0F8FF",rgb:[240,248,255],hsl:[208,100,97],category:"whites"},
+{name:"AntiqueWhite",hex:"#FAEBD7",rgb:[250,235,215],hsl:[34,78,91],category:"whites"},
+{name:"Beige",hex:"#F5F5DC",rgb:[245,245,220],hsl:[60,56,91],category:"whites"},
+{name:"Bisque",hex:"#FFE4C4",rgb:[255,228,196],hsl:[36,100,88],category:"whites"},
+{name:"BlanchedAlmond",hex:"#FFEBCD",rgb:[255,235,205],hsl:[37,100,90],category:"whites"},
+{name:"BlueViolet",hex:"#8A2BE2",rgb:[138,43,226],hsl:[272,76,53],category:"purples"},
+{name:"Brown",hex:"#A52A2A",rgb:[165,42,42],hsl:[0,66,41],category:"browns"},
+{name:"BurlyWood",hex:"#DEB887",rgb:[222,184,135],hsl:[34,62,70],category:"browns"},
+{name:"CadetBlue",hex:"#5F9EA0",rgb:[95,158,160],hsl:[182,30,50],category:"blues"},
+{name:"Chartreuse",hex:"#7FFF00",rgb:[127,255,0],hsl:[90,100,50],category:"greens"},
+{name:"Chocolate",hex:"#D2691E",rgb:[210,105,30],hsl:[27,81,47],category:"browns"},
+{name:"Coral",hex:"#FF7F50",rgb:[255,127,80],hsl:[16,100,66],category:"oranges"},
+{name:"CornflowerBlue",hex:"#6495ED",rgb:[100,149,237],hsl:[221,79,66],category:"blues"},
+{name:"Cornsilk",hex:"#FFF8DC",rgb:[255,248,220],hsl:[47,100,93],category:"whites"},
+{name:" Crimson",hex:"#DC143C",rgb:[220,20,60],hsl:[348,83,47],category:"reds"},
+{name:"Crimson",hex:"#DC143C",rgb:[220,20,60],hsl:[348,83,47],category:"reds"},
+{name:"DarkBlue",hex:"#00008B",rgb:[0,0,139],hsl:[240,100,27],category:"blues"},
+{name:"DarkCyan",hex:"#008B8B",rgb:[0,139,139],hsl:[180,100,27],category:"blues"},
+{name:"DarkGoldenRod",hex:"#B8860B",rgb:[184,134,11],hsl:[44,89,38],category:"browns"},
+{name:"DarkGray",hex:"#A9A9A9",rgb:[169,169,169],hsl:[0,0,66],category:"grays"},
+{name:"DarkGreen",hex:"#006400",rgb:[0,100,0],hsl:[120,100,20],category:"greens"},
+{name:"DarkKhaki",hex:"#BDB76B",rgb:[189,183,107],hsl:[56,37,58],category:"yellows"},
+{name:"DarkMagenta",hex:"#8B008B",rgb:[139,0,139],hsl:[300,100,27],category:"purples"},
+{name:"DarkOliveGreen",hex:"#556B2F",rgb:[85,107,47],hsl:[82,43,30],category:"greens"},
+{name:"DarkOrange",hex:"#FF8C00",rgb:[255,140,0],hsl:[33,100,50],category:"oranges"},
+{name:"DarkOrchid",hex:"#9932CC",rgb:[153,50,204],hsl:[280,61,50],category:"purples"},
+{name:"DarkRed",hex:"#8B0000",rgb:[139,0,0],hsl:[0,100,27],category:"reds"},
+{name:"DarkSalmon",hex:"#E9967A",rgb:[233,150,122],hsl:[15,67,70],category:"oranges"},
+{name:"DarkSeaGreen",hex:"#8FBC8F",rgb:[143,188,143],hsl:[120,28,65],category:"greens"},
+{name:"DarkSlateBlue",hex:"#483D8B",rgb:[72,61,139],hsl:[249,40,39],category:"purples"},
+{name:"DarkSlateGray",hex:"#2F4F4F",rgb:[47,79,79],hsl:[180,25,25],category:"grays"},
+{name:"DarkTurquoise",hex:"#00CED1",rgb:[0,206,209],hsl:[181,100,41],category:"blues"},
+{name:"DarkViolet",hex:"#9400D3",rgb:[148,0,211],hsl:[281,100,41],category:"purples"},
+{name:"DeepPink",hex:"#FF1493",rgb:[255,20,147],hsl:[328,100,54],category:"pinks"},
+{name:"DeepSkyBlue",hex:"#00BFFF",rgb:[0,191,255],hsl:[197,100,50],category:"blues"},
+{name:"DimGray",hex:"#696969",rgb:[105,105,105],hsl:[0,0,41],category:"grays"},
+{name:"DodgerBlue",hex:"#1E90FF",rgb:[30,144,255],hsl:[209,100,56],category:"blues"},
+{name:"FireBrick",hex:"#B22222",rgb:[178,34,34],hsl:[0,70,42],category:"reds"},
+{name:"FloralWhite",hex:"#FFFAF0",rgb:[255,250,240],hsl:[40,100,97],category:"whites"},
+{name:"ForestGreen",hex:"#228B22",rgb:[34,139,34],hsl:[120,61,34],category:"greens"},
+{name:"Gainsboro",hex:"#DCDCDC",rgb:[220,220,220],hsl:[0,0,86],category:"grays"},
+{name:"GhostWhite",hex:"#F8F8FF",rgb:[248,248,255],hsl:[240,100,98],category:"whites"},
+{name:"Gold",hex:"#FFD700",rgb:[255,215,0],hsl:[51,100,50],category:"yellows"},
+{name:"GoldenRod",hex:"#DAA520",rgb:[218,165,32],hsl:[43,74,49],category:"yellows"},
+{name:"Gray",hex:"#808080",rgb:[128,128,128],hsl:[0,0,50],category:"grays"},
+{name:"GreenYellow",hex:"#ADFF2F",rgb:[173,255,47],hsl:[81,100,59],category:"greens"},
+{name:"HoneyDew",hex:"#F0FFF0",rgb:[240,255,240],hsl:[120,100,97],category:"whites"},
+{name:"HotPink",hex:"#FF69B4",rgb:[255,105,180],hsl:[330,100,71],category:"pinks"},
+{name:"IndianRed",hex:"#CD5C5C",rgb:[205,92,92],hsl:[0,54,58],category:"reds"},
+{name:"Indigo",hex:"#4B0082",rgb:[75,0,130],hsl:[275,100,25],category:"purples"},
+{name:"Ivory",hex:"#FFFFF0",rgb:[255,255,240],hsl:[60,100,97],category:"whites"},
+{name:"Khaki",hex:"#F0E68C",rgb:[240,230,140],hsl:[53,77,75],category:"yellows"},
+{name:"Lavender",hex:"#E6E6FA",rgb:[230,230,250],hsl:[240,67,94],category:"purples"},
+{name:"LavenderBlush",hex:"#FFF0F5",rgb:[255,240,245],hsl:[340,100,97],category:"pinks"},
+{name:"LawnGreen",hex:"#7CFC00",rgb:[124,252,0],hsl:[90,100,49],category:"greens"},
+{name:"LemonChiffon",hex:"#FFFACD",rgb:[255,250,205],hsl:[54,100,90],category:"yellows"},
+{name:"LightBlue",hex:"#ADD8E6",rgb:[173,216,230],hsl:[197,53,80],category:"blues"},
+{name:"LightCoral",hex:"#F08080",rgb:[240,128,128],hsl:[0,79,72],category:"reds"},
+{name:"LightCyan",hex:"#E0FFFF",rgb:[224,255,255],hsl:[180,100,94],category:"blues"},
+{name:"LightGoldenRodYellow",hex:"#FAFAD2",rgb:[250,250,210],hsl:[60,80,90],category:"yellows"},
+{name:"LightGray",hex:"#D3D3D3",rgb:[211,211,211],hsl:[0,0,83],category:"grays"},
+{name:"LightGreen",hex:"#90EE90",rgb:[144,238,144],hsl:[120,74,75],category:"greens"},
+{name:"LightPink",hex:"#FFB6C1",rgb:[255,182,193],hsl:[351,100,86],category:"pinks"},
+{name:"LightSalmon",hex:"#FFA07A",rgb:[255,160,122],hsl:[18,100,74],category:"oranges"},
+{name:"LightSeaGreen",hex:"#20B2AA",rgb:[32,178,170],hsl:[177,70,41],category:"greens"},
+{name:"LightSkyBlue",hex:"#87CEFA",rgb:[135,206,250],hsl:[204,93,75],category:"blues"},
+{name:"LightSlateGray",hex:"#778899",rgb:[119,136,153],hsl:[210,16,53],category:"grays"},
+{name:"LightSteelBlue",hex:"#B0C4DE",rgb:[176,196,222],hsl:[214,41,78],category:"blues"},
+{name:"LightYellow",hex:"#FFFFE0",rgb:[255,255,224],hsl:[60,100,94],category:"yellows"},
+{name:"Lime",hex:"#00FF00",rgb:[0,255,0],hsl:[120,100,50],category:"greens"},
+{name:"LimeGreen",hex:"#32CD32",rgb:[50,205,50],hsl:[120,61,50],category:"greens"},
+{name:"Linen",hex:"#FAF0E6",rgb:[250,240,230],hsl:[30,67,94],category:"whites"},
+{name:"MediumAquaMarine",hex:"#66CDAA",rgb:[102,205,170],hsl:[160,51,60],category:"greens"},
+{name:"MediumBlue",hex:"#0000CD",rgb:[0,0,205],hsl:[240,100,40],category:"blues"},
+{name:"MediumOrchid",hex:"#BA55D3",rgb:[186,85,211],hsl:[282,59,58],category:"purples"},
+{name:"MediumPurple",hex:"#9370DB",rgb:[147,112,219],hsl:[260,62,65],category:"purples"},
+{name:"MediumSeaGreen",hex:"#3CB371",rgb:[60,179,113],hsl:[150,55,47],category:"greens"},
+{name:"MediumSlateBlue",hex:"#7B68EE",rgb:[123,104,238],hsl:[248,81,67],category:"purples"},
+{name:"MediumSpringGreen",hex:"#00FA9A",rgb:[0,250,154],hsl:[160,100,49],category:"greens"},
+{name:"MediumTurquoise",hex:"#48D1CC",rgb:[72,209,204],hsl:[178,59,55],category:"blues"},
+{name:"MediumVioletRed",hex:"#C71585",rgb:[199,21,133],hsl:[323,81,43],category:"pinks"},
+{name:"MidnightBlue",hex:"#191970",rgb:[25,25,112],hsl:[240,65,27],category:"blues"},
+{name:"MintCream",hex:"#F5FFFA",rgb:[245,255,250],hsl:[150,100,98],category:"whites"},
+{name:"MistyRose",hex:"#FFE4E1",rgb:[255,228,225],hsl:[6,100,94],category:"pinks"},
+{name:"Moccasin",hex:"#FFE4B5",rgb:[255,228,181],hsl:[37,100,85],category:"whites"},
+{name:"NavajoWhite",hex:"#FFDEAD",rgb:[255,222,173],hsl:[36,100,84],category:"whites"},
+{name:"OldLace",hex:"#FDF5E6",rgb:[253,245,230],hsl:[39,85,95],category:"whites"},
+{name:"OliveDrab",hex:"#6B8E23",rgb:[107,142,35],hsl:[80,60,35],category:"greens"},
+{name:"Orange",hex:"#FFA500",rgb:[255,165,0],hsl:[37,100,50],category:"oranges"},
+{name:"OrangeRed",hex:"#FF4500",rgb:[255,69,0],hsl:[16,100,50],category:"oranges"},
+{name:"Orchid",hex:"#DA70D6",rgb:[218,112,214],hsl:[303,62,65],category:"purples"},
+{name:"PaleGoldenRod",hex:"#EEE8AA",rgb:[238,232,170],hsl:[54,69,80],category:"yellows"},
+{name:"PaleGreen",hex:"#98FB98",rgb:[152,251,152],hsl:[120,93,79],category:"greens"},
+{name:"PaleTurquoise",hex:"#AFEEEE",rgb:[175,238,238],hsl:[180,67,91],category:"blues"},
+{name:"PapayaWhip",hex:"#FFEFD5",rgb:[255,239,213],hsl:[38,100,92],category:"whites"},
+{name:"PeachPuff",hex:"#FFDAB9",rgb:[255,218,185],hsl:[27,100,86],category:"oranges"},
+{name:"Peru",hex:"#CD853F",rgb:[205,133,63],hsl:[32,60,53],category:"browns"},
+{name:"Pink",hex:"#FFC0CB",rgb:[255,192,203],hsl:[349,100,88],category:"pinks"},
+{name:"Plum",hex:"#DDA0DD",rgb:[221,160,221],hsl:[300,57,75],category:"purples"},
+{name:"PowderBlue",hex:"#B0E0E6",rgb:[176,224,230],hsl:[186,52,80],category:"blues"},
+{name:"Purple",hex:"#800080",rgb:[128,0,128],hsl:[300,100,25],category:"purples"},
+{name:"RebeccaPurple",hex:"#663399",rgb:[102,51,153],hsl:[270,44,40],category:"purples"},
+{name:"RosyBrown",hex:"#BC8F8F",rgb:[188,143,143],hsl:[0,26,65],category:"browns"},
+{name:"RoyalBlue",hex:"#4169E1",rgb:[65,105,225],hsl:[223,73,57],category:"blues"},
+{name:"SaddleBrown",hex:"#8B4513",rgb:[139,69,19],hsl:[25,75,31],category:"browns"},
+{name:"Salmon",hex:"#FA8072",rgb:[250,128,114],hsl:[6,93,72],category:"oranges"},
+{name:"SandyBrown",hex:"#F4A460",rgb:[244,164,96],hsl:[28,87,67],category:"oranges"},
+{name:"SeaGreen",hex:"#2E8B57",rgb:[46,139,87],hsl:[147,50,36],category:"greens"},
+{name:"SeaShell",hex:"#FFF5EE",rgb:[255,245,238],hsl:[23,100,97],category:"whites"},
+{name:"Sienna",hex:"#A0522D",rgb:[160,82,45],hsl:[19,58,40],category:"browns"},
+{name:"SkyBlue",hex:"#87CEEB",rgb:[135,206,235],hsl:[197,72,73],category:"blues"},
+{name:"SlateBlue",hex:"#6A5ACD",rgb:[106,90,205],hsl:[248,53,58],category:"purples"},
+{name:"SlateGray",hex:"#708090",rgb:[112,128,144],hsl:[210,16,50],category:"grays"},
+{name:"Snow",hex:"#FFFAFA",rgb:[255,250,250],hsl:[0,100,98],category:"whites"},
+{name:"SpringGreen",hex:"#00FF7F",rgb:[0,255,127],hsl:[150,100,50],category:"greens"},
+{name:"SteelBlue",hex:"#4682B4",rgb:[70,130,180],hsl:[207,45,49],category:"blues"},
+{name:"Tan",hex:"#D2B48C",rgb:[210,180,140],hsl:[35,44,69],category:"browns"},
+{name:"Thistle",hex:"#D8BFD8",rgb:[216,191,216],hsl:[300,33,80],category:"purples"},
+{name:"Tomato",hex:"#FF6347",rgb:[255,99,71],hsl:[9,100,64],category:"oranges"},
+{name:"Turquoise",hex:"#40E0D0",rgb:[64,224,208],hsl:[175,72,56],category:"blues"},
+{name:"Violet",hex:"#EE82EE",rgb:[238,130,238],hsl:[300,76,72],category:"purples"},
+{name:"Wheat",hex:"#F5DEB3",rgb:[245,222,179],hsl:[36,71,83],category:"whites"},
+{name:"WhiteSmoke",hex:"#F5F5F5",rgb:[245,245,245],hsl:[0,0,96],category:"whites"},
+{name:"YellowGreen",hex:"#9ACD32",rgb:[154,205,50],hsl:[80,62,50],category:"greens"}
+];
+
+let currentCategory = 'all';
+let searchTerm = '';
+
+function renderColors() {
+const container = document.getElementById('colorsContainer');
+container.innerHTML = '';
+
+const filtered = colors.filter(c => {
+const matchCategory = currentCategory === 'all' || c.category === currentCategory;
+const matchSearch = !searchTerm || 
+c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+c.hex.toLowerCase().includes(searchTerm.toLowerCase());
+return matchCategory && matchSearch;
+});
+
+const categories = [...new Set(filtered.map(c => c.category))];
+
+categories.forEach(cat => {
+const catColors = filtered.filter(c => c.category === cat);
+if(catColors.length === 0) return;
+
+const titles = {
+basic:'基本颜色',reds:'红色系',oranges:'橙色系',yellows:'黄色系',
+greens:'绿色系',blues:'蓝色系',purples:'紫色系',pinks:'粉色系',
+browns:'棕色系',grays:'灰色系',whites:'白色系'
+};
+
+const section = document.createElement('div');
+section.innerHTML = `<div class="category-title">${titles[cat] || cat}</div>`;
+container.appendChild(section);
+
+const grid = document.createElement('div');
+grid.className = 'colors-grid';
+
+catColors.forEach(color => {
+const card = document.createElement('div');
+card.className = 'color-card';
+card.innerHTML = `
+<div class="color-preview" style="background-color:${color.hex}"></div>
+<div class="color-info">
+<div class="color-name">${color.name}</div>
+<div class="color-values">
+<div><span>HEX</span><button class="copy-btn" onclick="copyColor('${color.hex}')">${color.hex}</button></div>
+<div><span>RGB</span><button class="copy-btn" onclick="copyColor('rgb(${color.rgb.join(',')})')">rgb(${color.rgb.join(',')})</button></div>
+<div><span>HSL</span><button class="copy-btn" onclick="copyColor('hsl(${color.hsl[0]},${color.hsl[1]}%,${color.hsl[2]}%)')">hsl(${color.hsl[0]},${color.hsl[1]}%,${color.hsl[2]}%)</button></div>
+</div>
+</div>`;
+grid.appendChild(card);
+});
+
+container.appendChild(grid);
+});
+
+const countEl = document.createElement('div');
+countEl.style.cssText = 'text-align:center;padding:20px;color:#999;font-size:14px';
+countEl.textContent = `共 ${filtered.length} 种颜色`;
+container.appendChild(countEl);
+}
+
+function copyColor(text) {
+navigator.clipboard.writeText(text).then(() => {
+const toast = document.getElementById('toast');
+toast.textContent = `已复制: ${text}`;
+toast.classList.add('show');
+setTimeout(() => toast.classList.remove('show'), 2000);
+});
+}
+
+document.getElementById('searchBox').addEventListener('input', (e) => {
+searchTerm = e.target.value;
+renderColors();
+});
+
+document.getElementById('categoryFilters').addEventListener('click', (e) => {
+if(e.target.classList.contains('filter-btn')) {
+document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+e.target.classList.add('active');
+currentCategory = e.target.dataset.category;
+renderColors();
+}
+});
+
+renderColors();
+</script>
+</body>
+</html>

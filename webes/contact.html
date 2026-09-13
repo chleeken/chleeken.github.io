@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>联系我们 - 科技博客</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.8;
+            min-height: 100vh;
+        }
+
+        .hero {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 80px 20px;
+            text-align: center;
+            color: #fff;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .hero p {
+            font-size: 18px;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        .intro-section {
+            background: #fff;
+            border-radius: 16px;
+            padding: 48px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .intro-section h2 {
+            font-size: 28px;
+            color: #1a1a1a;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .intro-section h2::before {
+            content: "";
+            width: 4px;
+            height: 28px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+
+        .intro-section p {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 16px;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 24px;
+            margin-top: 32px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            border-radius: 12px;
+            padding: 24px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
+        }
+
+        .feature-card .icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .feature-card h3 {
+            font-size: 16px;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: #666;
+            margin: 0;
+        }
+
+        .contact-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .contact-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: transform 0.3s;
+        }
+
+        .contact-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .contact-card .card-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .contact-card h3 {
+            font-size: 18px;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        .contact-card .label {
+            font-size: 13px;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .contact-card .value {
+            font-size: 16px;
+            color: #667eea;
+            font-weight: 500;
+        }
+
+        .contact-card a {
+            color: #667eea;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .contact-card a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        .response-time {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .response-time h3 {
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+
+        .response-time p {
+            opacity: 0.9;
+            font-size: 16px;
+        }
+
+        .collab-section {
+            background: #fff;
+            border-radius: 16px;
+            padding: 48px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .collab-section h2 {
+            font-size: 28px;
+            color: #1a1a1a;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .collab-section h2::before {
+            content: "";
+            width: 4px;
+            height: 28px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+
+        .collab-list {
+            list-style: none;
+        }
+
+        .collab-list li {
+            padding: 16px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            color: #555;
+        }
+
+        .collab-list li:last-child {
+            border-bottom: none;
+        }
+
+        .collab-list li::before {
+            content: "✓";
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: rgba(255,255,255,0.8);
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 32px;
+            }
+            .intro-section, .collab-section {
+                padding: 32px 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <h1>联系我们</h1>
+        <p>专注 Python 编程 · Web 建站 · 网络营销 · SEO 优化 · GEO 优化 的科技博客</p>
+    </div>
+
+    <div class="container">
+        <div class="intro-section">
+            <h2>关于我们</h2>
+            <p>我们是一个专注于技术分享与实战经验交流的博客平台，致力于为开发者、站长和营销人员提供高质量的技术内容。</p>
+            <p>从 Python 自动化脚本到 Django/Flask 框架开发，从 WordPress 建站到响应式 Web 设计，从搜索引擎优化到数字营销策略，我们的内容覆盖技术领域的全链路。</p>
+            
+            <div class="features">
+                <div class="feature-card">
+                    <div class="icon">🐍</div>
+                    <h3>Python 编程</h3>
+                    <p>自动化脚本、数据处理、机器学习、Web开发实战教程</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">🌐</div>
+                    <h3>Web 建站</h3>
+                    <p>WordPress定制、响应式设计、前后端开发技术解析</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">📈</div>
+                    <h3>网络营销</h3>
+                    <p>内容营销策略、社交媒体运营、转化率优化实战经验</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">🔍</div>
+                    <h3>SEO优化</h3>
+                    <p>搜索引擎算法解读、关键词策略、技术SEO诊断于海拔方案</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">🔍</div>
+                    <h3>GEO优化</h3>
+                    <p>生成式AI搜索引擎算法解读、关键词策略、技术GEO诊断优化方案</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="contact-section">
+            <div class="contact-card">
+                <div class="card-icon">📧</div>
+                <div class="label">合作邮箱</div>
+                <h3>商务联系</h3>
+                <p class="value"><a href="mailto:uulov@qq.com">uulov@qq.com</a></p>
+            </div>
+            <div class="contact-card">
+                <div class="card-icon">💬</div>
+                <div class="label">微信客服</div>
+                <h3>技术交流群</h3>
+                <p class="value">TechBlog_2024</p>
+            </div>
+            <div class="contact-card">
+                <div class="card-icon">📍</div>
+                <div class="label">团队优势</div>
+                <h3>专业专注</h3>
+                <p class="value">用心服务</p>
+            </div>
+        </div>
+
+        <div class="response-time">
+            <h3>⚡ 快速响应承诺</h3>
+            <p>我们承诺在收到您的消息后 24 小时内给予回复，工作日通常在 4 小时内响应</p>
+        </div>
+
+        <div class="collab-section">
+            <h2>合作方向</h2>
+            <ul class="collab-list">
+                <li><strong>技术内容合作</strong> — 专栏作者邀请、技术文章代发、专题策划</li>
+                <li><strong>品牌广告投放</strong> — 首页 Banner、文章内嵌广告、邮件 Newsletter</li>
+                <li><strong>课程培训合作</strong> — Python 实战课程、Web 开发训练营、SEO 进阶班</li>
+                <li><strong>技术支持服务</strong> — 网站定制开发、技术顾问咨询、企业内训</li>
+                <li><strong>资源互换推广</strong> — 友情链接、内容转载、联合活动</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>© 2024 靳好宝科技博客 | 专注技术分享，助力开发者成长</p>
+    </div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+

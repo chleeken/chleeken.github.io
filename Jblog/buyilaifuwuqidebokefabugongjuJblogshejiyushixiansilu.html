@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <!-- 支持多编码解析，优先UTF-8 -->
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="Content-Language" content="zh-CN">
+   <!-- 链接在新标签跳转 -->
+    <base target="_blank">
+    <!-- 移动设备视口适配 -->
+ <!-- 移动端视口，必备 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=no">
+    <!-- SEO核心Meta自动，txt，发布，生成，关键词标签 -->
+    <meta name="keywords" content="自动，txt，发布，生成，关键词">
+     <!-- SEO核心内容标签 -->
+    <meta name="description" content="不依赖服务器的博客发布工具：Jblog 设计与实现思路一、引言做个人博客，通常...">
+    <!-- 网页显示标题标签-作者/网站名称 -->
+    <meta name="author" content="靳好宝博客">
+    <!-- {网页URL}-->
+    <meta property="og:url" content="{网页URL}">   
+    <link rel="canonical" href="{网页URL}">  
+    <meta name="robots" content="index, follow">
+    <!-- 禁止移动端识别手机号/邮箱 -->
+    <meta name="format-detection" content="telephone=no, email=no">
+     <!-- 网页图标 favicon -->
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <!-- {浏览器显示标题-网站名称}--> 
+    <title>不依赖服务器的博客发布工具Jblog设计与实现思路-靳好宝博客-一个关注python编程，Web建站，网络营销，seo优化的科技博客</title>   
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- 头部导航 -->
+    <header>
+        <nav class="nav-links">
+            <a href="index.html" target="_self">首页</a>
+            <a href="webes/about.html" target="_blank">关于</a>
+            <a href="webes/product.html" target="_blank">服务</a>
+            <a href="webes/contact.html" target="_blank">联系我们</a> 
+        </nav>
+    </header>
+
+    <!-- 左侧悬浮广告位 -->
+    <aside class="left-sidebar" id="leftAd">
+        <!-- 左侧广告位：由JavaScript动态加载 -->
+    </aside>
+
+    <!-- 主体内容 -->
+    <div class="container">
+        <main class="main-content">
+            <h1>不依赖服务器的博客发布工具：Jblog设计与实现思路</h1><span class="article-date" style="font-size:14px">2026年09月13日|作者:靳好宝|栏目:Jblog|分类:博客建站</span>
+            <!-- 以下为文章正文编辑区 -->
+            <!-- site_page_begin -->
+<p>&nbsp&nbsp不依赖服务器的博客发布工具：Jblog 设计与实现思路</p>
+
+<p>&nbsp&nbsp一、引言</p>
+
+<p>&nbsp&nbsp做个人博客，通常绕不开建站平台或内容管理系统。它们省事，但文章数据散落在云端，导出麻烦，样式也常被平台规则限制。发布</p>
+
+<p>&nbsp&nbspJblog 换了个思路：用一个本地桌面工具打通「写作」和「发布」。你只管在编辑区写正文，点一下「发布」，它就生成可直接上传的静态 HTML，并自动维护首页、sitemap 和链接索引。没有服务器，没有数据库，产物就是一堆标准网页文件，往任何静态空间一放就能访问。</p>
+
+<p>&nbsp&nbsp二、定位与功能</p>
+
+<p>&nbsp&nbspJblog 是一款基于 Python + Tkinter 的桌面应用，覆盖完整流程：</p>
+
+<p>&nbsp&nbsp- 文章编辑：纯文本所见即所得编辑，撤销重做，快捷键插入常用 HTML 标签与符号，一键插入当前时间，导入 TXT。</p>
+<p>&nbsp&nbsp- 图片处理：本地图片自动转 WebP，宽度超 600px 等比缩放，文件名中文自动转拼音；网络图 URL 粘贴后自动下载转换，并补齐 img 的 alt、width、height。</p>
+<p>&nbsp&nbsp- 文本格式化：删行首空格、删空行、删行内空格，以及「规范」功能——按行首空格识别段落，自动包裹 &nbsp; 标签，文末生成关键词摘要。txt，</p>
+<p>&nbsp&nbsp- 关键词与链接：基于 jieba 分词提取高频词，随机插入关键词、已有链接和尾随链接；也可从关键词文件手动选择插入。</p>
+<p>&nbsp&nbsp- 发布：基于 demo 模板生成单篇 HTML，自动填充标题、日期、作者、栏目、描述、关键词，文末插入最近链接，并同步维护 url.txt、栏目索引、sitemap 等。</p>
+<p>&nbsp&nbsp- 首页生成：栏目首页每 30 条一页，超出部分生成分页文件并自动清理过期分页；另有全局首页，基于全站 Markdown 摘要生成。关键词，</p>
+
+<p>&nbsp&nbsp三、关键设计</p>
+
+<p>&nbsp&nbsp1. 配置文件集中、自动创建</p>
+
+<p>&nbsp&nbsp启动时检查并自动创建 domain.txt、栏目.txt、作者.txt、分类.txt、关键词.txt、整理.txt 等。缺省带默认值，降低上手门槛。</p>
+
+<p>&nbsp&nbsp2. 目录结构约定</p>
+
+<p>&nbsp&nbsp所有配置和生成文件固定在程序目录，与启动位置无关。每个栏目对应一个子目录，内含 image、url.txt、文章 HTML 和 sitemap；栏目-txt 目录存放带全局序号的 TXT 原文备份。程序能识别开发态、PyInstaller 打包态、Nuitka 编译态，配置文件始终落在 exe 所在目录。</p>
+
+<p>&nbsp&nbsp3. 多编码兼容读取</p>
+
+<p>&nbsp&nbsp自动检测 BOM（UTF-8 / UTF-16），无 BOM 时先走 chardet 检测，再依次尝试 utf-8、gbk、gb2312、gb18030、big5、utf-16、ascii，最大化兼容不同来源的 TXT。</p>
+
+<p>&nbsp&nbsp4. 发布前自动整理</p>
+
+<p>&nbsp&nbsp点击发布前先执行 txt 保存 + 整理流程，保证生成的 HTML 与原文一致。去重机制会在标题、正文或文件名重复时跳过并提示。</p>
+
+<p>&nbsp&nbsp四、技术栈</p>
+
+<p>&nbsp&nbspPython 3.10+、Tkinter（标准库）、jieba 分词、pypinyin 转拼音、Pillow 处理图片、chardet 检测编码，打包用 PyInstaller 或 Nuitka。</p>
+
+<p>&nbsp&nbsp五、适用场景</p>
+
+<p>&nbsp&nbsp- 习惯纯文本写作、不想被富文本编辑器分心的场景</p>
+<p>&nbsp&nbsp- 想保留全部内容本地副本、随时可导出的场景</p>
+<p>&nbsp&nbsp- 已有静态空间、只缺一套「写完即出网页」工具的场景</p>
+<p>&nbsp&nbsp- 个人站维护量大、希望 sitemap 和索引自动更新的场景</p>
+
+<p>&nbsp&nbsp六、结语</p>
+
+<p>&nbsp&nbspJblog 的价值不在花哨，而在于把「写」和「发」这条链路做闭环、做自动化。对希望内容自主可控的个人站来说，它把发布环节压成了一次点击。</p>
+
+<p>&nbsp&nbsp后续方向：增加草稿与批量发布、模板在线预览、以及对接 CI 自动部署，让静态站维护更省心。</p>
+自动，txt，发布，生成，关键词。<br>
+            <a href="https://chleeken.github.io/Jblog/gaobiefuwuqiyijianfabubokeJblograngnideneirongwanquanshuyuziji.html" target="_blank" title="告别服务器，一键发布博客Jblog 让你的内容完全属于自己做个人博客，你是不..." style="color:#555860">#告别服务器，一键发布博客——Jblog让你的内容完全属于自己</a>
+            <!-- site_page_end -->
+        </main>
+    </div>
+
+    <!-- 右侧悬浮侧边栏 -->
+    <aside class="right-sidebar">
+        <!-- 右上广告位 -->
+        <div class="ad-placeholder" id="topRightAd">
+            <!-- 右上广告位：由JavaScript动态加载 -->
+        </div>
+
+        <!-- 右下链接侧边栏（纯CSS定义） -->
+        <div class="link-sidebar">
+        <a href="https://chleeken.github.io/Jblog/gaobiefuwuqiyijianfabubokeJblograngnideneirongwanquanshuyuziji.html" target="_blank" title="告别服务器，一键发布博客Jblog 让你的内容完全属于自己做个人博客，你是不..." style="color:#555860">#告别服务器，一键发布博客——Jblog让你的内容完全属于自己</a>
+        </div>
+    </aside>
+    <nav class="pagination" aria-label="分页导航" style="color:#4B0082;text-align:center">
+     下一页 <span><a href="https://chleeken.github.io/Jblog/gaobiefuwuqiyijianfabubokeJblograngnideneirongwanquanshuyuziji.html" target="_blank" title="告别服务器，一键发布博客Jblog 让你的内容完全属于自己做个人博客，你是不..." style="color:#555860">#告别服务器，一键发布博客——Jblog让你的内容完全属于自己</a></span>   
+</nav>  
+    <!-- 底部版权信息 -->
+    <footer>
+<p> <h4>©2025 靳好宝博客 -- Powered by <a href="https://chleeken.github.io/Jblog/jblog.html">Jblog</a>|theme by <a href="https://chleeken.github.io/theme/index.html">Jbtheme</a> Analytics</h4></p>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

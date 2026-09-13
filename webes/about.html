@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>关于我们 - 靳好宝科技博客</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: #f8f9fa;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+        .header {
+            text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin-bottom: 40px;
+        }
+        .header h1 { font-size: 2.5em; margin-bottom: 10px; }
+        .header p { font-size: 1.1em; opacity: 0.9; }
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .section h2 {
+            color: #667eea;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        .section h3 {
+            color: #444;
+            font-size: 1.2em;
+            margin: 24px 0 12px;
+        }
+        .section p { color: #555; margin-bottom: 12px; }
+        .section ul { padding-left: 24px; }
+        .section li { margin-bottom: 8px; color: #555; }
+        .section li strong { color: #333; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        th { background: #f8f9fa; font-weight: 600; color: #333; }
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+        }
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+        .contact-item {
+            background: #f8f9fa;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .contact-item strong { color: #667eea; display: block; margin-bottom: 4px; }
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: #888;
+            font-size: 0.9em;
+        }
+        @media (max-width: 600px) {
+            .section { padding: 24px; }
+            .header h1 { font-size: 1.8em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>关于我们</h1>
+        <p>让技术变得可学、可用、可落地</p>
+    </div>
+
+    <div class="container">
+        <div class="section">
+            <h2>引言：为何出发</h2>
+            <p>在数字化浪潮席卷全球的今天，技术不再是少数人的专属工具，而是每个人可以掌握的杠杆。从第一行 Python 代码到搭建完整的网站，从搜索引擎排名到精准的网络营销，每一个环节都蕴含着改变事业轨迹的可能。</p>
+            <div class="highlight-box">
+                <p><strong>我们的初衷：</strong>让技术变得可学、可用、可落地。不堆砌术语，不空谈概念，只分享真正能帮你解决问题的方案。</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>核心领域</h2>
+
+            <h3>🐍 Python 编程</h3>
+            <p>Python 以其简洁的语法和强大的生态，成为数据科学、自动化脚本、Web 开发的首选语言。</p>
+            <ul>
+                <li><strong>基础进阶</strong>：从入门语法到面向对象、装饰器、并发编程的系统性讲解</li>
+                <li><strong>实用库详解</strong>：requests、pandas、Flask、Django、scikit-learn 等主流库的实战应用</li>
+                <li><strong>自动化脚本</strong>：文件处理、爬虫开发、定时任务、API 交互等日常效率提升方案</li>
+                <li><strong>AI 应用</strong>：大模型 API 接入、Prompt 工程、LangChain 工作流等前沿实践</li>
+            </ul>
+
+            <h3>🌐 Web 建站</h3>
+            <p>好的网站是技术与设计的结合体。我们覆盖：</p>
+            <ul>
+                <li><strong>静态站点</strong>：HTML5/CSS3/JavaScript 基础与响应式设计</li>
+                <li><strong>现代框架</strong>：React、Vue、Next.js 等前端框架的选型与实践</li>
+                <li><strong>后端架构</strong>：Node.js、Python Flask/Django、Go 等后端语言的性能优化</li>
+                <li><strong>部署运维</strong>：Docker 容器化、CI/CD 流水线、云服务器选型与配置</li>
+                <li><strong>性能优化</strong>：加载速度、SEO 友好度、移动端适配的全链路优化</li>
+            </ul>
+
+            <h3>📈 网络营销</h3>
+            <p>流量是生存之本，但流量不等于转化。我们分享：</p>
+            <ul>
+                <li><strong>内容营销</strong>：选题策略、内容日历、SEO 写作技巧</li>
+                <li><strong>社交媒体</strong>：公众号、知乎、B站、小红书等平台的运营方法论</li>
+                <li><strong>私域运营</strong>：从公域引流到私域沉淀的完整链路</li>
+                <li><strong>数据分析</strong>：GA4、百度统计、热力图工具的深度使用</li>
+                <li><strong>转化优化</strong>：Landing Page 设计、CTA 策略、A/B 测试方法论</li>
+            </ul>
+
+            <h3>🔍 SEO 优化</h3>
+            <p>搜索引擎是互联网最大的流量入口。我们聚焦：</p>
+            <ul>
+                <li><strong>技术 SEO</strong>：站点结构、索引控制、Core Web Vitals 优化</li>
+                <li><strong>内容 SEO</strong>：关键词研究、语义化布局、内链策略</li>
+                <li><strong>外链建设</strong>：高质量外链获取、品牌提及、Guest Post 策略</li>
+                <li><strong>本地 SEO</strong>：Google My Business、百度地图标注、本地评分管理</li>
+                <li><strong>AI 时代 SEO</strong>：GEO（生成引擎优化）、零点击搜索应对策略</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>我们的特色</h2>
+            <ul>
+                <li><strong>实战导向</strong>：每篇文章都基于真实项目经验，提供可直接复用的代码和方案</li>
+                <li><strong>持续更新</strong>：保持月度级更新频率，追踪 Python 新版本、搜索算法变动、营销工具演进</li>
+                <li><strong>深度拆解</strong>：从原理层、实现层、优化层三个维度层层拆解，建立系统性认知</li>
+                <li><strong>社区互动</strong>：鼓励读者提问、反馈、投稿，最好的想法来自实践者</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>发展历程</h2>
+            <table>
+                <tr>
+                    <th>时间</th>
+                    <th>里程碑</th>
+                </tr>
+                <tr>
+                    <td>2023 年初</td>
+                    <td>博客上线，首发 Python 爬虫系列</td>
+                </tr>
+                <tr>
+                    <td>2023 年中</td>
+                    <td>推出 Web 建站实战专栏，累计 30+ 篇</td>
+                </tr>
+                <tr>
+                    <td>2023 年末</td>
+                    <td>开始覆盖 SEO 与内容营销领域</td>
+                </tr>
+                <tr>
+                    <td>2024 年</td>
+                    <td>读者突破 10 万，建立付费专栏与咨询业务</td>
+                </tr>
+                <tr>
+                    <td>2025 年</td>
+                    <td>引入 AI 专题，涵盖 LLM 应用、GEO 优化、自动化工作流</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>团队</h2>
+            <p>我们是一个由开发者、设计师、营销人组成的复合型团队。有人写过百万行代码，有人操盘过上亿流量的营销活动，有人在搜索引擎行业深耕十年。不同视角的碰撞，让我们既能理解技术的实现细节，也能把握商业的落地逻辑。</p>
+        </div>
+
+        <div class="section">
+            <h2>联系我们</h2>
+            <div class="contact-grid">
+                <div class="contact-item">
+                    <strong>邮箱</strong>
+                    uulov@qq.com
+                </div>
+                <div class="contact-item">
+                    <strong>微信</strong>
+                    kinguiu
+                </div>
+                <div class="contact-item">
+                    <strong>GitHub</strong>
+                    https://chleeken.github.io/
+                </div>
+                <div class="contact-item">
+                    <strong>投稿</strong>
+                    欢迎原创技术文章投稿
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>结语</h2>
+            <p>技术世界变化太快，但规律从未改变：<strong>解决问题的人永远有市场</strong>。</p>
+            <p>我们希望通过这个平台，帮你掌握 Python、Web、营销、SEO 的核心能力，在不确定的时代建立自己的确定性。</p>
+            <p>如果你也相信"动手做"的力量，欢迎加入我们。</p>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>© 2026 TechBlog | 最后更新：2026 年 9 月</p>
+    </div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+

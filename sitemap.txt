@@ -1,0 +1,2 @@
+[不依赖服务器的博客发布工具：Jblog设计与实现思路](https://chleeken.github.io/Jblog/buyilaifuwuqidebokefabugongjuJblogshejiyushixiansilu.html)
+[#告别服务器，一键发布博客——Jblog让你的内容完全属于自己](https://chleeken.github.io/Jblog/gaobiefuwuqiyijianfabubokeJblograngnideneirongwanquanshuyuziji.html)
