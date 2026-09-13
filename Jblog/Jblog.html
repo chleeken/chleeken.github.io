@@ -415,7 +415,7 @@ table tr:hover td {
       <div class="card-title"><span class="icon">📊</span> 字数统计</div>
       <ul>
         <li>实时统计<strong>汉字、字母、数字</strong>及总数</li>
-        <li>自动将文章链接（Markdown 格式）追加到 <code>{栏目}_url.txt</code></li>
+        <li>自动将文章链接追加到 <code>{栏目}_url.txt</code></li>
       </ul>
     </div>
     <div class="card">
@@ -436,7 +436,7 @@ table tr:hover td {
         <li>每 30 条为一页，超出自动生成分页文件</li>
         <li>自动清理超出当前页数的旧分页文件</li>
         <li>随机填充侧栏链接（最多 6 条）</li>
-        <li><strong>程序首页</strong>：基于 index_url_all.md 生成全局 index.html 及分页文件</li>
+        <li><strong>分页功能</strong>：基于内置核心算法生成index.html 及分页文件</li>
       </ul>
     </div>
     <div class="card">
@@ -463,13 +463,6 @@ table tr:hover td {
 ├── demo/                <span class="cm"># HTML 模板目录（需手动创建）</span>
 │   ├── demo.html        <span class="cm"># 文章页模板</span>
 │   └── index.html       <span class="cm"># 首页模板</span>
-├── domain.txt           <span class="cm"># 域名配置（第一行为默认域名）</span>
-├── 关键词.txt            <span class="cm"># 关键词文件名列表</span>
-├── 栏目.txt             <span class="cm"># 栏目名称列表</span>
-├── 整理.txt             <span class="cm"># 批量替换规则（旧 新 每行一条）</span>
-├── 作者.txt             <span class="cm"># 作者名称列表</span>
-├── 分类.txt             <span class="cm"># 分类名称列表</span>
-├── 整理/               <span class="cm"># 整理.txt 对应的替换记录（按需生成）</span>
 │
 ├── <span class="hl">{栏目名}</span>/            <span class="cm"># 各栏目文章输出目录</span>
 │   ├── <span class="hl">{拼音}</span>.html      <span class="cm"># 文章 HTML 文件</span>
@@ -482,12 +475,10 @@ table tr:hover td {
 │   └── 标题_作者_栏目_分类_序号_日期.txt
 │
 ├── url.txt              <span class="cm"># 全站文章链接清单</span>
-├── index_url_all.md     <span class="cm"># 全站文章 Markdown 摘要</span>
-├── index.html           <span class="cm"># 全局首页</span>
 ├── <span class="hl">{域名}</span>_index_<span class="hl">{id}</span>.html   <span class="cm"># 全局分页文件</span>
 ├── <span class="hl">{域名}</span>_<span class="hl">{栏目}</span>_index_<span class="hl">{id}</span>.html  <span class="cm"># 栏目分页文件</span>
-├── sitemap.xml          <span class="cm"># 全局 sitemap</span>
-└── sitemap.txt          <span class="cm"># 全站链接（纯文本）</span></div>
+└──sitemap.xml          <span class="cm"># 全局 sitemap</span>
+ </div>
 </section>
 
 <section id="install">
@@ -588,8 +579,8 @@ table tr:hover td {
     <div class="step">
       <div class="step-num">7</div>
       <div class="step-content">
-        <div class="step-title">生成程序首页</div>
-        <p>点击「程序首页」按钮 → 基于 <code>index_url_all.md</code> 生成全局 <code>index.html</code> 及分页文件 → 输出到程序根目录。</p>
+        <div class="step-title">Jblog(奕豪webbuilder)</div>
+        <p>单文件博客内容系统 → 基于 <code>python+tinker</code> 生成网站 <code>博客内容</code> 静态html → 输出到程序根目录。</p>
       </div>
     </div>
   </div>
@@ -727,7 +718,7 @@ ABC abc</div>
 
 <footer class="footer">
   <p>本项目为个人项目，作者保留所有权利。</p>
-  <p style="margin-top:8px;">Jblog-奕豪WebBuilder <span class="badge">v-3.05.1029</span> · 靳好宝 · <a href="mailto:uulov@qq.com">uulov@qq.com</a></p>
+  <p style="margin-top:8px;"><a href="https://chleeken.github.io/Jblog/Jblog.html">Jblog</a>|-奕豪WebBuilder <span class="badge">v-3.05.1029</span> · 靳好宝 · <a href="mailto:uulov@qq.com">uulov@qq.com</a></p>
 </footer>
 
 </body>
