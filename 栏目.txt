@@ -1,6 +1,7 @@
 blog
 Jblog
 theme
+trade
 medical
 site
 page

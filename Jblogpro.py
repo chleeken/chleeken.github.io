@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Jblog-奕豪WebBuilder v-3.05.1029 - 网站生成器
+奕豪WebBuilder v-3.05.1029 - 网站生成器
 作者:靳好宝 Email:uulov@qq.com (c)2026.05.03 09:32:16
 """
 import tkinter as tk
@@ -194,51 +194,17 @@ class LogPanel:
 
 class Msg:
     @staticmethod
-    def _w(title,msg,fg='black',timeout=1000):
-        r = tk._default_root
-        if not r: return
-        w = tk.Toplevel(r)
-        w.title(title)
-        w.geometry(f"+{r.winfo_x()+200}+{r.winfo_y()+200}")
-        w.transient(r); w.grab_set()
-        f = tk.Frame(w,padx=20,pady=20)
-        f.pack(fill=tk.BOTH,expand=True)
-        tk.Label(f,text=msg,wraplength=360,justify=tk.LEFT,
-                font=('宋体',11),fg=fg).pack()
-        tk.Button(f,text="确定",command=w.destroy,
-                 bg='#9ACD32',width=10).pack(pady=(10,0))
-        w.after(timeout,w.destroy)
-    @staticmethod
     def info(t,m):
         print(f"[{datetime.now().strftime('%H:%M:%S')}] ✅{m}")
         LogPanel.add('✅',f'{t}: {m}', 'success')
-        Msg._w(t,m)
     @staticmethod
     def warn(t,m):
         print(f"[{datetime.now().strftime('%H:%M:%S')}] ℹ️{m}")
         LogPanel.add('ℹ️',f'{t}: {m}', 'info')
-        Msg._w(t,m,fg='#CC6600')
     @staticmethod
     def error(t,m):
         print(f"[{datetime.now().strftime('%H:%M:%S')}] ❌{m}")
         LogPanel.add('❌',f'{t}: {m}', 'error')
-        Msg._w(t,m,fg='#CC0000')
-    @staticmethod
-    def ask(t,m):
-        r = tk._default_root
-        if not r: return False
-        res=[False]
-        w = tk.Toplevel(r)
-        w.title(t); w.geometry(f"+{r.winfo_x()+200}+{r.winfo_y()+200}")
-        w.transient(r); w.grab_set()
-        tk.Label(w,text=m,wraplength=360,font=('宋体',11)).pack(padx=20,pady=20)
-        bf=tk.Frame(w); bf.pack(pady=10)
-        tk.Button(bf,text="确定",command=lambda:(res.__setitem__(0,True),w.destroy()),
-                 bg='#9ACD32',width=8).pack(side=tk.LEFT,padx=5)
-        tk.Button(bf,text="取消",command=w.destroy,bg='#FF6347',
-                 width=8).pack(side=tk.LEFT,padx=5)
-        w.wait_window()
-        return res[0]
 
 class App:
     # 硬编码颜色配置
@@ -258,7 +224,7 @@ class App:
         self.ustack=[]; self.rstack=[]; self.maxu=3; self.cur=None
         self.log_entries=[]
         self.last_access_path = PROGRAM_DIR
-        self.root.title("Jblog-奕豪WebBuilder v-3.05.1029  Email:uulov@qq.com (c)2026.05.03 09:32:16")
+        self.root.title("奕豪WebBuilder v-3.05.1029  Email:uulov@qq.com (c)2026.05.03 09:32:16")
         self.root.geometry("1200x850"); self.root.configure(bg='#E6E6FA')
         self._ui(); self._bind(); self._load()
         self._apply(); self.root.protocol("WM_DELETE_WINDOW",self._quit)
@@ -614,7 +580,8 @@ class App:
         self.root.clipboard_clear(); self.root.clipboard_append(c)
         Msg.info("复制","已全部复制")
     def _clr(self):
-        if Msg.ask("确认","确定清除？"): self.t.delete('1.0','end')
+        self.t.delete('1.0','end')
+        LogPanel.add('✅','内容已清除')
     def _link(self):
         try: cb=self.root.clipboard_get()
         except: cb=''
@@ -1592,11 +1559,19 @@ class App:
         Msg.info("程序首页",f"已生成index.html（最新{min(page_size,total)}条）"+(f"及{num_files}个分页文件" if num_files else "，未超30条不分页"))
     def _add_log(self, icon, msg, level='info'):
         ts=datetime.now().strftime('%H:%M:%S')
-        self.log_entries.append(f'[{ts}] {icon} {msg}')
-        self.log_t.insert(tk.END, f'[{ts}] {icon} {msg}\n')
+        entry=f'[{ts}] {icon} {msg}'
+        self.log_entries.append(entry)
+        if len(self.log_entries) > 100:
+            overflow = self.log_entries[:len(self.log_entries)-100]
+            self.log_entries = self.log_entries[-100:]
+            lines = [line for line in self.log_t.get('1.0', tk.END).split('\n') if line]
+            for line in overflow:
+                if line in lines:
+                    lines.remove(line)
+            self.log_t.delete('1.0', tk.END)
+            self.log_t.insert('1.0', '\n'.join(lines) + ('\n' if lines else ''))
+        self.log_t.insert(tk.END, entry + '\n')
         self.log_t.see(tk.END)
-        if len(self.log_entries) > 500:
-            self.log_entries = self.log_entries[-300:]
     def _clear_log(self):
         self.log_entries.clear()
         self.log_t.delete('1.0', tk.END)
