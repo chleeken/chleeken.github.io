@@ -1,0 +1,10 @@
+document.write("<script>!(function () {\"use strict\";var w = window, d = document, u = \"//api.tongjiniao.com/c?_=958852909978423296\", s =document.createElement(\"script\"), r = document.getElementsByTagName(\"script\")[0];s.type = \"text/javascript\";s.setAttribute(\"charset\", \"UTF-8\");s.async = !0;s.src = u;r.parentNode.insertBefore(s, r)})();</script>")
+
+
+
+
+
+
+
+
+
