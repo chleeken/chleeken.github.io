@@ -1,0 +1,29 @@
+# robots.txt
+# 标准配置：允许搜索引擎抓取公开页面，排除敏感目录
+
+User-agent: *
+Allow: /
+
+# 屏蔽常见后台/管理目录
+Disallow: /admin/
+Disallow: /wp-admin/
+Disallow: /manage/
+Disallow: /config/
+Disallow: /api/
+Disallow: /uploads/
+Disallow: /static/cache/
+Disallow: /search
+Disallow: /deno
+Disallow: /blog-txt
+Disallow: /Jblog-txt
+Disallow: /?
+
+# 屏蔽PDF及临时文件
+Disallow: /backup/
+Disallow: /temp/
+Disallow: /.git/
+Disallow: /.env
+
+# 站点地图
+Sitemap: https://yourdomain.com/sitemap.xml
+Sitemap: https://yourdomain.com/sitemap.txt
