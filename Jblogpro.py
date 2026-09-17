@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-奕豪WebBuilder v-3.05.1029 - 网站生成器
-作者:靳好宝 Email:uulov@qq.com (c)2026.05.03 09:32:16
+奕豪WebBuilder v-3.05.1031 - 网站生成器
+作者:靳好宝 Email:uulov@qq.com (c)2026.09.16 导入发布优化
 """
 import tkinter as tk
 from tkinter import ttk, filedialog, colorchooser
@@ -28,8 +28,14 @@ def _detect_bom(raw):
 def read_file(path, errors='replace'):
     if not os.path.exists(path):
         return None
-    with open(path, 'rb') as f:
-        raw = f.read()
+    try:
+        with open(path, 'rb') as f:
+            raw = f.read()
+    except (IOError, OSError) as e:
+        if isinstance(e, PermissionError) and getattr(sys, 'frozen', False):
+            return ''
+        print(f'[WARN] 无法读取 {path}: {e}')
+        return None
     bom_enc, data = _detect_bom(raw)
     if bom_enc:
         try:
@@ -134,6 +140,7 @@ def sfn(fn):
     return re.sub(r'[\\/:*?"<>|]','',fn)
 
 def strip_html(text):
+    text = '' if text is None else text
     return re.sub(r'<[^>]+>','',text).replace('&nbsp;','').replace('&nbsp','').strip()
 
 def clean_title(title):
@@ -169,6 +176,21 @@ def get_first_words(text, min_len, max_len):
     elif result:
         return result[:max_len] + ('...' if len(result) > max_len else '')
     return clean[:max_len] + ('...' if len(clean) > max_len else '')
+
+def get_min_pubs(text, min_cn=300):
+    clean = strip_html(text)
+    cn = sum(1 for c in clean if '\u4e00' <= c <= '\u9fff')
+    return cn >= min_cn
+
+def get_img_size_rule(w, h):
+    if w >= 600:
+        return '600', str(round(h * 600 / w))
+    return str(w), str(h)
+
+def build_inline_img(url, iw, ih, alt=''):
+    rw, rh = get_img_size_rule(iw, ih)
+    alt = (alt or '').replace('"', "'").strip()
+    return f'<img src="{url}"  width="{rw}" height="{rh}" align="middle" alt="{alt}" hspace="5" vspace="5">'
 
 def get_max_txt_number_in_dir(txt_dir):
     """获取指定目录下txt文件名的最大数字"""
@@ -224,7 +246,7 @@ class App:
         self.ustack=[]; self.rstack=[]; self.maxu=3; self.cur=None
         self.log_entries=[]
         self.last_access_path = PROGRAM_DIR
-        self.root.title("奕豪WebBuilder v-3.05.1029  Email:uulov@qq.com (c)2026.05.03 09:32:16")
+        self.root.title("奕豪WebBuilder v-3.05.1032  Email:uulov@qq.com (c)2026.09.17 撤销发布按钮")
         self.root.geometry("1200x850"); self.root.configure(bg='#E6E6FA')
         self._ui(); self._bind(); self._load()
         self._apply(); self.root.protocol("WM_DELETE_WINDOW",self._quit)
@@ -439,12 +461,14 @@ class App:
         try:
             write_file(os.path.join(txt_dir,fn), c)
             Msg.info("保存",f"已保存: {fn}")
+            self._last_txt_fn=os.path.join(txt_dir,fn)
         except: pass
     def _r2(self):
         r=tk.Frame(self.tb,bg='#9400D3'); r.pack(fill=tk.X,padx=2,pady=1)
         btns=[
             ('图片','插入图片转WebP',self._img,{}),
             ('网图','插入网络图片转WebP',self._wangtu,{}),
+            ('在线图片','插入在线图片(保留URL)',self._onlineimg,{}),
             ('全复制','复制全部内容',self._cpa,{}),
             ('清除','清除内容',self._clr,{'bg':'#FFD700'}),
             ('链接','插入超链接',self._link,{}),
@@ -467,12 +491,14 @@ class App:
         ]
         for t,tip,cmd,ex in btns:
             b=self._mkb(r,t,tip,cmd,**ex); b.pack(side=tk.LEFT,padx=1,pady=1)
-        self.pb=self._mkb(r,'发布','发布HTML',self._pub,bg='#FF8C00',w=6)
+        self.pb=self._mkb(r,'发布','发布HTML',self._pubbtn,bg='#FF8C00',w=6)
         self.hb=self._mkb(r,'首页','生成首页',self._home,w=6,bg='#FAEBD7')
         self.wb=self._mkb(r,'字数','统计字数并生成链接',self._wcnt,w=6,bg='#9ACD32')
+        self.vb=self._mkb(r,'撤销发布','撤销最近一次发布',self._unpub,w=6,bg='#808080')
         self.pb.pack(side=tk.LEFT,padx=1,pady=1)
         self.hb.pack(side=tk.LEFT,padx=1,pady=1)
         self.wb.pack(side=tk.LEFT,padx=1,pady=1)
+        self.vb.pack(side=tk.LEFT,padx=1,pady=1)
     def _wangtu(self):
         cat=self.cv.get().strip()
         if not cat:
@@ -529,6 +555,51 @@ class App:
             except:
                 self._ins(f'<img src="{rel}" alt="{fl}">')
                 Msg.info("网图","已处理插入")
+            d.destroy()
+        tk.Button(d,text="确定",command=ok,bg='#9ACD32',width=10,font=('宋体',10)).pack(pady=10)
+    def _onlineimg(self):
+        """插入在线图片 - 保留URL，不下载不转WebP，按原图尺寸规则生成<img>并插入光标处"""
+        try: cb=self.root.clipboard_get()
+        except: cb=''
+        ct=self.t.get('1.0','end-1c')
+        d=tk.Toplevel(self.root); d.title("插入在线图片")
+        d.geometry(f"+{self.root.winfo_x()+300}+{self.root.winfo_y()+300}")
+        d.transient(self.root); d.grab_set()
+        tk.Label(d,text="图片地址:",font=('宋体',10)).pack(padx=10,pady=(10,5),anchor='w')
+        uv=tk.StringVar(value=cb if cb.startswith('http') else '')
+        row=tk.Frame(d); row.pack(padx=10,pady=5,fill=tk.X)
+        ent=tk.Entry(row,textvariable=uv,width=50,font=('宋体',10)); ent.pack(side=tk.LEFT,fill=tk.X,expand=True)
+        def paste_url():
+            try: uv.set(self.root.clipboard_get())
+            except: Msg.info("提示","剪贴板为空")
+        tk.Button(row,text="粘贴",command=paste_url,bg='#FF8C00',width=6,font=('宋体',10)).pack(side=tk.LEFT,padx=(5,0))
+        def ok():
+            url=uv.get().strip()
+            if not url: d.destroy(); return
+            if not url.startswith('http'):
+                Msg.info("提示","图片地址需以http/https开头")
+                return
+            alt=get_first_words(ct, 55, 65).replace('"',"'")
+            try:
+                import urllib.request as ur
+                req=ur.request.Request(url, headers={'User-Agent':'Mozilla/5.0'})
+                data=ur.urlopen(req,timeout=15).read(1024*1024)
+                w=h=None
+                try:
+                    from PIL import Image
+                    im=Image.open(io.BytesIO(data)); w,h=im.size
+                except Exception:
+                    pass
+                if w and h:
+                    img=build_inline_img(url, w, h, alt)
+                else:
+                    img=build_inline_img(url, 600, 600, alt)
+                self._ins(img)
+                Msg.info("在线图片","已插入")
+            except Exception as e:
+                img=build_inline_img(url, 600, 600, alt)
+                self._ins(img)
+                Msg.info("在线图片",f"读取尺寸失败，按默认600宽插入: {e}")
             d.destroy()
         tk.Button(d,text="确定",command=ok,bg='#9ACD32',width=10,font=('宋体',10)).pack(pady=10)
     def _img(self):
@@ -720,17 +791,59 @@ class App:
         if not fd: return
         tfs=[f for f in os.listdir(fd) if f.endswith('.txt')]
         if not tfs: Msg.info("导入","无TXT文件"); return
-        def en(fn):
-            ns=re.findall(r'(\d+)',fn)
+        date_pattern=r'20\d{2}\.\d{2}\.\d{2}'
+        new6_pat=re.compile(r'^(.+)_([^_]+)_([^_]+)_([^_]+)_([0-9]+)_(' + date_pattern + r')\.txt$')
+        old_pat=re.compile(r'^(.+)_(\d+)_(' + date_pattern + r')\.txt$')
+        def key(f):
+            m=new6_pat.match(f)
+            if m: return int(m.group(5))
+            m=old_pat.match(f)
+            if m: return int(m.group(2))
+            ns=re.findall(r'(\d+)',f)
             return int(ns[-1]) if ns else 0
-        tfs.sort(key=en)
-        fp=os.path.join(fd,tfs[0])
-        try:
-            c = read_file(fp, errors='replace')
-            self.t.delete('1.0','end'); self.t.insert('1.0',c)
-            self.tv.set(re.sub(r'[\d#_\-]+','',tfs[0].replace('.txt','')).strip() or tfs[0].replace('.txt',''))
-            Msg.info("导入",f"已导入: {tfs[0]}")
-        except Exception as e: Msg.error("导入",str(e))
+        tfs.sort(key=key)
+        total=len(tfs); ok_cnt=0; skip_cnt=0
+        for i,fn in enumerate(tfs,1):
+            fp=os.path.join(fd,fn)
+            content=read_file(fp,errors='replace')
+            if content is None:
+                Msg.error("导入",f"[{i}/{total}] 读取失败，跳过: {fn}"); skip_cnt+=1; continue
+            lines=content.split('\n')
+            body='\n'.join(lines[1:]).lstrip('\n')
+            first=(lines[0].strip() if lines else '')
+            m6=new6_pat.match(fn)
+            if m6:
+                title=m6.group(1); author=m6.group(2); cat=m6.group(3); category=m6.group(4); num=m6.group(5); date_d=m6.group(6)
+                if first: title=first
+                if author: self.av.set(author)
+                if cat: self.cv.set(cat)
+                if category: self.cav.set(category)
+                if not body: Msg.warn("导入",f"[{i}/{total}] 标题下无正文，跳过: {fn}"); skip_cnt+=1; continue
+                self.t.delete('1.0','end')
+                self.t.insert('1.0',f'{title}\n{body}')
+                self.tv.set(title)
+                self._get_domain_list()
+                self._pub(pub_date=f'{date_d[0:4]}年{date_d[5:7]}月{date_d[8:10]}日', skip_stxt=True, skip_orgf=True)
+                if self.published: ok_cnt+=1
+                else: skip_cnt+=1; Msg.warn("导入",f"[{i}/{total}] 未成功发布: {fn}")
+            else:
+                m5=old_pat.match(fn)
+                if m5: num=m5.group(2)
+                else:
+                    ns=re.findall(r'(\d+)',fn)
+                    num=ns[-1] if ns else None
+                if num is not None and first==num:
+                    Msg.warn("导入",f"[{i}/{total}] 首行为数字「{first}」，疑似无标题，跳过: {fn}"); skip_cnt+=1; continue
+                t=first or fn[:-4]
+                if not body: Msg.warn("导入",f"[{i}/{total}] 标题下无正文，跳过: {fn}"); skip_cnt+=1; continue
+                self.t.delete('1.0','end')
+                self.t.insert('1.0',f'{t}\n{body}')
+                self.tv.set(t)
+                self._get_domain_list()
+                self._pub(skip_stxt=True, skip_orgf=True)
+                if self.published: ok_cnt+=1
+                else: skip_cnt+=1; Msg.warn("导入",f"[{i}/{total}] 未成功发布: {fn}")
+        Msg.info("导入",f"完成：共{total}篇，成功发布{ok_cnt}篇，跳过{skip_cnt}篇")
     def _new(self):
         self.t.delete('1.0','end'); self.tv.set(''); self.cur=None
         self.published=False; self.pb.config(bg='#FF0000')
@@ -770,6 +883,7 @@ class App:
         except Exception as e: Msg.error("保存",str(e))
     def _extract_top_words(self, text, n=5):
         """提取文本中的高频词"""
+        text = text or ''
         import jieba
         from collections import Counter
         text = strip_html(text)
@@ -793,8 +907,9 @@ class App:
 
     def _orgf(self):
         """整理按钮 - 格式化+随机插入关键词/链接"""
-        c=self.t.get('1.0','end-1c').strip()
-        if not c: Msg.info("整理","内容为空"); return
+        c=self.t.get('1.0','end-1c')
+        if not c or not c.strip(): Msg.info("整理","内容为空"); return
+        c=c.strip()
 
         top_words = self._extract_top_words(c, 5)
 
@@ -1144,10 +1259,27 @@ class App:
         pass
     def _get_date_str(self):
         return datetime.now().strftime('%Y年%m月%d日')
-    def _pub(self):
+    def _get_domain_list(self):
+        fp = os.path.join(PROGRAM_DIR, 'domain.txt')
+        dl = []
+        if os.path.exists(fp):
+            dl = [l.strip() for l in (read_file(fp, errors='replace') or '').split('\n') if l.strip()]
+        self.dc['values'] = dl
+        if dl and self.dv.get().strip() not in dl:
+            self.dv.set(dl[0])
+        return dl
+
+    def _pubbtn(self):
+        self.published=False
+        self.pb.config(bg='#FF8C00')
+        self._pub()
+    def _pub(self, pub_date=None, skip_stxt=False, skip_orgf=False):
         """发布文章 - 先执行txt和整理功能"""
         c=self.t.get('1.0','end-1c').strip()
         if not c: Msg.info("提示","内容为空"); return
+        if not get_min_pubs(c, 300):
+            Msg.warn("发布跳过",f"正文汉字不足300字，跳过发布。请补充正文后再发布。")
+            return
         first_line=c.split('\n')[0].strip() or '文章'
         t=self.tv.get().strip()
         if not t:
@@ -1155,9 +1287,11 @@ class App:
             self.tv.set(t)
         t = clean_title(t)
         self.tv.set(t)
-        self._stxt()
-        self._orgf()
+        if not skip_stxt: self._stxt()
+        if not skip_orgf: self._orgf()
         c=self.t.get('1.0','end-1c').strip()
+        if not pub_date:
+            pub_date = datetime.now().strftime('%Y年%m月%d日')
         title_text = get_first_words(c, 20, 30)
         abstract_text = get_first_words(c, 150, 200)
         md_title = get_first_words(c, 25, 35)
@@ -1182,8 +1316,7 @@ class App:
             ht=ht.replace('title_name',ct)
             ht=ht.replace('<title>title_name</title>',f'<title>{ct}</title>')
             ht=ht.replace('网页标题',t)
-            date_str=datetime.now().strftime('%Y年%m月%d日')
-            ht=ht.replace('<h1>文章标题</h1>',f'<h1>{t}</h1><span class="article-date" style="font-size:14px">{date_str}|作者:{self.av.get().strip()}|栏目:{cat}|分类:{self.cav.get().strip()}</span>')
+            ht=ht.replace('<h1>文章标题</h1>',f'<h1>{t}</h1><span class="article-date" style="font-size:14px">{pub_date}|作者:{self.av.get().strip()}|栏目:{cat}|分类:{self.cav.get().strip()}</span>')
             desc = get_first_words(c, 25, 30).replace('<p>&nbsp&nbsp','').replace('</p>','')
             ht=ht.replace('描述',desc)
             iuf_cat=os.path.join(PROGRAM_DIR,f'{cat}_url.txt')
@@ -1206,7 +1339,7 @@ class App:
                 paragraphs = re.split(r'\n\s*\n', c)
                 formatted_article = '\n'.join([f'<p>&nbsp&nbsp{p.strip()}</p>' for p in paragraphs if p.strip()]).replace('{','').replace('}','')
             ht=re.sub(r'<!-- site_page_begin -->.*?<!-- site_page_end -->',
-                      f'<!-- site_page_begin -->\n{formatted_article}\n            <!-- site_page_end -->',
+                      lambda m:f'<!-- site_page_begin -->\n{formatted_article}\n            <!-- site_page_end -->',
                       ht,flags=re.DOTALL)
             uf5=os.path.join(PROGRAM_DIR,f'{cat}_url.txt')
             uls5=[]
@@ -1231,7 +1364,7 @@ class App:
                 ht=re.sub(r'<!-- new_link_name_start-->.*?<!-- new_link_name_end-->', '', ht, flags=re.DOTALL)
             else:
                 ht=re.sub(r'<!-- new_link_name_start-->.*?<!-- new_link_name_end-->',
-                          link_content, ht, flags=re.DOTALL)
+                          lambda m:link_content, ht, flags=re.DOTALL)
             ium=os.path.join(PROGRAM_DIR,f'{cat}_index_url.md')
             ium_old=os.path.join(PROGRAM_DIR,f'{cat}-index_url.md')
             existing_md=read_file(ium) if os.path.exists(ium) else ''
@@ -1312,7 +1445,7 @@ class App:
             title_text_clean = re.sub(r'<[^>]+>', '', title_text).strip()
             md_title_clean = re.sub(r'<[^>]+>', '', md_title).strip().replace('#','')
             md_abstract_clean = re.sub(r'<[^>]+>', '', md_abstract).strip()
-            current_date = datetime.now().strftime('%Y年%m月%d日')
+            current_date = pub_date
             md_entry = f"""<!-- site_page -->
    <div class="article-item">
    <h2 class="article-title">
@@ -1334,7 +1467,13 @@ class App:
             iall=read_file(iuall) if os.path.exists(iuall) else ''
             write_file(iuall, ium_new+'\n'+iall if iall else ium_new)
             self.published=True; self.pb.config(bg='#00FF00')
-            # 生成 sitemap.txt
+            import json as _json
+            _lpub={'hfp':hfp,'hfn':hfn,'pu':pu,'cat':cat,'date':datetime.now().strftime('%Y-%m-%d')}
+            try:
+                _lpub['txt_file']=getattr(self,'_last_txt_fn','')
+                if not os.path.exists(_lpub['txt_file']): _lpub['txt_file']=''
+            except: _lpub['txt_file']=''
+            write_file(os.path.join(PROGRAM_DIR,'last_pub.json'),_json.dumps(_lpub,ensure_ascii=False))
             self._gen_sitemap(t, pu)
             Msg.info("发布成功",f"已发布: {hfp}")
         except Exception as e:
@@ -1379,8 +1518,67 @@ class App:
                 write_file(rsf, rex)
             else:
                 write_file(rsf, '<?xml version="1.0" encoding="UTF-8"?>\n'
-                           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-                           +en+'\n</urlset>')
+                       '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+                       +en+'\n</urlset>')
+    def _unpub(self):
+        last=os.path.join(PROGRAM_DIR,'last_pub.json')
+        if not os.path.exists(last):
+            Msg.info("撤销发布","没有找到最近一次发布的记录"); return
+        try:
+            import json
+            rec=json.loads(read_file(last))
+        except Exception:
+            Msg.error("撤销发布","last_pub.json 解析失败"); return
+        removed=[]
+        def rmline(path,needle):
+            if not os.path.exists(path): return
+            ls=[l for l in (read_file(path,errors='replace') or '').split('\n')
+                if l.strip() and needle not in l]
+            write_file(path,'\n'.join(ls))
+        def rm_md_path(path,needle):
+            if not os.path.exists(path) or not needle: return
+            c=read_file(path,errors='replace') or ''
+            parts=c.split('<!-- site_page -->')
+            head,rest=parts[0],parts[1:]
+            new_rest=[]
+            for i in rest:
+                if needle in i:
+                    continue
+                new_rest.append(i)
+            if new_rest:
+                write_file(path,head+'<!-- site_page -->'.join(new_rest))
+            else:
+                write_file(path,head.rstrip())
+        def rm_sitemap(sf,url):
+            if not os.path.exists(sf) or not url: return
+            c=read_file(sf,errors='replace') or ''
+            if url in c:
+                ue='  <url>\n    <loc>'+url.replace('&','&amp;')+'</loc>\n    <lastmod>'
+                ie=c.find(ue)
+                if ie>=0:
+                    je=c.find('  </url>',ie)
+                    if je>=0:
+                        end=je+len('  </url>')
+                        if c[end:end+1]=='\n': end+=1
+                        c=c[:ie]+c[end:]
+                write_file(sf,c)
+        if rec.get('hfp') and os.path.exists(rec['hfp']):
+            os.remove(rec['hfp']); removed.append(os.path.basename(rec['hfp']))
+        if rec.get('txt_file') and os.path.exists(rec['txt_file']):
+            os.remove(rec['txt_file']); removed.append(os.path.basename(rec['txt_file']))
+        hfn=rec.get('hfn',''); pu=rec.get('pu',''); cat=rec.get('cat','')
+        if hfn:
+            for f in [f'/{cat}_index_url.txt',f'/{cat}_url.txt','/url.txt']:
+                rmline(os.path.join(PROGRAM_DIR,f.lstrip('/')),hfn)
+        if pu:
+            rm_sitemap(os.path.join(PROGRAM_DIR,cat,'sitemap.xml'),pu)
+            rm_sitemap(os.path.join(PROGRAM_DIR,'sitemap.xml'),pu)
+        if hfn and cat:
+            rm_md_path(os.path.join(PROGRAM_DIR,f'{cat}_index_url.md'),hfn)
+            rm_md_path(os.path.join(PROGRAM_DIR,'index_url_all.md'),hfn)
+        os.remove(last)
+        self.published=False; self.pb.config(bg='#FF0000')
+        Msg.info("撤销发布",f"已撤销最近一次发布: {', '.join(removed) or rec.get('hfn','')}\n链接/索引文件中的对应条目已删除")
     def _home(self):
         """生成首页 - 完整分页"""
         cat=self.cv.get().strip()
@@ -1430,14 +1628,14 @@ class App:
         def fill_side(html):
             if not side_links: return html
             return re.sub(r'<!-- new_link_name_start-->.*?<!-- new_link_name_end-->',
-                         f'<!-- new_link_name_start-->\n{side_links}\n        <!-- new_link_name_end-->',
+                         lambda m:f'<!-- new_link_name_start-->\n{side_links}\n        <!-- new_link_name_end-->',
                          html, flags=re.DOTALL)
         def build_page_on(base, pi):
             s=pi*page_size; e=min(s+page_size,total)
             cards='\n'.join(f'<!-- site_page -->\n{item}' for item in all_items[s:e])
             # 先清除占位符之间的旧内容，再插入最新30条
             pc=re.sub(r'<!-- site_page_begin -->.*?<!-- site_page_end -->',
-                      f'<!-- site_page_begin -->\n{cards}\n            <!-- site_page_end -->',
+                      lambda m:f'<!-- site_page_begin -->\n{cards}\n            <!-- site_page_end -->',
                       base, flags=re.DOTALL)
             nav=''
             if pi==0:
@@ -1451,7 +1649,7 @@ class App:
                 if pi+1<pages:
                     nav+=f'<a href="{dom}_{cat_safe}_index_{pi+1}.html" aria-label="下一页">下一页</a>'
             pc=pc.replace('<a href="page_nav_link" aria-label="下一页">下一页</a>',nav)
-            pc=re.sub(r'<!-- page_nav_link-->',nav,pc)
+            pc=re.sub(r'<!-- page_nav_link-->',lambda m:nav,pc)
             return fill_side(pc)
         build_page=lambda pi: build_page_on(read_file(demo) if os.path.exists(demo) else ic, pi)
         if not all_items:
@@ -1530,13 +1728,13 @@ class App:
             else:
                 cards='\n'.join(items_slice)
             content=re.sub(r'<!-- site_page_begin -->.*?<!-- site_page_end -->',
-                           f'<!-- site_page_begin -->\n{cards}\n<!-- site_page_end -->',
+                           lambda m:f'<!-- site_page_begin -->\n{cards}\n<!-- site_page_end -->',
                            base, flags=re.DOTALL)
-            content=re.sub(r'<a href="page_nav_link"[^>]*>.*?</a>', nav_html, content, flags=re.DOTALL)
-            content=re.sub(r'<!-- page_nav_link-->', nav_html, content)
+            content=re.sub(r'<a href="page_nav_link"[^>]*>.*?</a>', lambda m:nav_html, content, flags=re.DOTALL)
+            content=re.sub(r'<!-- page_nav_link-->', lambda m:nav_html, content)
             if side_links:
                 content=re.sub(r'<!-- new_link_name_start-->.*?<!-- new_link_name_end-->',
-                               f'<!-- new_link_name_start-->\n{side_links}\n<!-- new_link_name_end-->',
+                               lambda m:f'<!-- new_link_name_start-->\n{side_links}\n<!-- new_link_name_end-->',
                                content, flags=re.DOTALL)
             return content
         num_files = pages - 1 if total > page_size else 0
