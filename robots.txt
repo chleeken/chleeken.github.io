@@ -13,9 +13,10 @@ Disallow: /api/
 Disallow: /uploads/
 Disallow: /static/cache/
 Disallow: /search
-Disallow: /deno
+Disallow: /demo
 Disallow: /blog-txt
 Disallow: /Jblog-txt
+Disallow: /test
 Disallow: /?
 
 # 屏蔽PDF及临时文件
@@ -23,7 +24,8 @@ Disallow: /backup/
 Disallow: /temp/
 Disallow: /.git/
 Disallow: /.env
-
+Disallow: /go.html
 # 站点地图
-Sitemap: https://yourdomain.com/sitemap.xml
-Sitemap: https://yourdomain.com/sitemap.txt
+Sitemap: https://chleeken.github.io/sitemap.xml
+Sitemap: https://chleeken.github.io/sitemap.txt
+

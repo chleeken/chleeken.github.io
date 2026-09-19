@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>404 - 页面未找到</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: "Microsoft YaHei", sans-serif;
+  background: #0a0a1a;
+  color: #fff;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+.stars { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
+.star {
+  position: absolute;
+  background: #fff;
+  border-radius: 50%;
+  animation: twinkle 3s ease-in-out infinite;
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 1; }
+}
+.container {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 40px;
+}
+.error-code {
+  font-size: 120px;
+  font-weight: 900;
+  background: linear-gradient(45deg, #ff6b6b, #f781c7, #6bc7e7, #c4e17f);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: glitch 2s ease-in-out infinite;
+}
+@keyframes glitch {
+  0%, 100% { transform: translate(0); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(2px, -2px); }
+  60% { transform: translate(-1px, 1px); }
+  80% { transform: translate(1px, -1px); }
+}
+.title {
+  font-size: 32px;
+  margin: 20px 0 10px;
+  color: #f781c7;
+  letter-spacing: 4px;
+}
+.message {
+  font-size: 18px;
+  color: #aab;
+  line-height: 1.8;
+  margin-bottom: 30px;
+}
+.countdown {
+  font-size: 16px;
+  color: #6bc7e7;
+  margin-bottom: 20px;
+}
+.countdown span {
+  font-size: 28px;
+  font-weight: bold;
+  color: #ff6b6b;
+}
+.btn {
+  display: inline-block;
+  padding: 12px 36px;
+  background: linear-gradient(45deg, #ff6b6b, #f781c7);
+  color: #fff;
+  text-decoration: none;
+  border-radius: 30px;
+  font-size: 16px;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(247, 129, 199, 0.5);
+}
+.floating { animation: float 3s ease-in-out infinite; }
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+</style>
+</head>
+<body>
+<div class="stars" id="stars"></div>
+<div class="container floating">
+  <div class="error-code">404</div>
+  <h1 class="title">页面未找到</h1>
+  <p class="message">您访问的文件不存在或已被删除<br>正在跳转到网站首页...</p>
+  <p class="countdown"><span id="sec">3</span> 秒后自动跳转</p>
+  <a href="/" class="btn">立即返回</a>
+</div>
+<script>
+const stars = document.getElementById('stars');
+for (let i = 0; i < 80; i++) {
+  const s = document.createElement('div');
+  s.className = 'star';
+  const size = Math.random() * 3 + 1;
+  s.style.width = size + 'px';
+  s.style.height = size + 'px';
+  s.style.left = Math.random() * 100 + '%';
+  s.style.top = Math.random() * 100 + '%';
+  s.style.animationDelay = Math.random() * 3 + 's';
+  stars.appendChild(s);
+}
+let sec = 3;
+const timer = setInterval(() => {
+  sec--;
+  if (sec <= 0) {
+    clearInterval(timer);
+    window.location.href = '/';
+  } else {
+    document.getElementById('sec').textContent = sec;
+  }
+}, 1000);
+</script>
+</body>
+</html>

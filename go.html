@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>跳转中...</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,Microsoft Yahei,sans-serif;}
+        body{height:100vh;display:flex;align-items:center;justify-content:center;background:#f5f7fa;color:#333;}
+        .box{text-align:center;padding:40px;background:#fff;border-radius:12px;box-shadow:0 2px 15px #00000010;max-width:420px;}
+        .tips{color:#666;margin-top:12px;font-size:14px;}
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h3>页面跳转中</h3>
+        <p class="tips">正在为您前往目标地址...</p>
+    </div>
+
+    <script>
+        const WHITELIST = [
+            'baidu.com',
+            'www.baidu.com'
+        ];
+        const referrerHost = (() => {
+            if (!document.referrer) return '';
+            try { return new URL(document.referrer).hostname.toLowerCase(); }
+            catch (e) { return ''; }
+        })();
+        function isHostInWhitelist(host) {
+            host = (host || '').toLowerCase();
+            if (!host) return false;
+            return WHITELIST.some((w) => {
+                w = String(w).toLowerCase();
+                if (!w) return false;
+                if (w[0] === '*') {
+                    const base = w.slice(1);
+                    return host === base || host.endsWith('.' + base);
+                }
+                return host === w;
+            });
+        }
+        const target = new URLSearchParams(location.search).get('url') || '';
+        const selfHost = location.host;
+
+        function isInternal(targetUrl){
+            const t = new URL(targetUrl);
+            const th = t.hostname;
+            const sh = selfHost.split(':')[0];
+            if(t.host === selfHost) return true;
+            if(th === sh) return true;
+            if(th.endsWith('.' + sh)) return true;
+            if(sh.endsWith('.' + th)) return true;
+            if(document.referrer){
+                try{
+                    const rh = new URL(document.referrer).host;
+                    if(rh === selfHost) return true;
+                    if(rh.split(':')[0] === sh) return true;
+                }catch(e){}
+            }
+            return false;
+        }
+
+        const tipsEl = document.querySelector('.tips');
+        const titleEl = document.querySelector('h3');
+
+        if(!target.trim()){
+            titleEl.textContent = '链接无效';
+            tipsEl.textContent = '缺少跳转地址参数';
+        }
+        else if(!/^https?:/i.test(target)){
+            titleEl.textContent = '链接无效';
+            tipsEl.textContent = '仅支持 HTTP / HTTPS 合法链接';
+        }
+        else{
+            let targetUrl;
+            try{
+                targetUrl = new URL(target);
+            }catch(e){
+                titleEl.textContent = '链接无效';
+                tipsEl.textContent = '目标链接格式错误';
+                return;
+            }
+
+            if(isInternal(target)){
+                location.replace(targetUrl.href);
+            }
+            else if(referrerHost && isHostInWhitelist(referrerHost)){
+                titleEl.textContent = '即将跳转外部链接';
+                tipsEl.innerHTML = '即将访问外部网站：<br><a href="' + targetUrl.href + '" target="_blank" rel="noopener noreferrer" style="color:#1a73e8;">' + targetUrl.href + '</a><br>点击确认按钮后跳转';
+                const btn = document.createElement('div');
+                btn.style.cssText = 'margin-top:20px;display:flex;gap:12px;justify-content:center;';
+                const cancelBtn = document.createElement('button');
+                cancelBtn.textContent = '取消';
+                cancelBtn.style.cssText = 'padding:8px 24px;border:1px solid #ccc;background:#fff;cursor:pointer;border-radius:6px;font-size:14px;';
+                cancelBtn.onclick = function(){
+                    location.href = 'about:blank';
+                    history.go(-1);
+                    setTimeout(function(){
+                        window.close();
+                    }, 100);
+                };
+                const okBtn = document.createElement('button');
+                okBtn.textContent = '确认跳转';
+                okBtn.style.cssText = 'padding:8px 24px;border:none;background:#1a73e8;color:#fff;cursor:pointer;border-radius:6px;font-size:14px;';
+                okBtn.onclick = function(){
+                    location.href = targetUrl.href;
+                };
+                btn.appendChild(cancelBtn);
+                btn.appendChild(okBtn);
+                document.querySelector('.box').appendChild(btn);
+            }
+            else{
+                location.replace('/404.html');
+            }
+        }
+    </script>
+</body>
+</html>
