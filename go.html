@@ -19,13 +19,14 @@
 
     <script>
         const WHITELIST = [
-            'chleeken.github.io',
-            'www.chleeken.github.io'
+            'chleeken.github.io'
         ];
 
         function isHostInWhitelist(host){
             host=(host||'').toLowerCase();
             if(!host)return false;
+            const self=new URL(location.href).hostname.toLowerCase();
+            if(host===self)return true;
             return WHITELIST.some((w)=>{
                 w=String(w).toLowerCase();
                 if(!w)return false;
@@ -38,13 +39,14 @@
         }
 
         function isSourceAllowed(){
+            if(location.protocol==='file:')return true;
             const ref = document.referrer;
-            if(!ref) return false;
+            if(!ref) return true;
             try{
                 const rh = new URL(ref).hostname.toLowerCase();
                 return isHostInWhitelist(rh);
             }catch(e){
-                return false;
+                return true;
             }
         }
 
