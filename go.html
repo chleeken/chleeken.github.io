@@ -37,18 +37,15 @@
             });
         }
 
-        const selfHost = location.hostname.toLowerCase();
-
         function isSourceAllowed(){
-            if(isHostInWhitelist(selfHost)) return true;
             const ref = document.referrer;
-            if(ref){
-                try{
-                    const rh = new URL(ref).hostname.toLowerCase();
-                    if(isHostInWhitelist(rh)) return true;
-                }catch(e){}
+            if(!ref) return false;
+            try{
+                const rh = new URL(ref).hostname.toLowerCase();
+                return isHostInWhitelist(rh);
+            }catch(e){
+                return false;
             }
-            return false;
         }
 
         function isTargetValid(targetUrl){
@@ -69,7 +66,7 @@
             var box=document.getElementById('jumpBox');
             box.style.display='block';
             box.querySelector('h3').textContent='404 - 页面未找到';
-            box.querySelector('.tips').textContent='链接无效或来源地址不在白名单中';
+            box.querySelector('.tips').textContent='来源地址不在白名单中，或链接无效';
         }
 
         const showJumpBox=function(){document.getElementById('jumpBox').style.display='block';};
