@@ -1,6 +1,18 @@
 <!-- site_page -->
    <div class="article-item">
    <h2 class="article-title">
+   <a href="https://chleeken.github.io/blog/ruanzhudengjijinruyingmenkanshidainidedaimazhendejingdeqishenchama.html" target="_blank" title="软著登记进入"硬门槛"时代：你的代码真的经得起审查吗？ 引言最近技术圈里流传一条..." style="color:#555860">软著登记进入"硬门槛"时代：你的代码真的经得起审查吗？</a >
+   </h2>
+   <div class="article-meta">
+   2026年09月19日|作者:靳好宝|栏目:blog|分类:互联网络
+   </div>
+   <p class="article-desc">
+   软著登记进入"硬门槛"时代：你的代码真的经得起审查吗？ 引言最近技术圈里流传一条消息：中国版权保护中心在年月日召开了专题会议，主题只有一个软著登记的非正常申请治理。这不是某个地方的临时通知，而是全国性监管信号的释放。会议明确指出，过去那种"材料齐全、形式合格"就能快速拿证的宽松时代，正式结束了。为什么这条消息值得每一位开发者、每一个技术团队认真对待？因为软著早已不是"备个案"那么简单。它是高新技术企业认定的硬门槛，是项目申报的评分依据，是产品...
+   </p>
+   </div>
+<!-- site_page -->
+   <div class="article-item">
+   <h2 class="article-title">
    <a href="https://chleeken.github.io/blog/sousuoyinqingliuliangduanyaxiadieAIzhengzairuhezhongxindingyiyueduderukou.html" target="_blank" title="搜索引擎流量断崖下跌：AI正在如何重新定义"阅读"的入口靳好宝科技博客持续研究发..." style="color:#555860">#搜索引擎流量断崖下跌：AI正在如何重新定义"阅读"的入口</a >
    </h2>
    <div class="article-meta">
