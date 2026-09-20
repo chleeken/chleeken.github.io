@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-奕豪WebBuilder v-3.05.1031 - 网站生成器
-作者:靳好宝 Email:uulov@qq.com (c)2026.09.16 导入发布优化
+奕豪WebBuilder v-3.06.1033 - 网站生成器
+作者:靳好宝 Email:uulov@qq.com (c)2026.09.20 Markdown转HTML发布
 """
 import tkinter as tk
 from tkinter import ttk, filedialog, colorchooser
@@ -13,6 +13,10 @@ try:
     import chardet
 except ImportError:
     chardet = None
+try:
+    import markdown as _md_lib
+except ImportError:
+    _md_lib = None
 
 SUPPORTED_ENCODINGS = ['utf-8', 'gbk', 'gb2312', 'gb18030', 'big5', 'utf-16', 'ascii']
 
@@ -151,6 +155,211 @@ def clean_filename(fn):
     """清除文件名中的空格和数字"""
     return re.sub(r'[\s\d]+','',fn)
 
+def is_markdown_text(text):
+    """检测文本是否为Markdown格式（非HTML）"""
+    t = (text or '').strip()
+    if not t:
+        return False
+    if re.search(r'<p\s*>|<div\s*>|<span\s*>|<br\s*/?>|<h[1-6]\s*>|<table', t, re.I):
+        return False
+    patterns = [
+        r'^#{1,6}\s+\S',
+        r'^>\s+\S',
+        r'^\s*[-*+]\s+\S',
+        r'^\s*\d+\.\s+\S',
+        r'\[[^\]]{1,60}\]\((?:https?:)?//[^\s)]+\)',
+        r'^\[[^\]]+\]:\s+https?://',
+        r'```',
+        r'`[^`\n]+`',
+        r'^\s*[-*_]{3,}\s*$',
+        r'!\[[^\]]*\]\((?:https?:)?//[^\s)]+\)',
+    ]
+    lines = t.split('\n')
+    score = 0
+    for p in patterns:
+        if re.search(p, t, re.M):
+            score += 1
+    return score >= 2
+
+def md_to_html(text, base_url='', strip_title=False):
+    """Markdown转HTML。markdown库缺失时用内置简易转换。base_url用于相对路径图片补全域名。
+    strip_title=True时去掉首个一级标题（避免与文章主标题重复显示）"""
+    text = (text or '').strip()
+    if not text:
+        return ''
+    lines = text.split('\n')
+    for k, ln in enumerate(lines):
+        if ln.strip():
+            m = re.match(r'^#{1,6}\s*(.+)$', ln.strip())
+            if m:
+                lines[k] = m.group(1).strip()
+            break
+    text = '\n'.join(lines).strip()
+    if not text:
+        return ''
+    if strip_title:
+        lines_t = text.split('\n')
+        idx = None
+        for k, ln in enumerate(lines_t):
+            if ln.strip():
+                m = re.match(r'^#\s+(.+)$', ln.strip())
+                if m:
+                    idx = k
+                break
+        if idx is not None:
+            lines_t[idx] = ''
+        text = '\n'.join(lines_t).strip()
+        if not text:
+            return ''
+    if _md_lib:
+        try:
+            html = _md_lib.markdown(
+                text,
+                extensions=['fenced_code', 'tables', 'sane_lists', 'toc'],
+                output_format='html'
+            )
+            if base_url and re.search(r'<img[^>]+src="', html):
+                def fix_img(m):
+                    tag = m.group(0)
+                    sm = re.search(r'src="([^"]*)"', tag)
+                    if sm and not sm.group(1).startswith(('http', '//', 'data:')):
+                        tag = tag.replace(sm.group(1), base_url + '/' + sm.group(1).lstrip('/'))
+                    return tag
+                html = re.sub(r'<img[^>]+src="[^"]*"[^>]*>', fix_img, html)
+            return html.strip()
+        except Exception:
+            pass
+    lines = normalize_newlines(text).split('\n')
+    out = []
+    i = 0
+    in_list = False
+    in_ol = False
+    list_items = []
+    ol_start = 1
+    buf = []
+
+    def flush_para():
+        if buf:
+            p = '\n'.join(buf).strip()
+            if p:
+                out.append(f'<p>&nbsp&nbsp{p}</p>')
+            buf.clear()
+
+    def flush_list():
+        nonlocal in_list, in_ol
+        if in_list:
+            items = '\n'.join(f'<li>{it}</li>' for it in list_items if it)
+            out.append(f'<ul>\n{items}\n</ul>')
+            in_list = False
+            list_items.clear()
+        if in_ol:
+            items = '\n'.join(f'<li>{it}</li>' for it in list_items if it)
+            out.append(f'<ol start="{ol_start}">\n{items}\n</ol>')
+            in_ol = False
+            list_items.clear()
+
+    while i < len(lines):
+        s = lines[i].strip()
+        if s.startswith('```'):
+            flush_para()
+            flush_list()
+            i += 1
+            code_lines = []
+            while i < len(lines) and not lines[i].strip().startswith('```'):
+                code_lines.append(lines[i].rstrip())
+                i += 1
+            out.append('<pre><code>' + '\n'.join(code_lines) + '</code></pre>')
+            i += 1
+            continue
+        if s.startswith('|') and '|' in s[1:]:
+            flush_para()
+            flush_list()
+            tbl = []
+            while i < len(lines) and lines[i].strip().startswith('|'):
+                tbl.append(lines[i].strip())
+                i += 1
+            if len(tbl) >= 2:
+                cells = [c.strip() for c in tbl[0].strip('|').split('|')]
+                head = ''.join(f'<th>{c}</th>' for c in cells)
+                body_rows = []
+                for row in tbl[1:]:
+                    if re.match(r'^\s*\|[\s:|-]+\|?\s*$', row):
+                        continue
+                    cs = [c.strip() for c in row.strip('|').split('|')]
+                    body_rows.append(''.join(f'<td>{c}</td>' for c in cs))
+                out.append(f'<table>\n<tr>{head}</tr>\n' + '\n'.join(body_rows) + '\n</table>')
+            continue
+        if s.startswith('#'):
+            m = re.match(r'^(#{1,6})\s*(.+)$', s)
+            if m:
+                flush_para()
+                flush_list()
+                lvl = min(len(m.group(1)), 6)
+                txt = m.group(2).strip().replace('**', '')
+                out.append(f'<h{lvl}>{txt}</h{lvl}>')
+                i += 1
+                continue
+        if s.startswith('>'):
+            flush_para()
+            flush_list()
+            q = []
+            while i < len(lines) and lines[i].strip().startswith('>'):
+                q.append(lines[i].strip().lstrip('>').strip())
+                i += 1
+            out.append('<blockquote>\n' + '\n'.join(q) + '\n</blockquote>')
+            continue
+        m = re.match(r'^(\d+)\.\s+(.*)$', s)
+        if m:
+            flush_para()
+            if in_list:
+                flush_list()
+            in_ol = True
+            ol_start = int(m.group(1))
+            list_items.append(m.group(2))
+            i += 1
+            continue
+        m = re.match(r'^[-*+]\s+(.*)$', s)
+        if m:
+            flush_para()
+            if in_ol:
+                flush_list()
+            in_list = True
+            list_items.append(m.group(1))
+            i += 1
+            continue
+        if s.startswith('---') or s.startswith('***') or s.startswith('___'):
+            flush_para()
+            flush_list()
+            out.append('<hr>')
+            i += 1
+            continue
+        if s == '':
+            flush_para()
+            flush_list()
+            i += 1
+            continue
+        buf.append(s)
+        i += 1
+    flush_para()
+    flush_list()
+    result = '\n'.join(out)
+    result = re.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', result)
+    result = re.sub(r'__(.+?)__', r'<b>\1</b>', result)
+    result = re.sub(r'(?<!\*)\*(?!\*)([^*\n]+?)\*(?!\*)', r'<i>\1</i>', result)
+    result = re.sub(r'(?<!_)_(?!_)([^_\n]+?)_(?!_)', r'<i>\1</i>', result)
+    result = re.sub(r'~~(.+?)~~', r'<del>\1</del>', result)
+    def link_sub(m):
+        txt, url = m.group(1), m.group(2)
+        return f'<a href="{url}" target="_blank">{txt}</a>'
+    result = re.sub(r'\[([^\]]+)\]\(([^)\s]+)\)', link_sub, result)
+    def img_sub(m):
+        alt, src = m.group(1), m.group(2)
+        if base_url and not src.startswith(('http', '//', 'data:')):
+            src = base_url + '/' + src.lstrip('/')
+        return f'<img src="{src}" alt="{alt}" hspace="5" vspace="5">'
+    result = re.sub(r'!\[([^\]]*)\]\(([^)\s]+)\)', img_sub, result)
+    return result.strip()
+
 def get_first_words(text, min_len, max_len):
     clean = strip_html(text)
     chars = []
@@ -246,7 +455,7 @@ class App:
         self.ustack=[]; self.rstack=[]; self.maxu=3; self.cur=None
         self.log_entries=[]
         self.last_access_path = PROGRAM_DIR
-        self.root.title("奕豪WebBuilder v-3.05.1032  Email:uulov@qq.com (c)2026.09.17 撤销发布按钮")
+        self.root.title("奕豪WebBuilder v-3.05.1033  Email:uulov@qq.com (c)2026.09.20 Markdown转HTML发布")
         self.root.geometry("1200x850"); self.root.configure(bg='#E6E6FA')
         self._ui(); self._bind(); self._load()
         self._apply(); self.root.protocol("WM_DELETE_WINDOW",self._quit)
@@ -481,6 +690,7 @@ class App:
             ('删空行','删除空行',self._deL,{}),
             ('删空格','删除行内空格',self._dis,{}),
             ('规范','添加<p></p>标签',self._fmt,{}),
+            ('MD转HTML','Markdown转HTML',self._md2html,{}),
             ('字数','统计字数',self._wcnt,{}),
             ('导入','导入TXT',self._imp,{}),
             ('新建','新建文章',self._new,{'bg':'#FF8C00'}),
@@ -700,6 +910,21 @@ class App:
     def _dis(self):
         c=re.sub(r'[ \t]+','',self.t.get('1.0','end-1c'))
         self.t.delete('1.0','end'); self.t.insert('1.0',c)
+    def _md2html(self, strip_title=False):
+        """MD转HTML按钮 - 手动将编辑区Markdown内容转换为HTML"""
+        c = self.t.get('1.0', 'end-1c').strip()
+        if not c:
+            Msg.info("MD转HTML", "内容为空")
+            return
+        if not is_markdown_text(c):
+            Msg.info("MD转HTML", "未检测到Markdown格式，跳过")
+            return
+        dom_pub = self.dv.get().strip().rstrip('/')
+        base_url = dom_pub.replace('https://', '').replace('http://', '') if dom_pub else ''
+        html = md_to_html(c, base_url, strip_title=strip_title)
+        self.t.delete('1.0', 'end')
+        self.t.insert('1.0', html)
+        Msg.info("MD转HTML", "已转换为HTML")
     def _fmt(self):
         """规范按钮 - 按行首空格分割段落并添加<p></p>标签"""
         c=self.t.get('1.0','end-1c')
@@ -819,8 +1044,15 @@ class App:
                 if cat: self.cv.set(cat)
                 if category: self.cav.set(category)
                 if not body: Msg.warn("导入",f"[{i}/{total}] 标题下无正文，跳过: {fn}"); skip_cnt+=1; continue
-                self.t.delete('1.0','end')
-                self.t.insert('1.0',f'{title}\n{body}')
+                if is_markdown_text(body):
+                    dom_imp=self.dv.get().strip().rstrip('/')
+                    body=md_to_html(body, dom_imp.replace('https://','').replace('http://','') if dom_imp else '', strip_title=True)
+                    self.t.delete('1.0','end')
+                    self.t.insert('1.0',f'{title}\n{body}')
+                    Msg.info("导入",f"[{i}/{total}] Markdown已转HTML: {fn}")
+                else:
+                    self.t.delete('1.0','end')
+                    self.t.insert('1.0',f'{title}\n{body}')
                 self.tv.set(title)
                 self._get_domain_list()
                 self._pub(pub_date=f'{date_d[0:4]}年{date_d[5:7]}月{date_d[8:10]}日', skip_stxt=True, skip_orgf=True)
@@ -1272,6 +1504,9 @@ class App:
     def _pubbtn(self):
         self.published=False
         self.pb.config(bg='#FF8C00')
+        c=self.t.get('1.0','end-1c').strip()
+        if c and is_markdown_text(c):
+            self._md2html()
         self._pub()
     def _pub(self, pub_date=None, skip_stxt=False, skip_orgf=False):
         """发布文章 - 先执行txt和整理功能"""
@@ -1292,6 +1527,14 @@ class App:
         c=self.t.get('1.0','end-1c').strip()
         if not pub_date:
             pub_date = datetime.now().strftime('%Y年%m月%d日')
+        dom_pub=self.dv.get().strip().rstrip('/')
+        if is_markdown_text(c):
+            dom_pub_now = self.dv.get().strip().rstrip('/')
+            base_url = dom_pub_now.replace('https://', '').replace('http://', '') if dom_pub_now else ''
+            c = md_to_html(c, base_url, strip_title=True)
+            self.t.delete('1.0', 'end')
+            self.t.insert('1.0', c)
+            Msg.info("Markdown", "已转换为HTML（去除重复主标题）")
         title_text = get_first_words(c, 20, 30)
         abstract_text = get_first_words(c, 150, 200)
         md_title = get_first_words(c, 25, 35)
@@ -1406,6 +1649,21 @@ class App:
             if dup_files:
                 Msg.warn("文件名重复",f"文件名「{hfn}」已在以下文件中存在，跳过写入: {', '.join(dup_files)}")
                 return
+            # about_link_list: 从{cat}_url.txt随机取6条<a>链接，插入模板标记之间
+            about_begin='<!-- about_link_list_begin -->'
+            about_end='<!-- about_link_list_end -->'
+            if about_begin in ht and about_end in ht:
+                cat_url_file=os.path.join(PROGRAM_DIR,f'{cat}_url.txt')
+                about_links=[]
+                if os.path.exists(cat_url_file):
+                    alines=[l.strip() for l in read_file(cat_url_file, errors='replace').split('\n') if l.strip() and l.strip().startswith('<a')]
+                    if alines:
+                        n=min(6,len(alines))
+                        about_links=random.sample(alines,n) if len(alines)>n else alines
+                about_block=''.join(link+'<br>\n' for link in about_links)
+                ht=re.sub(r'<!-- about_link_list_begin -->.*?<!-- about_link_list_end -->',
+                          lambda m:about_begin+'\n'+about_block+about_end,
+                          ht,flags=re.DOTALL)
             write_file(hfp, ht)
             pu=f'{dom.rstrip("/")}/{cat}/{hfn}' if dom else f'/{cat}/{hfn}'
             title_text_clean = re.sub(r'<[^>]+>', '', title_text).strip()
