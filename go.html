@@ -19,14 +19,14 @@
 
     <script>
         const WHITELIST = [
-            'chleeken.github.io'
+            'cntones.lovestoblog.com',
+            'chleeken.github.io',
+            'www.chleeken.github.io'
         ];
 
         function isHostInWhitelist(host){
             host=(host||'').toLowerCase();
             if(!host)return false;
-            const self=new URL(location.href).hostname.toLowerCase();
-            if(host===self)return true;
             return WHITELIST.some((w)=>{
                 w=String(w).toLowerCase();
                 if(!w)return false;
@@ -38,16 +38,18 @@
             });
         }
 
+        const selfHost = location.hostname.toLowerCase();
+
         function isSourceAllowed(){
-            if(location.protocol==='file:')return true;
+            if(isHostInWhitelist(selfHost)) return true;
             const ref = document.referrer;
-            if(!ref) return true;
-            try{
-                const rh = new URL(ref).hostname.toLowerCase();
-                return isHostInWhitelist(rh);
-            }catch(e){
-                return true;
+            if(ref){
+                try{
+                    const rh = new URL(ref).hostname.toLowerCase();
+                    if(isHostInWhitelist(rh)) return true;
+                }catch(e){}
             }
+            return false;
         }
 
         function isTargetValid(targetUrl){
@@ -65,20 +67,16 @@
             if(redirectDone)return;
             redirectDone=true;
             document.title='404 - 页面未找到';
-            var box=document.getElementById('jumpBox');
-            box.style.display='block';
-            box.querySelector('h3').textContent='404 - 页面未找到';
-            box.querySelector('.tips').textContent='来源地址不在白名单中，或链接无效';
+            location.replace('404.html');
         }
 
-        const showJumpBox=function(){document.getElementById('jumpBox').style.display='block';};
-
         function safeGo(targetUrl){
+            if(redirectDone)return;
             try{
                 const u=new URL(targetUrl);
                 if(u.protocol!=='https:'&&u.protocol!=='http:'){go404();return;}
                 if(!u.hostname){go404();return;}
-                showJumpBox();
+                document.getElementById('jumpBox').style.display='block';
                 redirectDone=true;
                 location.replace(u.href);
             }catch(e){go404();}
