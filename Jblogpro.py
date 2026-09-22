@@ -689,7 +689,6 @@ class App:
             ('删行首','删除行首空格',self._dlp,{}),
             ('删空行','删除空行',self._deL,{}),
             ('删空格','删除行内空格',self._dis,{}),
-            ('规范','添加<p></p>标签',self._fmt,{}),
             ('MD转HTML','Markdown转HTML',self._md2html,{}),
             ('字数','统计字数',self._wcnt,{}),
             ('导入','导入TXT',self._imp,{}),
@@ -925,38 +924,6 @@ class App:
         self.t.delete('1.0', 'end')
         self.t.insert('1.0', html)
         Msg.info("MD转HTML", "已转换为HTML")
-    def _fmt(self):
-        """规范按钮 - 按行首空格分割段落并添加<p></p>标签"""
-        c=self.t.get('1.0','end-1c')
-        has_p_tag = bool(re.search(r'<p\s*>', c))
-        if has_p_tag:
-            Msg.info("规范","已有<p>标签，保留原样")
-            return
-        lines = c.split('\n')
-        paragraphs = []
-        current_para = []
-        for line in lines:
-            if line.startswith(' ') or line == '':
-                if current_para:
-                    paragraphs.append('\n'.join(current_para))
-                    current_para = []
-                if line == '':
-                    paragraphs.append('')
-            else:
-                current_para.append(line)
-        if current_para:
-            paragraphs.append('\n'.join(current_para))
-        paragraphs = [p.strip() for p in paragraphs if p.strip()]
-        if not paragraphs:
-            paragraphs = [c.strip()]
-        r = []
-        for p in paragraphs:
-            r.append(f'<p>&nbsp&nbsp{p}</p>')
-        self.t.delete('1.0','end')
-        self.t.insert('1.0','\n\n'.join(r))
-        w=self._hf(c,4)
-        if w: self.t.insert('end',f'\n&nbsp&nbsp{w}。')
-        Msg.info("规范","段落格式已规范")
     def _fmt2(self):
         """规范行首按钮 - 给有空行或行首空格的行前添加两个空格"""
         c=self.t.get('1.0','end-1c')
