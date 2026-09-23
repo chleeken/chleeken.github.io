@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-奕豪WebBuilder v-3.06.1033 - 网站生成器
-作者:靳好宝 Email:uulov@qq.com (c)2026.09.20 Markdown转HTML发布
+奕豪WebBuilder v-3.06.1034 - 网站生成器
+作者:靳好宝 Email:uulov@qq.com (c)2026.09.23 修复正文带<p>时标题清洗未去HTML标签，导致<p>混入文章网址、<title>和H1
 """
 import tkinter as tk
 from tkinter import ttk, filedialog, colorchooser
@@ -148,8 +148,9 @@ def strip_html(text):
     return re.sub(r'<[^>]+>','',text).replace('&nbsp;','').replace('&nbsp','').strip()
 
 def clean_title(title):
-    """清除标题中的空格，保留数字（修复标题中数字被过滤的问题）"""
-    return re.sub(r'\s+', '', title).strip()
+    """清除标题中的HTML标签和空格，防止<p>等标签混入文章网址和<title>"""
+    t = re.sub(r'<[^>]+>', '', title)
+    return re.sub(r'[\s]+', '', t).strip()
 
 def clean_filename(fn):
     """清除文件名中的空格和数字"""
@@ -1653,7 +1654,6 @@ class App:
             ed=read_file(udf) or ''
             ulines=[lh]+[l for l in ed.split('\n') if l.strip() and l!=lh]
             write_file(udf, '\n'.join(ulines))
-            self._sitemap(pu, cat)
             if os.path.exists(ium_old) and not os.path.exists(ium):
                 write_file(ium, read_file(ium_old))
             ciu=os.path.join(PROGRAM_DIR,f'{cat}_index_url.txt')
@@ -1699,52 +1699,11 @@ class App:
                 if not os.path.exists(_lpub['txt_file']): _lpub['txt_file']=''
             except: _lpub['txt_file']=''
             write_file(os.path.join(PROGRAM_DIR,'last_pub.json'),_json.dumps(_lpub,ensure_ascii=False))
-            self._gen_sitemap(t, pu)
+            self.gen_sitemap()
             Msg.info("发布成功",f"已发布: {hfp}")
         except Exception as e:
             import traceback
             Msg.error("发布失败",str(e)+'\n'+traceback.format_exc())
-    def _gen_sitemap(self, title, pu):
-        """生成 sitemap.txt 到程序目录（新链接在最前面）"""
-        try:
-            sm_link = f'[{title}]({pu})'
-            sm_file = os.path.join(PROGRAM_DIR, 'sitemap.txt')
-            sm_existing = ''
-            if os.path.exists(sm_file):
-                sm_existing = read_file(sm_file) or ''
-            lines = [sm_link] + [l for l in sm_existing.split('\n') if l.strip() and l != sm_link]
-            write_file(sm_file, '\n'.join(lines))
-        except Exception:
-            pass
-    def _sitemap(self, url, cat=''):
-        sf = os.path.join(PROGRAM_DIR, cat, 'sitemap.xml') if cat else os.path.join(PROGRAM_DIR, 'sitemap.xml')
-        now=datetime.now().strftime('%Y-%m-%d')
-        url_esc=url.replace('&','&amp;')
-        en=(f'  <url>\n    <loc>{url_esc}</loc>\n    <lastmod>{now}</lastmod>\n'
-            f'    <changefreq>daily</changefreq>\n    <priority>0.8</priority>\n  </url>')
-        if os.path.exists(sf):
-            ex = read_file(sf)
-            if url in ex: return
-            write_file(sf, ex.replace('</urlset>',en+'\n</urlset>'))
-        else:
-            write_file(sf, '<?xml version="1.0" encoding="UTF-8"?>\n'
-                       '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-                       +en+'\n</urlset>')
-        if cat:
-            rsf=os.path.join(PROGRAM_DIR,'sitemap.xml')
-            if url in (read_file(rsf) or ''): return
-            if os.path.exists(rsf):
-                rex=read_file(rsf)
-                m=re.search(r'(?m)^\s*<url>', rex)
-                if m:
-                    rex=rex[:m.start()]+en+'\n'+rex[m.start():]
-                else:
-                    rex=rex.replace('</urlset>', en+'\n</urlset>')
-                write_file(rsf, rex)
-            else:
-                write_file(rsf, '<?xml version="1.0" encoding="UTF-8"?>\n'
-                       '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-                       +en+'\n</urlset>')
     def _unpub(self):
         last=os.path.join(PROGRAM_DIR,'last_pub.json')
         if not os.path.exists(last):
@@ -1774,30 +1733,14 @@ class App:
                 write_file(path,head+'<!-- site_page -->'.join(new_rest))
             else:
                 write_file(path,head.rstrip())
-        def rm_sitemap(sf,url):
-            if not os.path.exists(sf) or not url: return
-            c=read_file(sf,errors='replace') or ''
-            if url in c:
-                ue='  <url>\n    <loc>'+url.replace('&','&amp;')+'</loc>\n    <lastmod>'
-                ie=c.find(ue)
-                if ie>=0:
-                    je=c.find('  </url>',ie)
-                    if je>=0:
-                        end=je+len('  </url>')
-                        if c[end:end+1]=='\n': end+=1
-                        c=c[:ie]+c[end:]
-                write_file(sf,c)
         if rec.get('hfp') and os.path.exists(rec['hfp']):
             os.remove(rec['hfp']); removed.append(os.path.basename(rec['hfp']))
         if rec.get('txt_file') and os.path.exists(rec['txt_file']):
             os.remove(rec['txt_file']); removed.append(os.path.basename(rec['txt_file']))
-        hfn=rec.get('hfn',''); pu=rec.get('pu',''); cat=rec.get('cat','')
+        hfn=rec.get('hfn',''); cat=rec.get('cat','')
         if hfn:
             for f in [f'/{cat}_index_url.txt',f'/{cat}_url.txt','/url.txt']:
                 rmline(os.path.join(PROGRAM_DIR,f.lstrip('/')),hfn)
-        if pu:
-            rm_sitemap(os.path.join(PROGRAM_DIR,cat,'sitemap.xml'),pu)
-            rm_sitemap(os.path.join(PROGRAM_DIR,'sitemap.xml'),pu)
         if hfn and cat:
             rm_md_path(os.path.join(PROGRAM_DIR,f'{cat}_index_url.md'),hfn)
             rm_md_path(os.path.join(PROGRAM_DIR,'index_url_all.md'),hfn)
@@ -1980,6 +1923,38 @@ class App:
                 try: os.remove(os.path.join(PROGRAM_DIR,f))
                 except: pass
         Msg.info("程序首页",f"已生成index.html（最新{min(page_size,total)}条）"+(f"及{num_files}个分页文件" if num_files else "，未超30条不分页"))
+    def gen_sitemap(self):
+        dom_fp=os.path.join(PROGRAM_DIR,'domain.txt')
+        dom=''
+        if os.path.exists(dom_fp):
+            dl=[l.strip() for l in (read_file(dom_fp,errors='replace') or '').split('\n') if l.strip()]
+            dom=dl[0] if dl else ''
+        dom=dom.replace('https://','').replace('http://','').rstrip('/')
+        base=f'https://{dom}' if dom else ''
+        htmls=[]
+        for fn in os.listdir(PROGRAM_DIR):
+            fp=os.path.join(PROGRAM_DIR,fn)
+            if os.path.isfile(fp) and fn.lower().endswith('.html'):
+                htmls.append(fn)
+            elif os.path.isdir(fp) and not fn.endswith('-txt') and not fn.startswith('.') and fn.lower()!='demo':
+                for sf in os.listdir(fp):
+                    if sf.lower().endswith('.html'):
+                        htmls.append(f'{fn}/{sf}')
+        urls=set()
+        for h in htmls:
+            rel=h.replace('\\\\','/').lstrip('/')
+            urls.add(f'{base}/{rel}' if base else f'/{rel}')
+        urls=sorted(urls)
+        if not urls:
+            Msg.info("sitemap","程序目录下未找到任何.html文件，sitemap.txt 已清空")
+            write_file(os.path.join(PROGRAM_DIR,'sitemap.txt'),'')
+            return
+        lines=[]
+        for u in urls:
+            lines.append(u)
+        out='\n'.join(lines)
+        write_file(os.path.join(PROGRAM_DIR,'sitemap.txt'),out)
+        Msg.info("sitemap",f"已生成 sitemap.txt，共 {len(urls)} 条URL")
     def _add_log(self, icon, msg, level='info'):
         ts=datetime.now().strftime('%H:%M:%S')
         entry=f'[{ts}] {icon} {msg}'
