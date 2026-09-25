@@ -227,6 +227,7 @@ def md_to_html(text, base_url='', strip_title=False):
                         tag = tag.replace(sm.group(1), base_url + '/' + sm.group(1).lstrip('/'))
                     return tag
                 html = re.sub(r'<img[^>]+src="[^"]*"[^>]*>', fix_img, html)
+            html = re.sub(r'(<p>)', r'<p>\u00a0\u00a0', html)
             return html.strip()
         except Exception:
             pass
@@ -243,7 +244,7 @@ def md_to_html(text, base_url='', strip_title=False):
         if buf:
             p = '\n'.join(buf).strip()
             if p:
-                out.append(f'<p>&nbsp&nbsp{p}</p>')
+                out.append(f'<p>\u00a0\u00a0{p}</p>')
             buf.clear()
 
     def flush_list():
