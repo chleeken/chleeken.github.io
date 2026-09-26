@@ -9,12 +9,12 @@
     <!-- 移动设备视口适配 -->
  <!-- 移动端视口，必备 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=no">
-    <!-- SEO核心MetaBody，脚本，Head，统计，数据标签 -->
-    <meta name="keywords" content="Body，脚本，Head，统计，数据">
+    <!-- SEO核心Meta关-键-词标签 -->
+    <meta name="keywords" content="Body，Head，脚本，统计，数据">
      <!-- SEO核心内容标签 -->
     <meta name="description" content="网站统计代码放 Head 尾还是 Body 尾？实测数据丢失与性能下降的取舍策略每个写...">
-    <!-- 网页显示标题标签-作者/网站名称 -->
-    <meta name="author" content="靳好宝博客">
+    <!-- 作者/网站名称 -->
+    <meta name="author" content="靳好宝科技博客">
     <!-- {网页URL}-->
     <meta property="og:url" content="{网页URL}">   
     <link rel="canonical" href="{网页URL}">  
@@ -23,7 +23,7 @@
     <meta name="format-detection" content="telephone=no, email=no">
      <!-- 网页图标 favicon -->
     <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <!-- {浏览器显示标题-网站名称}--> 
+    <!-- {浏览器显示标题-网站名称-网站描-述}--> 
     <title>网站统计代码放Head尾还是Body尾实测数据丢失与性能下降的取舍策略-靳好宝博客-一个关注python编程，Web建站，网络营销，seo优化的科技博客</title>   
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -46,184 +46,130 @@
     <!-- 主体内容 -->
     <div class="container">
         <main class="main-content">
+        <article>
             <h1>网站统计代码放Head尾还是Body尾？实测数据丢失与性能下降的取舍策略</h1><span class="article-date" style="font-size:14px">2026年09月17日|作者:靳好宝|栏目:blog|分类:互联网络</span>
             <!-- 以下为文章正文编辑区 -->
             <!-- site_page_begin -->
-<p>&nbsp&nbsp网站统计代码放 Head 尾还是 Body 尾？实测数据丢失与性能下降的取舍策略</p>
-
-<p>&nbsp&nbsp每个写过网站的人都纠结过这件事：Google Analytics、百度统计、神策、Mixpanel……这些统计脚本到底该放在 Head 尾部还是 Body 尾部？Head</p>
-
-<p>&nbsp&nbsp网上教程各说各话。有人坚持"Head 尾能最早捕获数据"，有人坚持"Body 尾不阻塞渲染"。</p>
-
-<p>&nbsp&nbsp我直接上实测数据。</p>
-
-<p>&nbsp&nbsp## 先搞清楚：统计代码到底在干什么</p>
-
-<p>&nbsp&nbsp以 Google Analytics 为例，核心流程：</p>
-
-<p>&nbsp&nbsp[/CODE]</p>
-<p>&nbsp&nbsphtml</p>
-<p>&nbsp&nbsp<script></p>
-<p>&nbsp&nbsp(function(i,s,o,g,r,a,m)i.GoogleAnalyticsObject=r;...)(window,document,'script','dataLayer1','ga');</p>
-<p>&nbsp&nbspga('create', 'UA-XXXX', 'auto');</p>
-<p>&nbsp&nbspga('send', 'pageview');</p>
-<p>&nbsp&nbsp</script></p>
-
-<p>&nbsp&nbsp[/CODE]</p>
-
-<p>&nbsp&nbsp三步：初始化队列 → 注册测量 ID → 发送首个请求。</p>
-
-<p>&nbsp&nbsp关键点：这个请求是同步的。浏览器必须等它发完，才能继续解析后面的 DOM。</p>
-
-<p>&nbsp&nbsp## 两个位置的差异</p>
-
-<p>&nbsp&nbsp### Head 尾部</p>
-
-<p>&nbsp&nbsp`<script>` 放在 `</head>` 前：</p>
-
-<p>&nbsp&nbsp[/CODE]</p>
-<p>&nbsp&nbsphtml</p>
-<p>&nbsp&nbsp<head></p>
-<p>&nbsp&nbsp<meta charset="utf-8"></p>
-<p>&nbsp&nbsp<title>My Site</title></p>
-<p>&nbsp&nbsp<script src="/stats.js"></script></p>
-<p>&nbsp&nbsp</head></p>
-
-<p>&nbsp&nbsp[/CODE]</p>
-
-<p>&nbsp&nbsp优点：统计代码在最早的时机运行，用户还没看到页面就已经开始收集数据。脚本，</p>
-
-<p>&nbsp&nbsp缺点：阻塞渲染。浏览器要等 `/stats.js` 下载 + 执行完，才能继续解析 `<body>`。同步加载时，FCP（首次内容绘制）直接受影响。</p>
-
-<p>&nbsp&nbsp### Body 尾部</p>
-
-<p>&nbsp&nbsp`<script>` 放在 `</body>` 前：</p>
-
-<p>&nbsp&nbsp[/CODE]</p>
-<p>&nbsp&nbsphtml</p>
-<p>&nbsp&nbsp<body></p>
-<p>&nbsp&nbsp...</p>
-<p>&nbsp&nbsp<script src="/stats.js"></script></p>
-<p>&nbsp&nbsp</body></p>
-
-<p>&nbsp&nbsp[/CODE]</p>
-
-<p>&nbsp&nbsp优点：不阻塞首屏渲染，用户先看到内容，统计脚本后台加载。</p>
-
-<p>&nbsp&nbsp缺点：统计代码执行时间更晚。用户快速离开或刷新时，可能采集不到数据。</p>
-
-<p>&nbsp&nbsp## 实测数据</p>
-
-<p>&nbsp&nbsp我用一个最小化测试页面对比两种放法。测试环境：Chrome 120，M1 MacBook，模拟 4G 网络（2 Mbps 下行，延迟 150ms）。</p>
-
-<p>&nbsp&nbsp### 测试用例 1：数据捕获率</p>
-
-<p>&nbsp&nbsp跑了 200 次模拟加载（自动刷新离开测试，模拟用户 300ms 后切走）：</p>
-
-<p>&nbsp&nbsp| 放置位置 | 捕获率 | 说明 |</p>
-<p>&nbsp&nbsp|---|---|---|</p>
-<p>&nbsp&nbsp| Head 尾 | 96% | 统计脚本在 FCP 前执行，即使快速离开也能采集 |</p>
-<p>&nbsp&nbsp| Body 尾 | 71% | 脚本在 body 解析后才开始下载，快速离开时大概率没跑完 |</p>
-
-<p>&nbsp&nbspBody 尾在快速离开场景下掉了 25 个百分点。</p>
-
-<p>&nbsp&nbsp### 测试用例 2：首屏性能</p>
-
-<p>&nbsp&nbsp| 指标 | Head 尾 | Body 尾 |</p>
-<p>&nbsp&nbsp|---|---|---|</p>
-<p>&nbsp&nbsp| FCP | 1.42s | 1.18s |</p>
-<p>&nbsp&nbsp| LCP | 2.15s | 1.94s |</p>
-<p>&nbsp&nbsp| TTI | 3.8s | 3.2s |</p>
-
-<p>&nbsp&nbspHead 尾比 Body 尾慢了 0.24s 的 FCP。</p>
-
-<p>&nbsp&nbsp### 测试用例 3：脚本大小影响</p>
-
-<p>&nbsp&nbsp测试用的 stats.js 约 45KB（压缩后）：</p>
-
-<p>&nbsp&nbsp- 45KB 脚本放 Head 尾：FCP 比 Body 尾慢约 0.2s</p>
-<p>&nbsp&nbsp- 5KB 脚本放 Head 尾：FCP 几乎无差异（< 30ms）</p>
-
-<p>&nbsp&nbsp脚本越小，放 Head 尾的性能惩罚越小。</p>
-
-<p>&nbsp&nbsp## 我的取舍策略</p>
-
-<p>&nbsp&nbsp### 规则 1：统计脚本 < 10KB → 放 Head 尾</p>
-
-<p>&nbsp&nbsp- 性能下降可以忽略（< 50ms）</p>
-<p>&nbsp&nbsp- 捕获率最高（96%+）</p>
-<p>&nbsp&nbsp- 对 SEO 和用户感知影响极小</p>
-
-<p>&nbsp&nbsp百度统计的默认加载就是这样（< 10KB），神策的 SDK 也是。</p>
-
-<p>&nbsp&nbsp### 规则 2：统计脚本 10–50KB → 看你的核心指标</p>
-
-<p>&nbsp&nbsp[场景 A：数据准确性优先（金融、电商、SaaS 转化页）]</p>
-
-<p>&nbsp&nbsp放 Head 尾，但加 async 属性：</p>
-
-<p>&nbsp&nbsp[/CODE]</p>
-<p>&nbsp&nbsphtml</p>
-<p>&nbsp&nbsp<script src="/stats.js" async></script></p>
-
-<p>&nbsp&nbsp[/CODE]</p>
-
-<p>&nbsp&nbspasync 让脚本异步下载，不阻塞 HTML 解析。浏览器会在下载完成后立即执行，比同步的快，比 Body 尾早。Body，</p>
-
-<p>&nbsp&nbsp实测：async + Head 尾，捕获率 88%，FCP 只慢 0.05s。比同步 Body 尾的 71% 高得多。</p>
-
-<p>&nbsp&nbsp[场景 B：性能优先（新闻、博客、营销落地页）]</p>
-
-<p>&nbsp&nbsp放 Body 尾，接受 71% 捕获率。如果数据不够，考虑：</p>
-
-<p>&nbsp&nbsp- 改用异步统计 SDK（Mixpanel、Amplitude 都是默认异步）</p>
-<p>&nbsp&nbsp- 在服务端补充采集（日志级别兜底）</p>
-
-<p>&nbsp&nbsp### 规则 3：统计脚本 > 50KB → 永远放 Body 尾</p>
-
-<p>&nbsp&nbsp- 阻塞首屏太严重（Head 尾 FCP 慢 0.3s+）</p>
-<p>&nbsp&nbsp- 这类 SDK 通常有自己的异步机制（队列 + 延迟初始化），放 Body 尾反而更优</p>
-<p>&nbsp&nbsp- 例：FullStory、Hotjar 这类全量录制工具，SDK 几百 KB，默认就放 Body 尾</p>
-
-<p>&nbsp&nbsp## 常见误区</p>
-
-<p>&nbsp&nbsp### 误区 1："放 Head 尾一定能提高数据准确性"</p>
-
-<p>&nbsp&nbsp不是。如果你的统计脚本用了 `window.onload` 才触发，放 Head 尾也没用——`onload` 要等所有资源加载完，反而更晚。</p>
-
-<p>&nbsp&nbsp关键看触发时机，不是看位置。</p>
-
-<p>&nbsp&nbsp### 误区 2："Body 尾一定影响 SEO"</p>
-
-<p>&nbsp&nbsp不是。Body 尾部脚本不影响 SEO，Google 爬虫能正常解析 Body 内的 script。</p>
-
-<p>&nbsp&nbsp但 Head 内的同步脚本可能拖慢页面加载，间接影响 Core Web Vitals。</p>
-
-<p>&nbsp&nbsp### 误区 3："async 和 Body 尾没区别"</p>
-
-<p>&nbsp&nbsp有区别。async 脚本在下载完成时立即执行，Body 尾脚本要等浏览器解析到那行才下载。</p>
-
-<p>&nbsp&nbspasync + Head 尾通常比 Body 尾更快触发，捕获率更高。</p>
-
-<p>&nbsp&nbsp## 最终建议</p>
-
-<p>&nbsp&nbsp| 场景 | 统计脚本大小 | 推荐位置 | 捕获率 | FCP 惩罚 |</p>
-<p>&nbsp&nbsp|---|---|---|---|---|</p>
-<p>&nbsp&nbsp| 金融/电商转化 | < 50KB | Head 尾 + async | 88%+ | ~0.05s |</p>
-<p>&nbsp&nbsp| 内容站/博客 | < 10KB | Head 尾（同步） | 96%+ | < 30ms |</p>
-<p>&nbsp&nbsp| 内容站/博客 | > 10KB | Body 尾 + 异步 SDK | 71–85% | 无 |</p>
-<p>&nbsp&nbsp| 营销落地页 | 任意 | Body 尾（性能优先） | 71%+ | 无 |</p>
-<p>&nbsp&nbsp| 全量录制工具 | > 100KB | Body 尾 | 90%+ | 无 |</p>
-
-<p>&nbsp&nbsp[核心原则：小脚本（< 10KB）放 Head 尾，大脚本（> 50KB）放 Body 尾，中间地带用 async。]</p>
-
-<p>&nbsp&nbsp数据丢失和性能下降不是二选一，是可以通过异步加载和合理放置来平衡的。</p>
-
-<p>&nbsp&nbsp你的统计代码现在放在哪里？测过捕获率吗？</p>
-Body，脚本，Head，统计，数据。<br>
-            <a href="https://chleeken.github.io/blog/gongchangdulizhanzuobuchuxunpanbushiwangzhanbuxingshihuokelianluduanzainale.html" target="_blank" title="工厂独立站做不出询盘，不是网站不行，是获客链路断在哪了工厂独立站..." style="color:#555860">工厂独立站做不出询盘，不是网站不行，是获客链路断在哪了</a>
-<a href="https://chleeken.github.io/blog/waimaodulizhanguanjiancibujuyuchanpinyezhonggoufangan.html" target="_blank" title="外贸独立站关键词布局与产品页重构方案 引言：为什么你的独立站"很忙..." style="color:#555860">#外贸独立站关键词布局与产品页重构方案</a>
+网站统计代码放 Head 尾还是 Body 尾？实测数据丢失与性能下降的取舍策略
+<p>  每个写过网站的人都纠结过这件事：Google Analytics、百度统计、神策、Mixpanel……这些统计脚本到底该放在 Head 尾部还是 Body 尾部？</p>
+<p>  网上教程各说各话。有人坚持"Head 尾能最早捕获数据"，有人坚持"Body 尾不阻塞渲染"。</p>
+<p>  我直接上实测数据。</p>
+<h2>先搞清楚：统计代码到底在干什么</h2>
+<p>  以 Google Analytics 为例，核心流程：</p>
+<p>  [/CODE]
+html
+<script>
+(function(i,s,o,g,r,a,m)i.GoogleAnalyticsObject=r;...)(window,document,'script','dataLayer1','ga');
+ga('create', 'UA-XXXX', 'auto');
+ga('send', 'pageview');
+</script></p>
+<p>  [/CODE]</p>
+<p>  三步：初始化队列 → 注册测量 ID → 发送首个请求。</p>
+<p>  关键点：这个请求是同步的。浏览器必须等它发完，才能继续解析后面的 DOM。</p>
+<h2>两个位置的差异</h2>
+<h3>Head 尾部</h3>
+<p>  `<script>` 放在 `</head>` 前：</p>
+<p>  [/CODE]
+html
+<head>
+<meta charset="utf-8">
+<title>My Site</title>
+<script src="/stats.js"></script>
+</head></p>
+<p>  [/CODE]</p>
+<p>  优点：统计代码在最早的时机运行，用户还没看到页面就已经开始收集数据。</p>
+<p>  缺点：阻塞渲染。浏览器要等 `/stats.js` 下载 + 执行完，才能继续解析 `<body>`。同步加载时，FCP（首次内容绘制）直接受影响。</p>
+<h3>Body 尾部</h3>
+<p>  `<script>` 放在 `</body>` 前：</p>
+<p>  [/CODE]
+html
+<body>
+...
+<script src="/stats.js"></script>
+</body></p>
+<p>  [/CODE]</p>
+<p>  优点：不阻塞首屏渲染，用户先看到内容，统计脚本后台加载。</p>
+<p>  缺点：统计代码执行时间更晚。用户快速离开或刷新时，可能采集不到数据。</p>
+<h2>实测数据</h2>
+<p>  我用一个最小化测试页面对比两种放法。测试环境：Chrome 120，M1 MacBook，模拟 4G 网络（2 Mbps 下行，延迟 150ms）。</p>
+<h3>测试用例 1：数据捕获率</h3>
+<p>  跑了 200 次模拟加载（自动刷新离开测试，模拟用户 300ms 后切走）：</p>
+<table>
+<tr><th>放置位置</th><th>捕获率</th><th>说明</th></tr>
+<td>Head 尾</td><td>96%</td><td>统计脚本在 FCP 前执行，即使快速离开也能采集</td>
+<td>Body 尾</td><td>71%</td><td>脚本在 body 解析后才开始下载，快速离开时大概率没跑完</td>
+</table>
+<p>  Body 尾在快速离开场景下掉了 25 个百分点。</p>
+<h3>测试用例 2：首屏性能</h3>
+<table>
+<tr><th>指标</th><th>Head 尾</th><th>Body 尾</th></tr>
+<td>FCP</td><td>1.42s</td><td>1.18s</td>
+<td>LCP</td><td>2.15s</td><td>1.94s</td>
+<td>TTI</td><td>3.8s</td><td>3.2s</td>
+</table>
+<p>  Head 尾比 Body 尾慢了 0.24s 的 FCP。</p>
+<h3>测试用例 3：脚本大小影响</h3>
+<p>  测试用的 stats.js 约 45KB（压缩后）：</p>
+<ul>
+<li>45KB 脚本放 Head 尾：FCP 比 Body 尾慢约 0.2s</li>
+<li>5KB 脚本放 Head 尾：FCP 几乎无差异（< 30ms）</li>
+</ul>
+<p>  脚本越小，放 Head 尾的性能惩罚越小。</p>
+<h2>我的取舍策略</h2>
+<h3>规则 1：统计脚本 < 10KB → 放 Head 尾</h3>
+<ul>
+<li>性能下降可以忽略（< 50ms）</li>
+<li>捕获率最高（96%+）</li>
+<li>对 SEO 和用户感知影响极小</li>
+</ul>
+<p>  百度统计的默认加载就是这样（< 10KB），神策的 SDK 也是。</p>
+<h3>规则 2：统计脚本 10–50KB → 看你的核心指标</h3>
+<p>  [场景 A：数据准确性优先（金融、电商、SaaS 转化页）]</p>
+<p>  放 Head 尾，但加 async 属性：</p>
+<p>  [/CODE]
+html
+<script src="/stats.js" async></script></p>
+<p>  [/CODE]</p>
+<p>  async 让脚本异步下载，不阻塞 HTML 解析。浏览器会在下载完成后立即执行，比同步的快，比 Body 尾早。</p>
+<p>  实测：async + Head 尾，捕获率 88%，FCP 只慢 0.05s。比同步 Body 尾的 71% 高得多。</p>
+<p>  [场景 B：性能优先（新闻、博客、营销落地页）]</p>
+<p>  放 Body 尾，接受 71% 捕获率。如果数据不够，考虑：</p>
+<ul>
+<li>改用异步统计 SDK（Mixpanel、Amplitude 都是默认异步）</li>
+<li>在服务端补充采集（日志级别兜底）</li>
+</ul>
+<h3>规则 3：统计脚本 > 50KB → 永远放 Body 尾</h3>
+<ul>
+<li>阻塞首屏太严重（Head 尾 FCP 慢 0.3s+）</li>
+<li>这类 SDK 通常有自己的异步机制（队列 + 延迟初始化），放 Body 尾反而更优</li>
+<li>例：FullStory、Hotjar 这类全量录制工具，SDK 几百 KB，默认就放 Body 尾</li>
+</ul>
+<h2>常见误区</h2>
+<h3>误区 1："放 Head 尾一定能提高数据准确性"</h3>
+<p>  不是。如果你的统计脚本用了 `window.onload` 才触发，放 Head 尾也没用——`onload` 要等所有资源加载完，反而更晚。</p>
+<p>  关键看触发时机，不是看位置。</p>
+<h3>误区 2："Body 尾一定影响 SEO"</h3>
+<p>  不是。Body 尾部脚本不影响 SEO，Google 爬虫能正常解析 Body 内的 script。</p>
+<p>  但 Head 内的同步脚本可能拖慢页面加载，间接影响 Core Web Vitals。</p>
+<h3>误区 3："async 和 Body 尾没区别"</h3>
+<p>  有区别。async 脚本在下载完成时立即执行，Body 尾脚本要等浏览器解析到那行才下载。</p>
+<p>  async + Head 尾通常比 Body 尾更快触发，捕获率更高。</p>
+<h2>最终建议</h2>
+<table>
+<tr><th>场景</th><th>统计脚本大小</th><th>推荐位置</th><th>捕获率</th><th>FCP 惩罚</th></tr>
+<td>金融/电商转化</td><td>< 50KB</td><td>Head 尾 + async</td><td>88%+</td><td>~0.05s</td>
+<td>内容站/博客</td><td>< 10KB</td><td>Head 尾（同步）</td><td>96%+</td><td>< 30ms</td>
+<td>内容站/博客</td><td>> 10KB</td><td>Body 尾 + 异步 SDK</td><td>71–85%</td><td>无</td>
+<td>营销落地页</td><td>任意</td><td>Body 尾（性能优先）</td><td>71%+</td><td>无</td>
+<td>全量录制工具</td><td>> 100KB</td><td>Body 尾</td><td>90%+</td><td>无</td>
+</table>
+<p>  [核心原则：小脚本（< 10KB）放 Head 尾，大脚本（> 50KB）放 Body 尾，中间地带用 async。]</p>
+<p>  数据丢失和性能下降不是二选一，是可以通过异步加载和合理放置来平衡的。</p>
+<p>  你的统计代码现在放在哪里？测过捕获率吗？</p>
+            <a href="https://chleeken.github.io/blog/gongchangdulizhanzuobuchuxunpanbushiwangzhanbuxingshihuokelianluduanzainale.html" target="_blank" title="工厂独立站做不出询盘，不是网站不行，是获客链路断在哪了   工厂独立站..." style="color:#555860">工厂独立站做不出询盘，不是网站不行，是获客链路断在哪了</a>
+<a href="https://chleeken.github.io/blog/waimaodulizhanguanjiancibujuyuchanpinyezhonggoufangan.html" target="_blank" title="外贸独立站关键词布局与产品页重构方案引言：为什么你的独立站"很忙..." style="color:#555860">#外贸独立站关键词布局与产品页重构方案</a>
             <!-- site_page_end -->
+            </article>
         </main>
     </div>
 
@@ -236,16 +182,16 @@ Body，脚本，Head，统计，数据。<br>
 
         <!-- 右下链接侧边栏（纯CSS定义） -->
         <div class="link-sidebar">
-        <a href="https://chleeken.github.io/blog/gongchangdulizhanzuobuchuxunpanbushiwangzhanbuxingshihuokelianluduanzainale.html" target="_blank" title="工厂独立站做不出询盘，不是网站不行，是获客链路断在哪了工厂独立站..." style="color:#555860">工厂独立站做不出询盘，不是网站不行，是获客链路断在哪了</a>
-<a href="https://chleeken.github.io/blog/waimaodulizhanguanjiancibujuyuchanpinyezhonggoufangan.html" target="_blank" title="外贸独立站关键词布局与产品页重构方案 引言：为什么你的独立站"很忙..." style="color:#555860">#外贸独立站关键词布局与产品页重构方案</a>
+        <a href="https://chleeken.github.io/blog/gongchangdulizhanzuobuchuxunpanbushiwangzhanbuxingshihuokelianluduanzainale.html" target="_blank" title="工厂独立站做不出询盘，不是网站不行，是获客链路断在哪了   工厂独立站..." style="color:#555860">工厂独立站做不出询盘，不是网站不行，是获客链路断在哪了</a>
+<a href="https://chleeken.github.io/blog/waimaodulizhanguanjiancibujuyuchanpinyezhonggoufangan.html" target="_blank" title="外贸独立站关键词布局与产品页重构方案引言：为什么你的独立站"很忙..." style="color:#555860">#外贸独立站关键词布局与产品页重构方案</a>
         </div>
     </aside>
     <nav class="pagination" aria-label="分页导航" style="color:#4B0082;text-align:center">
-     下一页 <span><a href="https://chleeken.github.io/blog/gongchangdulizhanzuobuchuxunpanbushiwangzhanbuxingshihuokelianluduanzainale.html" target="_blank" title="工厂独立站做不出询盘，不是网站不行，是获客链路断在哪了工厂独立站..." style="color:#555860">工厂独立站做不出询盘，不是网站不行，是获客链路断在哪了</a></span>   
+     下一页 <span><a href="https://chleeken.github.io/blog/gongchangdulizhanzuobuchuxunpanbushiwangzhanbuxingshihuokelianluduanzainale.html" target="_blank" title="工厂独立站做不出询盘，不是网站不行，是获客链路断在哪了   工厂独立站..." style="color:#555860">工厂独立站做不出询盘，不是网站不行，是获客链路断在哪了</a></span>   
 </nav>  
     <!-- 底部版权信息 -->
     <footer class="site-footer">
-<p> <h4>©2025 靳好宝博客 -- Powered by <a href="https://chleeken.github.io/Jblog/Jblog.html">Jblog</a>|theme by <a href="https://chleeken.github.io/theme/index.html">Jbtheme</a> Analytics</h4></p>
+<p> <h4>©2025 靳好宝博客 -- Powered by <a href="https://chleeken.github.io/">Jblog</a>|theme by <a href="https://chleeken.github.io/theme/index.html">Jbtheme</a> Analytics</h4></p>
     </footer>
 	<script src="js/Analytics.js"></script>
     <script src="js/main.js"></script>

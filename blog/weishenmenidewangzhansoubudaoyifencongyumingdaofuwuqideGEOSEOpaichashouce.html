@@ -46,108 +46,73 @@
     <!-- 主体内容 -->
     <div class="container">
         <main class="main-content">
+        <article>
             <h1>为什么你的网站搜不到？一份从域名到服务器的GEO+SEO排查手册</h1><span class="article-date" style="font-size:14px">2026年09月25日|作者:靳好宝|栏目:blog|分类:互联网络</span>
             <!-- 以下为文章正文编辑区 -->
             <!-- site_page_begin -->
 <p>  为什么你的网站搜不到？一份从域名到服务器的GEO+SEO排查手册</p>
-
-<p>  做了网站，投了广告，内容也更新得勤，但就是搜不到——这是不是很多技术团队都遇到过的怪事？</p>
-
-<p>  我见过不少站点：UI 做得很漂亮，内容页也算充足，可谷歌后台一查，索引量低得可怜；百度这边，连抓取都费劲。问题出在哪？十有八九不在"内容不够多"，而在技术底座。域名没选对、渲染靠 JS、状态码乱返回、服务器还误封了爬虫……任何一个环节掉链子，搜索表现都会一塌糊涂。</p>
-
-<p>  这篇文章就按"从外到内"的顺序，把网站做 GEO（地域搜索优化）+ SEO 时最容易踩的坑逐一讲透。你可以当成上线前的自查清单，也可以当出事后定位问题的地图。</p>
-<h2>一、域名层：最容易被低估的地基</h2>
-
-<p>  域名是搜索信号长期积累的载体，选错了，后面怎么优化都事倍功半。</p>
-
-<p>  [优先 .com 还是 .cn？] 面向国内市场，.cn 的本地属性更直接；面向全球，.搜索引擎com 的通用性更强。没有标准答案，关键看你的业务定位，选定后就不要频繁换。</p>
-
-<p>  [长度控制在 15 个字符以内]，避开大段无意义数字、下划线和难记组合。一个三年后用户口口相传还叫得出来的域名，才叫好域名。</p>
-
-<p>  [买老域名之前，务必查历史。] 用工具扒一下它的处罚记录、黑灰产痕迹、垃圾外链。页面，域名上的"旧病"不会因为换建站程序就消失，搜索引擎会记着。</p>
-
-<p>  [多地区业务，URL 结构要提前定好。] 子目录（`example.com/de/`）还是子域名（`de.example.com`），要结合你的技术架构和运营方式拍板，别等网站跑起来再改。</p>
-
-<p>  [两条"标配"动作]：www 与非 www 统一 301 到主版本；全站 HTTPS，HTTP 版本一律 301 跳走。这两条不做，权重信号直接分叉。</p>
-
-<p>  [国内网站，ICP 备案是硬性要求]，服务器和业务落在大陆，该走的手续一步别省。</p>
-<h2>二、前端代码层：搜索引擎"看不懂"的根源</h2>
-
-<p>  网站长什么样，是给用户看的；代码结构怎么样，才是搜索引擎在乎的。</p>
-
-<p>  [第一原则：核心内容必须 HTML 直出。] 导航、正文、关键链接，别全塞进 JavaScript 里异步加载。重要页面优先上 SSR（服务端渲染）或 SSG（静态生成）。爬虫抓到的如果只是一堆 `<div id="root">`，你后面所有优化都是空谈。</p>
-
-<p>  [语义化标签别省。] `<header>`、`<nav>`、`<main>`、`<article>`、`<footer>`，这些标签是给搜索引擎的"结构说明书"，用不用，差距很大。</p>
-
-<p>  [robots 标签要会用。] 正常页面是 `index,follow`；登录页、搜索结果页、重复页该 `noindex` 就 `noindex`。记住一句话：[不是所有 URL 都配进索引，控制索引范围本身就是一种优化。]</p>
-
-<p>  [站内链接用标准 `<a href>`，主链路别埋太深。] 核心业务页面最好三跳之内能到。纯靠点击事件跳转的页面，在爬虫眼里基本等于不存在。</p>
-
-<p>  [最后，别碰红线。] 隐藏文本、堆砌关键词、iframe 套核心内容、批量生成低质页、恶意跳转——这些不是"技巧"，是会被惩罚的作弊。</p>
-<h2>三、GEO 层：多语言页面不是"复制+机翻"</h2>
-
-<p>  面向多个国家，GEO 是绕不开的，而它的核心就三个字：`hreflang`。</p>
-
-<p>  [标注要双向。] A 页面指向 B 页面，B 也得指回 A。单向标注是最常见的翻车点。同时别犯"只写语言不写国家"、代码写错、指向不存在的 URL 这类低级错误。语言码走 ISO 639-1，国家码走 ISO 3166-1 Alpha 2，全球默认版用 `x-default` 兜底。</p>
-
-<p>  [但只贴个 `hreflang` 标签远远不够。] 页面本身要"像"当地的：当地实体地址、本地电话和国际区号、当地营业时间和货币、当地计量单位、对应的法规合规信息。面向中国展示 ICP 备案信息，面向欧盟就把 GDPR 隐私合规做扎实。语言更得是"人话"，符合当地用户的表达习惯，不是机翻腔。</p>
-
-<p>  [根标签别忘：] `<html lang="zh-CN">`、`<html lang="en-US">`。浏览器、搜索引擎、无障碍工具都靠它认语言。</p>
-<h2>四、技术 SEO 层：五个最基础的页面要素</h2>
-
-<p>  一个合格的页面，下面这几样缺一不可：</p>
-<ul>
-<li>[Title]：全站唯一，包含核心关键词 + 地域信息；</li>
-<li>[Meta Description]：跟内容对得上，别硬套；</li>
-<li>[H1]：一页一个，对准核心主题；</li>
-<li>[URL]：小写、短横线分词、结构清晰，尽量干掉无意义参数；</li>
-<li>[Canonical]：明确权威版本，压重复 URL。</li>
-</ul>
-
-<p>  还有个容易忽略的坑：[Canonical 和 hreflang 别打架。] 多地域站点，这两套配置方向不一致时，搜索引擎会懵，效果直接打折。</p>
-
-<p>  [Schema 结构化数据按需上。] 本地企业可以用 LocalBusiness Schema 帮搜索引擎理解业务。网站，前提就一条：数据必须和页面真实内容一致，别为了博展现去虚构。</p>
-<h2>五、服务器层：抓得快、抓得到、抓得稳</h2>
-
-<p>  SEO 不是纯代码题，基础设施的权重比大多数人想象的大。</p>
-
-<p>  [部署位置要考虑受众。] 主要服务哪个市场，服务器就尽量放在离得近的地方。IP 所属地域是搜索引擎判断服务区域的辅助信号之一——但别神话它，它不是排名的决定项。</p>
-
-<p>  [用 CDN 提速，同时管好安全策略。] 这是最经典的事故：CDN 或 WAF 把 Googlebot、Bingbot、Baiduspider 当攻击封了，网站对外正常，对搜索引擎却是一片空白。排查慢、发现晚、损失大。但反过来说，也不能光看 User-Agent 就放行——对方自称爬虫不等于就是爬虫，要结合官方公开的验证机制判断。</p>
-
-<p>  [性能持续盯指标：] TTFB、首屏加载、图片体积、JS/CSS 体积、缓存策略、CDN 命中率。别去背某个"性能达标线"，性能优化是个长期过程，对照用户体验和业务指标迭代就好。</p>
-
-<p>  [稳定性是底线。] 5xx 错误、DNS 抖动、数据库连接失败、CDN 异常，任何一个让搜索引擎"反复扑空"，抓取质量都会受损。把服务可用性做上去，再谈别的。</p>
-
-<p>  [HTTP 状态码要讲规矩：] 正常 200，永久迁移 301，页面不存在就老老实实 404。最讨厌的是"软 404"——页面内容其实没了，服务器还回 200，等于在骗搜索引擎。死链、恶意跳转、错误的 301 链，一并清理。</p>
-
-<p>  [大型站点还要管爬虫压力。] 服务器扛不住时，用技术手段给抓取"限流"可以，但千万别一刀切把核心业务页也禁了。robots.txt 是用来管理抓取的，不是用来泄愤的。</p>
-
-<p>  [robots.txt 和 Sitemap 配对使用。] 前者告诉爬虫哪些能碰哪些别碰，注意别误伤核心页和 CSS/JS 资源；后者列出你真正希望被收录的 URL，在 robots.txt 里声明地址。多地域站点按架构设计多套 Sitemap 是常态。</p>
-<h2>六、别忘了"提交"和"本地生态"</h2>
-
-<p>  [网站上线 ≠ 工作结束。] 该做的提交一个不能少：</p>
-<ul>
-<li>[Google Search Console]：验证站点、提交 Sitemap、盯索引量和抓取错误、看搜索表现。注意里面的地域相关设置会随产品规则调整，别以为"设了目标国家就能拿当地排名"；</li>
-<li>[百度搜索资源平台]：面向大陆市场的站点，提交网站、提交 Sitemap、监控抓取和索引，出了问题第一时间在这里排查。</li>
-</ul>
-
-<p>  [有线下业务，还得做本地搜索生态。] 谷歌这边完善 Google Business Profile，国内配合百度本地商户等渠道。关键原则：名称、地址、电话、营业时间，在官网和第三方平台之间必须保持一致。这套"真实且统一"的信息，是搜索引擎理解你服务区域最直接的证据。</p>
-<h2>写在最后</h2>
-
-<p>  把上面这些串起来看，其实就一条主线：[让搜索引擎能低成本、无歧义地理解你的网站，并且让它"信"你是服务于特定地区的真实业务。] 域名、代码、hreflang、服务器、状态码、robots、Sitemap、站长平台，每一层都是在降低理解成本和不确定性。</p>
-
-<p>  所以下次再问"为什么搜不到"，先别急着堆内容。拿这篇当清单，从最外层的域名往里一层层查，大概率能找到那个被你忽视的坑。</p>
-<hr>
-
+<p>  做了网站，投了广告，内容也更新得勤，但就是搜不到——这是不是很多技术团队都遇到过的怪事？</p>
+<p>  我见过不少站点：UI 做得很漂亮，内容页也算充足，可谷歌后台一查，索引量低得可怜；百度这边，连抓取都费劲。问题出在哪？十有八九不在"内容不够多"，而在技术底座。域名没选对、渲染靠 JS、状态码乱返回、服务器还误封了爬虫……任何一个环节掉链子，搜索表现都会一塌糊涂。</p>
+<p>  这篇文章就按"从外到内"的顺序，把网站做 GEO（地域搜索优化）+ SEO 时最容易踩的坑逐一讲透。你可以当成上线前的自查清单，也可以当出事后定位问题的地图。</p>
+<h2>一、域名层：最容易被低估的地基</h2>
+<p>  域名是搜索信号长期积累的载体，选错了，后面怎么优化都事倍功半。</p>
+<p>  [优先 .com 还是 .cn？] 面向国内市场，.cn 的本地属性更直接；面向全球，.com 的通用性更强。没有标准答案，关键看你的业务定位，选定后就不要频繁换。</p>
+<p>  [长度控制在 15 个字符以内]，避开大段无意义数字、下划线和难记组合。一个三年后用户口口相传还叫得出来的域名，才叫好域名。</p>
+<p>  [买老域名之前，务必查历史。] 用工具扒一下它的处罚记录、黑灰产痕迹、垃圾外链。域名上的"旧病"不会因为换建站程序就消失，搜索引擎会记着。</p>
+<p>  [多地区业务，URL 结构要提前定好。] 子目录（`example.com/de/`）还是子域名（`de.example.com`），要结合你的技术架构和运营方式拍板，别等网站跑起来再改。</p>
+<p>  [两条"标配"动作]：www 与非 www 统一 301 到主版本；全站 HTTPS，HTTP 版本一律 301 跳走。这两条不做，权重信号直接分叉。</p>
+<p>  [国内网站，ICP 备案是硬性要求]，服务器和业务落在大陆，该走的手续一步别省。</p>
+<h2>二、前端代码层：搜索引擎"看不懂"的根源</h2>
+<p>  网站长什么样，是给用户看的；代码结构怎么样，才是搜索引擎在乎的。</p>
+<p>  [第一原则：核心内容必须 HTML 直出。] 导航、正文、关键链接，别全塞进 JavaScript 里异步加载。重要页面优先上 SSR（服务端渲染）或 SSG（静态生成）。爬虫抓到的如果只是一堆 `<div id="root">`，你后面所有优化都是空谈。</p>
+<p>  [语义化标签别省。] `<header>`、`<nav>`、`<main>`、`<article>`、`<footer>`，这些标签是给搜索引擎的"结构说明书"，用不用，差距很大。</p>
+<p>  [robots 标签要会用。] 正常页面是 `index,follow`；登录页、搜索结果页、重复页该 `noindex` 就 `noindex`。记住一句话：[不是所有 URL 都配进索引，控制索引范围本身就是一种优化。]</p>
+<p>  [站内链接用标准 `<a href>`，主链路别埋太深。] 核心业务页面最好三跳之内能到。纯靠点击事件跳转的页面，在爬虫眼里基本等于不存在。</p>
+<p>  [最后，别碰红线。] 隐藏文本、堆砌关键词、iframe 套核心内容、批量生成低质页、恶意跳转——这些不是"技巧"，是会被惩罚的作弊。</p>
+<h2>三、GEO 层：多语言页面不是"复制+机翻"</h2>
+<p>  面向多个国家，GEO 是绕不开的，而它的核心就三个字：`hreflang`。</p>
+<p>  [标注要双向。] A 页面指向 B 页面，B 也得指回 A。单向标注是最常见的翻车点。同时别犯"只写语言不写国家"、代码写错、指向不存在的 URL 这类低级错误。语言码走 ISO 639-1，国家码走 ISO 3166-1 Alpha 2，全球默认版用 `x-default` 兜底。</p>
+<p>  [但只贴个 `hreflang` 标签远远不够。] 页面本身要"像"当地的：当地实体地址、本地电话和国际区号、当地营业时间和货币、当地计量单位、对应的法规合规信息。面向中国展示 ICP 备案信息，面向欧盟就把 GDPR 隐私合规做扎实。语言更得是"人话"，符合当地用户的表达习惯，不是机翻腔。</p>
+<p>  [根标签别忘：] `<html lang="zh-CN">`、`<html lang="en-US">`。浏览器、搜索引擎、无障碍工具都靠它认语言。</p>
+<h2>四、技术 SEO 层：五个最基础的页面要素</h2>
+<p>  一个合格的页面，下面这几样缺一不可：</p>
+<ul>
+<li>[Title]：全站唯一，包含核心关键词 + 地域信息；</li>
+<li>[Meta Description]：跟内容对得上，别硬套；</li>
+<li>[H1]：一页一个，对准核心主题；</li>
+<li>[URL]：小写、短横线分词、结构清晰，尽量干掉无意义参数；</li>
+<li>[Canonical]：明确权威版本，压重复 URL。</li>
+</ul>
+<p>  还有个容易忽略的坑：[Canonical 和 hreflang 别打架。] 多地域站点，这两套配置方向不一致时，搜索引擎会懵，效果直接打折。</p>
+<p>  [Schema 结构化数据按需上。] 本地企业可以用 LocalBusiness Schema 帮搜索引擎理解业务。前提就一条：数据必须和页面真实内容一致，别为了博展现去虚构。</p>
+<h2>五、服务器层：抓得快、抓得到、抓得稳</h2>
+<p>  SEO 不是纯代码题，基础设施的权重比大多数人想象的大。</p>
+<p>  [部署位置要考虑受众。] 主要服务哪个市场，服务器就尽量放在离得近的地方。IP 所属地域是搜索引擎判断服务区域的辅助信号之一——但别神话它，它不是排名的决定项。</p>
+<p>  [用 CDN 提速，同时管好安全策略。] 这是最经典的事故：CDN 或 WAF 把 Googlebot、Bingbot、Baiduspider 当攻击封了，网站对外正常，对搜索引擎却是一片空白。排查慢、发现晚、损失大。但反过来说，也不能光看 User-Agent 就放行——对方自称爬虫不等于就是爬虫，要结合官方公开的验证机制判断。</p>
+<p>  [性能持续盯指标：] TTFB、首屏加载、图片体积、JS/CSS 体积、缓存策略、CDN 命中率。别去背某个"性能达标线"，性能优化是个长期过程，对照用户体验和业务指标迭代就好。</p>
+<p>  [稳定性是底线。] 5xx 错误、DNS 抖动、数据库连接失败、CDN 异常，任何一个让搜索引擎"反复扑空"，抓取质量都会受损。把服务可用性做上去，再谈别的。</p>
+<p>  [HTTP 状态码要讲规矩：] 正常 200，永久迁移 301，页面不存在就老老实实 404。最讨厌的是"软 404"——页面内容其实没了，服务器还回 200，等于在骗搜索引擎。死链、恶意跳转、错误的 301 链，一并清理。</p>
+<p>  [大型站点还要管爬虫压力。] 服务器扛不住时，用技术手段给抓取"限流"可以，但千万别一刀切把核心业务页也禁了。robots.txt 是用来管理抓取的，不是用来泄愤的。</p>
+<p>  [robots.txt 和 Sitemap 配对使用。] 前者告诉爬虫哪些能碰哪些别碰，注意别误伤核心页和 CSS/JS 资源；后者列出你真正希望被收录的 URL，在 robots.txt 里声明地址。多地域站点按架构设计多套 Sitemap 是常态。</p>
+<h2>六、别忘了"提交"和"本地生态"</h2>
+<p>  [网站上线 ≠ 工作结束。] 该做的提交一个不能少：</p>
+<ul>
+<li>[Google Search Console]：验证站点、提交 Sitemap、盯索引量和抓取错误、看搜索表现。注意里面的地域相关设置会随产品规则调整，别以为"设了目标国家就能拿当地排名"；</li>
+<li>[百度搜索资源平台]：面向大陆市场的站点，提交网站、提交 Sitemap、监控抓取和索引，出了问题第一时间在这里排查。</li>
+</ul>
+<p>  [有线下业务，还得做本地搜索生态。] 谷歌这边完善 Google Business Profile，国内配合百度本地商户等渠道。关键原则：名称、地址、电话、营业时间，在官网和第三方平台之间必须保持一致。这套"真实且统一"的信息，是搜索引擎理解你服务区域最直接的证据。</p>
+<h2>写在最后</h2>
+<p>  把上面这些串起来看，其实就一条主线：[让搜索引擎能低成本、无歧义地理解你的网站，并且让它"信"你是服务于特定地区的真实业务。] 域名、代码、hreflang、服务器、状态码、robots、Sitemap、站长平台，每一层都是在降低理解成本和不确定性。</p>
+<p>  所以下次再问"为什么搜不到"，先别急着堆内容。拿这篇当清单，从最外层的域名往里一层层查，大概率能找到那个被你忽视的坑。</p>
+<hr>
 <p>  字数约 3000（正文 2600+ 汉字，含技术术语），采用问题驱动叙事：以"为什么搜不到"为贯穿全文的问题线索，每个板块都从"翻车场景"切入再给方案，结构与原文的分条罗列明显不同。</p>
-搜索引擎，页面，网站，域名，业务。<br>
             <a href="https://chleeken.github.io/blog/wangzhanzhuabujinlaibushouludiyupaimingpiaobaGEOSEOdedicenggongchengyicizuodui.html" target="_blank" title="网站抓不进来、不收录、地域排名飘？把 GEOSEO 的底层工程一次做对做技术博客写..." style="color:#555860">#网站抓不进来、不收录、地域排名飘？把GEO+SEO的底层工程一次做对</a>
 <a href="https://chleeken.github.io/blog/chaijieGEOdicengluojiweishenmenideneirongmeiyoubeiAItuijian.html" target="_blank" title="拆解 GEO 底层逻辑：为什么你的内容没有被 AI 推荐先问一个问题：你上一次在 AI 助..." style="color:#555860">拆解GEO底层逻辑：为什么你的内容没有被AI推荐</a>
-<a href="https://chleeken.github.io/blog/dulizhanyouliuliangmeixunpanchaijieyitaokefuxiandexunpanzhuanhualujing.html" target="_blank" title="独立站有流量没询盘？拆解一套可复现的询盘转化路径 一个反复出现的..." style="color:#555860">#独立站有流量没询盘？拆解一套可复现的询盘转化路径</a>
-<a href="https://chleeken.github.io/blog/ruanzhudengjijinruyingmenkanshidainidedaimazhendejingdeqishenchama.html" target="_blank" title="软著登记进入"硬门槛"时代：你的代码真的经得起审查吗？ 引言最近技术圈..." style="color:#555860">软著登记进入"硬门槛"时代：你的代码真的经得起审查吗？</a>
+<a href="https://chleeken.github.io/blog/dulizhanyouliuliangmeixunpanchaijieyitaokefuxiandexunpanzhuanhualujing.html" target="_blank" title="独立站有流量没询盘？拆解一套可复现的询盘转化路径一个反复出现的..." style="color:#555860">#独立站有流量没询盘？拆解一套可复现的询盘转化路径</a>
+<a href="https://chleeken.github.io/blog/ruanzhudengjijinruyingmenkanshidainidedaimazhendejingdeqishenchama.html" target="_blank" title="软著登记进入"硬门槛"时代：你的代码真的经得起审查吗？引言最近技术圈..." style="color:#555860">软著登记进入"硬门槛"时代：你的代码真的经得起审查吗？</a>
 <a href="https://chleeken.github.io/blog/sousuoyinqingliuliangduanyaxiadieAIzhengzairuhezhongxindingyiyueduderukou.html" target="_blank" title="搜索引擎流量断崖下跌：AI正在如何重新定义"阅读"的入口靳好宝科技博客..." style="color:#555860">#搜索引擎流量断崖下跌：AI正在如何重新定义"阅读"的入口</a>
             <!-- site_page_end -->
+            </article>
         </main>
     </div>
 
@@ -162,12 +127,12 @@
         <div class="link-sidebar">
         <a href="https://chleeken.github.io/blog/wangzhanzhuabujinlaibushouludiyupaimingpiaobaGEOSEOdedicenggongchengyicizuodui.html" target="_blank" title="网站抓不进来、不收录、地域排名飘？把 GEOSEO 的底层工程一次做对做技术博客写..." style="color:#555860">#网站抓不进来、不收录、地域排名飘？把GEO+SEO的底层工程一次做对</a>
 <a href="https://chleeken.github.io/blog/chaijieGEOdicengluojiweishenmenideneirongmeiyoubeiAItuijian.html" target="_blank" title="拆解 GEO 底层逻辑：为什么你的内容没有被 AI 推荐先问一个问题：你上一次在 AI 助..." style="color:#555860">拆解GEO底层逻辑：为什么你的内容没有被AI推荐</a>
-<a href="https://chleeken.github.io/blog/dulizhanyouliuliangmeixunpanchaijieyitaokefuxiandexunpanzhuanhualujing.html" target="_blank" title="独立站有流量没询盘？拆解一套可复现的询盘转化路径 一个反复出现的..." style="color:#555860">#独立站有流量没询盘？拆解一套可复现的询盘转化路径</a>
-<a href="https://chleeken.github.io/blog/ruanzhudengjijinruyingmenkanshidainidedaimazhendejingdeqishenchama.html" target="_blank" title="软著登记进入"硬门槛"时代：你的代码真的经得起审查吗？ 引言最近技术圈..." style="color:#555860">软著登记进入"硬门槛"时代：你的代码真的经得起审查吗？</a>
+<a href="https://chleeken.github.io/blog/dulizhanyouliuliangmeixunpanchaijieyitaokefuxiandexunpanzhuanhualujing.html" target="_blank" title="独立站有流量没询盘？拆解一套可复现的询盘转化路径一个反复出现的..." style="color:#555860">#独立站有流量没询盘？拆解一套可复现的询盘转化路径</a>
+<a href="https://chleeken.github.io/blog/ruanzhudengjijinruyingmenkanshidainidedaimazhendejingdeqishenchama.html" target="_blank" title="软著登记进入"硬门槛"时代：你的代码真的经得起审查吗？引言最近技术圈..." style="color:#555860">软著登记进入"硬门槛"时代：你的代码真的经得起审查吗？</a>
 <a href="https://chleeken.github.io/blog/sousuoyinqingliuliangduanyaxiadieAIzhengzairuhezhongxindingyiyueduderukou.html" target="_blank" title="搜索引擎流量断崖下跌：AI正在如何重新定义"阅读"的入口靳好宝科技博客..." style="color:#555860">#搜索引擎流量断崖下跌：AI正在如何重新定义"阅读"的入口</a>
 <a href="https://chleeken.github.io/blog/wangzhantongjidaimafangHeadweihaishiBodyweishiceshujudiushiyuxingnengxiajiangdequshecelve.html" target="_blank" title="网站统计代码放 Head 尾还是 Body 尾？实测数据丢失与性能下降的取舍策略每个写..." style="color:#555860">网站统计代码放Head尾还是Body尾？实测数据丢失与性能下降的取舍策略</a>
-<a href="https://chleeken.github.io/blog/gongchangdulizhanzuobuchuxunpanbushiwangzhanbuxingshihuokelianluduanzainale.html" target="_blank" title="工厂独立站做不出询盘，不是网站不行，是获客链路断在哪了工厂独立站..." style="color:#555860">工厂独立站做不出询盘，不是网站不行，是获客链路断在哪了</a>
-<a href="https://chleeken.github.io/blog/waimaodulizhanguanjiancibujuyuchanpinyezhonggoufangan.html" target="_blank" title="外贸独立站关键词布局与产品页重构方案 引言：为什么你的独立站"很忙..." style="color:#555860">#外贸独立站关键词布局与产品页重构方案</a>
+<a href="https://chleeken.github.io/blog/gongchangdulizhanzuobuchuxunpanbushiwangzhanbuxingshihuokelianluduanzainale.html" target="_blank" title="工厂独立站做不出询盘，不是网站不行，是获客链路断在哪了   工厂独立站..." style="color:#555860">工厂独立站做不出询盘，不是网站不行，是获客链路断在哪了</a>
+<a href="https://chleeken.github.io/blog/waimaodulizhanguanjiancibujuyuchanpinyezhonggoufangan.html" target="_blank" title="外贸独立站关键词布局与产品页重构方案引言：为什么你的独立站"很忙..." style="color:#555860">#外贸独立站关键词布局与产品页重构方案</a>
         </div>
     </aside>
     <nav class="pagination" aria-label="分页导航" style="color:#4B0082;text-align:center">
@@ -175,7 +140,7 @@
 </nav>  
     <!-- 底部版权信息 -->
     <footer class="site-footer">
-<p> <h4>©2025 靳好宝博客 -- Powered by <a href="https://chleeken.github.io/Jblog/Jblog.html">Jblog</a>|theme by <a href="https://chleeken.github.io/theme/index.html">Jbtheme</a> Analytics</h4></p>
+<p> <h4>©2025 靳好宝博客 -- Powered by <a href="https://chleeken.github.io/">Jblog</a>|theme by <a href="https://chleeken.github.io/theme/index.html">Jbtheme</a> Analytics</h4></p>
     </footer>
 	<script src="js/Analytics.js"></script>
     <script src="js/main.js"></script>

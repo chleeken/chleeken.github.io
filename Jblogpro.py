@@ -568,7 +568,7 @@ class App:
             ('时间','插入当前时间',self._time,{}),
             ('>','插入2个空格',lambda:self._ins('  '),{}),
             ('整理','用整理.txt替换',self._org,{}),
-            ('txt','另存为txt到栏目-txt文件夹',self._stxt,{'w':3}),
+            ('txt','另存为txt到程序目录txt_file文件夹',self._stxt,{'w':3}),
             ('()','插入()',lambda:self._wrp('(',')'),{}),
             ('[]','插入[]',lambda:self._wrp('[',']'),{}),
             ('{}','插入{}',lambda:self._wrp('{','}'),{}),
@@ -616,13 +616,12 @@ class App:
             Msg.info("整理","完成")
         except Exception as e: Msg.error("整理",str(e))
     def _stxt(self):
-        """txt按钮 - 保存到栏目-txt文件夹，递增数字"""
+        """txt按钮 - 保存到程序目录txt_file文件夹，递增数字"""
         c=self.t.get('1.0','end-1c').strip()
         if not c: return
         cat = self.cv.get().strip()
         if not cat: return
-        txt_dir_name = cat + '-txt'
-        txt_dir = os.path.join(PROGRAM_DIR, txt_dir_name)
+        txt_dir = os.path.join(PROGRAM_DIR, 'txt_file')
         if not os.path.exists(txt_dir):
             os.makedirs(txt_dir)
         title = self.tv.get().strip()
@@ -695,10 +694,9 @@ class App:
             ('字数','统计字数',self._wcnt,{}),
             ('导入','导入TXT',self._imp,{}),
             ('新建','新建文章',self._new,{'bg':'#FF8C00'}),
-            ('TXT存','保存到栏目-txt文件夹',self._stxc,{}),
             ('规范行首','规范行首空格',self._fmt2,{}),
             ('整理','格式化+随机插入关键词/链接',self._orgf,{}),
-            ('程序首页','生成程序目录index.html及分页',self._program_home,{'bg':'#FAEBD7'}),
+            ('网站首页','生成网站目录index.html及分页',self._program_home,{'bg':'#FAEBD7'}),
         ]
         for t,tip,cmd,ex in btns:
             b=self._mkb(r,t,tip,cmd,**ex); b.pack(side=tk.LEFT,padx=1,pady=1)
@@ -1049,39 +1047,6 @@ class App:
         self.t.delete('1.0','end'); self.tv.set(''); self.cur=None
         self.published=False; self.pb.config(bg='#FF0000')
         self.ustack.clear(); self.rstack.clear()
-    def _stxc(self):
-        """TXT存按钮 - 保存到栏目-txt文件夹（带递增数字）"""
-        t=self.tv.get().strip()
-        c=self.t.get('1.0','end-1c').strip()
-        if not c: Msg.info("提示","内容为空"); return
-        if not t:
-            fl=c.split('\n')[0].strip() if c else '未命名'
-            t=sfn(fl) or '未命名'
-        t=sfn(t) or '未命名'
-        cat = self.cv.get().strip()
-        if not cat:
-            Msg.info("提示","请选择栏目"); return
-        txt_dir_name = cat + '-txt'
-        td = os.path.join(PROGRAM_DIR, txt_dir_name)
-        if not os.path.exists(td): os.makedirs(td)
-        date_str = datetime.now().strftime('%Y.%m.%d')
-        # 全局递增：扫描目录下所有txt文件，找最大序号
-        max_n = 0
-        for f in os.listdir(td):
-            m = re.match(r'^[^_]+_(\d+)_', f)
-            if m:
-                max_n = max(max_n, int(m.group(1)))
-        fn = f'{t}_{max_n+1}_{date_str}.txt'
-        # 检测重复文件（按标题去重）
-        title_prefix = sfn(t)
-        for f in os.listdir(td):
-            if f.startswith(title_prefix) and f.endswith('.txt'):
-                Msg.info("保存",f"标题已存在，跳过: {fn}")
-                return
-        try:
-            write_file(os.path.join(td,fn), c)
-            Msg.info("保存",f"已保存: {fn}")
-        except Exception as e: Msg.error("保存",str(e))
     def _extract_top_words(self, text, n=5):
         """提取文本中的高频词"""
         text = text or ''
@@ -1791,7 +1756,7 @@ class App:
                 c_urls=read_file(uf, errors='replace')
                 uls=[l.strip() for l in c_urls.split('\n') if l.strip() and l.strip().startswith('<a') and '</a>' in l.strip()]
                 if uls:
-                    cnt=min(6,len(uls))
+                    cnt=min(10,len(uls))
                     side_links='\n'.join(random.sample(uls, cnt))
             except: pass
         def fill_side(html):
@@ -1890,7 +1855,7 @@ class App:
             uls=[l.strip() for l in (read_file(uf,errors='replace') or '').split('\n')
                  if l.strip() and l.strip().startswith('<a') and '</a>' in l.strip()]
             if uls:
-                side_links='\n'.join(random.sample(uls, min(6,len(uls))))
+                side_links='\n'.join(random.sample(uls, min(10,len(uls))))
         def fill(base, items_slice, nav_html):
             if not items_slice:
                 cards=''
