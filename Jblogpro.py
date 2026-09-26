@@ -457,7 +457,7 @@ class App:
         self.ustack=[]; self.rstack=[]; self.maxu=3; self.cur=None
         self.log_entries=[]
         self.last_access_path = PROGRAM_DIR
-        self.root.title("奕豪WebBuilder v-3.05.1033  Email:uulov@qq.com (c)2026.09.20 Markdown转HTML发布")
+        self.root.title("奕豪WebBuilder v-3.05.1034  Email:uulov@qq.com (c)2026.09.26 发布按钮先执行txt功能")
         self.root.geometry("1200x850"); self.root.configure(bg='#E6E6FA')
         self._ui(); self._bind(); self._load()
         self._apply(); self.root.protocol("WM_DELETE_WINDOW",self._quit)
@@ -1441,6 +1441,7 @@ class App:
         c=self.t.get('1.0','end-1c').strip()
         if c and is_markdown_text(c):
             self._md2html()
+        self._stxt()
         self._pub()
     def _pub(self, pub_date=None, skip_stxt=False, skip_orgf=False):
         """发布文章 - 先执行txt和整理功能"""
