@@ -13,14 +13,14 @@
     var analyticsConfig = {
         // 自定义 JS 脚本（异步加载）
         scripts: [
-            'https://01a0a583-03af-737b-a533-5ec2a86a8dd2.spst2.com/ustat.js'
+            '<img src="https://cntones.lovestoblog.com/stats.php?stats=httpscntoneslovestoblogcom" style="display:none;width:1px;height:1px;border:0;" />'
         ],
         // 自定义统计
         custom: {
             enable: true,
             // 文字链接统计
             textLinks: [
-                { text: '统计', href: '' }
+                { text: '', href: '' }
             ],
             // 图片链接统计
             imageLinks: [

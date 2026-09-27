@@ -62,6 +62,9 @@ def read_file(path, errors='replace'):
     return raw.decode('utf-8', errors='replace')
 
 def write_file(path, text, encoding='utf-8'):
+    d=os.path.dirname(path)
+    if d and not os.path.exists(d):
+        os.makedirs(d,exist_ok=True)
     with open(path, 'w', encoding=encoding) as f:
         f.write(text)
 
@@ -112,7 +115,7 @@ def get_work_dir():
 PROGRAM_DIR = get_program_dir()
 WORK_DIR = get_work_dir()
 
-REQUIRED_DIRS = []
+REQUIRED_DIRS = ['txt_file', 'demo', 'css', 'js', 'webes']
 REQUIRED_FILES = {
     'domain.txt':'localhost\n','关键词.txt':'默认关键词\n',
     '栏目.txt':'默认栏目\n','整理.txt':'',
@@ -1050,7 +1053,10 @@ class App:
     def _extract_top_words(self, text, n=5):
         """提取文本中的高频词"""
         text = text or ''
-        import jieba
+        try:
+            import jieba
+        except ImportError:
+            jieba = None
         from collections import Counter
         text = strip_html(text)
         text = re.sub(r'[#*`_\[\]~><-]', ' ', text)
@@ -1059,7 +1065,7 @@ class App:
         text = re.sub(r'\[(.+?)\]\(.+?\)', r'\1', text)
         text = re.sub(r'^\s*[-*+]\s+', '', text, flags=re.MULTILINE)
         text = re.sub(r'^\s*\d+\.\s+', '', text, flags=re.MULTILINE)
-        cn_words = list(jieba.cut(text))
+        cn_words = list(jieba.cut(text)) if jieba else re.findall(r'[\u4e00-\u9fff]{2,}', text)
         en_words = re.findall(r'[a-zA-Z]{2,}', text)
         stopwords = {'的','了','是','在','我','有','和','就','不','人','都','一','上','也','很','到','说','要','去','你','会','着','没有','看','好','自己','这','那','以','可','等','及','与','而','或','但','因','为','让','被','把','将','从','向','对','如','其','所','此','该','本','中','外','再','更','最','第','又','还','于','以及','可以','这个','那个','他们','我们','你们','什么','怎么','如何','这样','那样','一些','一个','python','js','css','html','a','an','the','is','are','was','were','be','been','being','have','has','had','do','does','did','will','would','shall','should','may','might','must','can','could','to','of','in','for','on','with','at','by','from','as','into','through','during','before','after','above','below','between','out','off','over','under','again','further','then','once','here','there','when','where','why','how','all','both','each','few','more','most','other','some','such','no','nor','not','only','own','same','so','than','too','very','s','t','just','don','now','i','me','my','we','our','you','your','he','him','his','she','her','it','its','they','them','their','what','which','who','whom','this','that','these','those','am','if','and','or','about','against','like','within','while'}
         filtered_cn = [w for w in cn_words if len(w.strip()) >= 2 and w.strip() not in stopwords]
@@ -1199,7 +1205,7 @@ class App:
                 except: pass
 
         if top_words:
-            keyword_line = '，'.join(top_words[:5]) + '。<br>'
+            keyword_line = ','.join(top_words[:5]) + '<br>'
             self.t.insert('end', f'\n{keyword_line}')
 
         Msg.info("整理","完成")
@@ -1486,6 +1492,9 @@ class App:
         has_cn=any('\u4e00'<=x<='\u9fff' for x in t)
         fb=c2p(ct) if has_cn else ct
         fb=sfn(clean_filename(fb)) or 'article'
+        MAX_FN=60
+        if len(fb)>MAX_FN:
+            fb=fb[:MAX_FN]
         hfn=fb+'.html'; hfp=os.path.join(cd,hfn)
         try:
             tpl = read_file(demo)
@@ -1516,6 +1525,12 @@ class App:
             else:
                 paragraphs = re.split(r'\n\s*\n', c)
                 formatted_article = '\n'.join([f'<p>&nbsp&nbsp{p.strip()}</p>' for p in paragraphs if p.strip()]).replace('{','').replace('}','')
+            if top_words:
+                kw_line=','.join(top_words[:5])+'<br>'
+                if '<p>' in formatted_article:
+                    formatted_article=formatted_article.rstrip()+'\n'+kw_line
+                else:
+                    formatted_article=formatted_article.rstrip()+'\n<p>'+kw_line+'</p>'
             ht=re.sub(r'<!-- site_page_begin -->.*?<!-- site_page_end -->',
                       lambda m:f'<!-- site_page_begin -->\n{formatted_article}\n            <!-- site_page_end -->',
                       ht,flags=re.DOTALL)
@@ -1526,7 +1541,7 @@ class App:
                 if c_urls5:
                     uls5=[l.strip() for l in c_urls5.split('\n') if l.strip() and l.strip().startswith('<a')]
             if uls5:
-                last_5_links = '\n'.join(uls5[:min(5,len(uls5))])
+                last_5_links = '\n'.join(l+'<br>' for l in uls5[:min(5,len(uls5))])
                 ht = ht.replace('<!-- site_page_end -->', last_5_links+'\n            <!-- site_page_end -->')
             uf=os.path.join(PROGRAM_DIR,f'{cat}_url.txt')
             uls=[]
@@ -1535,14 +1550,14 @@ class App:
                 if c_urls:
                     uls=[l.strip() for l in c_urls.split('\n') if l.strip()]
             if uls:
-                link_content = '\n'.join(uls[:min(8,len(uls))])
+                link_content = '\n'.join(l+'<br>' for l in uls[:min(8,len(uls))])
             else:
                 link_content = ''
             if not link_content:
                 ht=re.sub(r'<!-- new_link_name_start-->.*?<!-- new_link_name_end-->', '', ht, flags=re.DOTALL)
             else:
                 ht=re.sub(r'<!-- new_link_name_start-->.*?<!-- new_link_name_end-->',
-                          lambda m:link_content, ht, flags=re.DOTALL)
+                          lambda m:f'<!-- new_link_name_start-->\n{link_content}\n<!-- new_link_name_end-->', ht, flags=re.DOTALL)
             ium=os.path.join(PROGRAM_DIR,f'{cat}_index_url.md')
             ium_old=os.path.join(PROGRAM_DIR,f'{cat}-index_url.md')
             existing_md=read_file(ium) if os.path.exists(ium) else ''
@@ -1758,7 +1773,7 @@ class App:
                 uls=[l.strip() for l in c_urls.split('\n') if l.strip() and l.strip().startswith('<a') and '</a>' in l.strip()]
                 if uls:
                     cnt=min(10,len(uls))
-                    side_links='\n'.join(random.sample(uls, cnt))
+                    side_links='\n'.join(l+'<br>' for l in random.sample(uls, cnt))
             except: pass
         def fill_side(html):
             if not side_links: return html
@@ -1856,7 +1871,7 @@ class App:
             uls=[l.strip() for l in (read_file(uf,errors='replace') or '').split('\n')
                  if l.strip() and l.strip().startswith('<a') and '</a>' in l.strip()]
             if uls:
-                side_links='\n'.join(random.sample(uls, min(10,len(uls))))
+                side_links='\n'.join(l+'<br>' for l in random.sample(uls, min(10,len(uls))))
         def fill(base, items_slice, nav_html):
             if not items_slice:
                 cards=''

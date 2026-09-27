@@ -1,6 +1,6 @@
 // 广告内容配置
 const ads = {
-    leftAd: '<div><!-- 广告内容 --><a href="https://chleeken.github.io/" target="_blank">chleeken的page主页</a></div>',
+    leftAd: '<div><!-- 广告内容 --><a href="https://chleeken.github.io/" target="_blank">靳好宝博客</a></div>',
     topRightAd: '<div><!-- 广告内容 --><a href="https://chleeken.github.io/myurls.html" target="_blank">我的导航</a></div>'
 };
 
@@ -10,29 +10,44 @@ function loadAds() {
     document.getElementById('topRightAd').innerHTML = ads.topRightAd;
 }
 
-// 更新侧边栏位置
+// 动态计算侧边栏位置：跟随主内容，保持0.1%间隙
 function updateSidebarPosition() {
-    const leftSidebar = document.querySelector('.left-sidebar');
-    const rightSidebar = document.querySelector('.right-sidebar');
     const mainContent = document.querySelector('.main-content');
+    const leftSidebar = document.getElementById('leftAd');
+    const rightSidebar = document.querySelector('.right-sidebar');
 
-    if (leftSidebar && mainContent) {
-        const mainLeft = mainContent.offsetLeft;
-        leftSidebar.style.left = (mainLeft - 205) + 'px';
-    }
+    if (!mainContent || !leftSidebar || !rightSidebar) return;
 
-    if (rightSidebar && mainContent) {
-        const mainRight = mainContent.offsetLeft + mainContent.offsetWidth;
-        rightSidebar.style.right = 'auto';
-        rightSidebar.style.left = (mainRight + 5) + 'px';
-    }
+    const vw = window.innerWidth;
+    const gap = vw * 0.001;
+
+    // 左侧栏：右侧边框距主内容左边缘0.1%
+    const mainRect = mainContent.getBoundingClientRect();
+    leftSidebar.style.top = '50%';
+    leftSidebar.style.transform = 'translateY(-50%)';
+    leftSidebar.style.left = (mainRect.left - leftSidebar.offsetWidth - gap) + 'px';
+
+    // 右侧栏：左侧边框距主内容右边缘0.1%
+    const rsWidth = rightSidebar.offsetWidth;
+    rightSidebar.style.top = '50%';
+    rightSidebar.style.transform = 'translateY(-50%)';
+    rightSidebar.style.left = (mainRect.right + gap) + 'px';
 }
 
 // 页面加载完成后执行
-window.addEventListener('load', () => {
+window.addEventListener('load', function() {
     loadAds();
     updateSidebarPosition();
 });
 
-// 窗口调整时更新侧边栏位置
+// 窗口resize时重新计算位置
 window.addEventListener('resize', updateSidebarPosition);
+
+
+
+
+
+
+
+
+
