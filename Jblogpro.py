@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-奕豪WebBuilder v-3.06.1034 - 网站生成器
-作者:靳好宝 Email:uulov@qq.com (c)2026.09.23 修复正文带<p>时标题清洗未去HTML标签，导致<p>混入文章网址、<title>和H1
+奕豪WebBuilder v-3.06.1036 - 网站生成器
+作者:靳好宝 Email:uulov@qq.com (c)2026.10.04 智能打包数据文件修复:下拉框正常读取程序目录配置
 """
 import tkinter as tk
 from tkinter import ttk, filedialog, colorchooser
@@ -89,14 +89,29 @@ def is_temp_directory(path):
 
 def get_program_dir():
     """获取程序所在目录（固定路径）"""
-    # PyInstaller 设置 sys.frozen=True
+    # PyInstaller 设置 sys.frozen=True，sys.executable 即 exe 本体
     if getattr(sys, 'frozen', False):
         return os.path.dirname(sys.executable)
-    # Nuitka 编译后：sys.argv[0] 是 exe 路径（非临时目录），__file__ 指向临时目录
-    argv0 = os.path.abspath(sys.argv[0])
-    if argv0.endswith('.exe') and not is_temp_directory(os.path.dirname(argv0)):
-        return os.path.dirname(argv0)
-    # 开发态：用 __file__
+    # Nuitka onefile/standalone：sys.argv[0] 是 exe 本体路径（不在临时解压目录）
+    if sys.argv and sys.argv[0] and os.path.basename(sys.argv[0]).lower().endswith('.exe') \
+            and os.path.exists(os.path.abspath(sys.argv[0])):
+        return os.path.dirname(os.path.abspath(sys.argv[0]))
+    # Nuitka onefile 解压到临时目录：sys.argv[0] 指向临时目录中的 .py
+    # 向上回溯，找到第一个非临时目录（即程序部署目录）
+    if sys.argv and sys.argv[0]:
+        argv0_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
+        if is_temp_directory(argv0_dir):
+            d = argv0_dir
+            # 向上回溯直到不再是临时目录
+            while d and len(d) > 3 and is_temp_directory(d):
+                d = os.path.dirname(d)
+            if d and len(d) > 3 and not is_temp_directory(d):
+                # 验证这是程序部署目录（有标志文件/目录）
+                if os.path.isdir(os.path.join(d, 'config_file')) or \
+                   os.path.isdir(os.path.join(d, 'txt_file')) or \
+                   os.path.isfile(os.path.join(d, 'Jblogpro.py')):
+                    return d
+    # 开发态：用 __file__（源码所在目录）
     return os.path.dirname(os.path.abspath(__file__))
 
 def get_work_dir():
@@ -115,7 +130,8 @@ def get_work_dir():
 PROGRAM_DIR = get_program_dir()
 WORK_DIR = get_work_dir()
 
-REQUIRED_DIRS = ['txt_file', 'demo', 'css', 'js', 'webes']
+CONFIG_DIR = os.path.join(PROGRAM_DIR, 'config_file')
+REQUIRED_DIRS = ['txt_file', 'demo', 'css', 'js', 'webes', 'config_file']
 REQUIRED_FILES = {
     'domain.txt':'localhost\n','关键词.txt':'默认关键词\n',
     '栏目.txt':'默认栏目\n','整理.txt':'',
@@ -126,7 +142,7 @@ def ensure_dirs():
         p = os.path.join(PROGRAM_DIR,d)
         if not os.path.exists(p): os.makedirs(p)
     for fn,ct in REQUIRED_FILES.items():
-        p = os.path.join(PROGRAM_DIR,fn)
+        p = os.path.join(CONFIG_DIR,fn)
         if not os.path.exists(p):
             write_file(p, ct)
 
@@ -166,23 +182,28 @@ def is_markdown_text(text):
         return False
     if re.search(r'<p\s*>|<div\s*>|<span\s*>|<br\s*/?>|<h[1-6]\s*>|<table', t, re.I):
         return False
-    patterns = [
-        r'^#{1,6}\s+\S',
-        r'^>\s+\S',
-        r'^\s*[-*+]\s+\S',
-        r'^\s*\d+\.\s+\S',
-        r'\[[^\]]{1,60}\]\((?:https?:)?//[^\s)]+\)',
-        r'^\[[^\]]+\]:\s+https?://',
-        r'```',
-        r'`[^`\n]+`',
-        r'^\s*[-*_]{3,}\s*$',
-        r'!\[[^\]]*\]\((?:https?:)?//[^\s)]+\)',
-    ]
-    lines = t.split('\n')
+    # 去掉行首全角空格后逐行检测
+    lines_norm = t.replace('\u3000', ' ').replace('\u00a0', ' ').split('\n')
+    # 逐行检测（去掉行首半角空格后匹配）
     score = 0
-    for p in patterns:
-        if re.search(p, t, re.M):
-            score += 1
+    has_table_row = False
+    for ln in lines_norm:
+        s = ln.lstrip()
+        if re.match(r'^#{1,6}\s+\S', s): score += 1
+        if re.match(r'^>\s+\S', s): score += 1
+        if re.match(r'^\s*[-*+]\s+\S', s): score += 1
+        if re.match(r'^\s*\d+\.\s+\S', s): score += 1
+        if re.search(r'\[[^\]]{1,60}\]\((?:https?:)?//[^\s)]+\)', s): score += 1
+        if re.match(r'^\[[^\]]+\]:\s+https?://', s): score += 1
+        if '```' in s: score += 1
+        if re.search(r'`[^`\n]+`', s): score += 1
+        if re.match(r'^\s*[-*_]{3,}\s*$', s): score += 1
+        if re.search(r'!\[[^\]]*\]\((?:https?:)?//[^\s)]+\)', s): score += 1
+        if re.match(r'^\s*\|.*\|', s):
+            has_table_row = True
+    # 表格行直接判定为 Markdown
+    if has_table_row:
+        return True
     return score >= 2
 
 def md_to_html(text, base_url='', strip_title=False):
@@ -191,27 +212,17 @@ def md_to_html(text, base_url='', strip_title=False):
     text = (text or '').strip()
     if not text:
         return ''
-    lines = text.split('\n')
-    for k, ln in enumerate(lines):
-        if ln.strip():
-            m = re.match(r'^#{1,6}\s*(.+)$', ln.strip())
-            if m:
-                lines[k] = m.group(1).strip()
-            break
+    # 去掉每行行首的空白（含全角空格），防止它们干扰 markdown 库的标题/列表识别
+    lines = [ln.lstrip() for ln in text.split('\n')]
     text = '\n'.join(lines).strip()
     if not text:
         return ''
     if strip_title:
+        # 只删除第一行前面的 #（仅当第一行是 # 开头时），避免重复主标题
         lines_t = text.split('\n')
-        idx = None
-        for k, ln in enumerate(lines_t):
-            if ln.strip():
-                m = re.match(r'^#\s+(.+)$', ln.strip())
-                if m:
-                    idx = k
-                break
-        if idx is not None:
-            lines_t[idx] = ''
+        m = re.match(r'^(#+)(.*)$', lines_t[0])
+        if m:
+            lines_t[0] = m.group(2).lstrip()
         text = '\n'.join(lines_t).strip()
         if not text:
             return ''
@@ -219,7 +230,7 @@ def md_to_html(text, base_url='', strip_title=False):
         try:
             html = _md_lib.markdown(
                 text,
-                extensions=['fenced_code', 'tables', 'sane_lists', 'toc'],
+                extensions=['fenced_code', 'tables', 'sane_lists'],
                 output_format='html'
             )
             if base_url and re.search(r'<img[^>]+src="', html):
@@ -230,11 +241,12 @@ def md_to_html(text, base_url='', strip_title=False):
                         tag = tag.replace(sm.group(1), base_url + '/' + sm.group(1).lstrip('/'))
                     return tag
                 html = re.sub(r'<img[^>]+src="[^"]*"[^>]*>', fix_img, html)
-            html = re.sub(r'(<p>)', r'<p>\u00a0\u00a0', html)
+            html = re.sub(r'(<p>)', '<p>\u00a0\u00a0', html)
             return html.strip()
         except Exception:
             pass
     lines = normalize_newlines(text).split('\n')
+    lines = [ln.lstrip() for ln in lines]  # 去掉行首空白，让标题/列表正常识别
     out = []
     i = 0
     in_list = False
@@ -292,7 +304,7 @@ def md_to_html(text, base_url='', strip_title=False):
                         continue
                     cs = [c.strip() for c in row.strip('|').split('|')]
                     body_rows.append(''.join(f'<td>{c}</td>' for c in cs))
-                out.append(f'<table>\n<tr>{head}</tr>\n' + '\n'.join(body_rows) + '\n</table>')
+                out.append(f'<table>\n<tr>{head}</tr>\n' + '\n'.join(f'<tr>{r}</tr>' for r in body_rows) + '\n</table>')
             continue
         if s.startswith('#'):
             m = re.match(r'^(#{1,6})\s*(.+)$', s)
@@ -460,7 +472,7 @@ class App:
         self.ustack=[]; self.rstack=[]; self.maxu=3; self.cur=None
         self.log_entries=[]
         self.last_access_path = PROGRAM_DIR
-        self.root.title("奕豪WebBuilder v-3.05.1034  Email:uulov@qq.com (c)2026.09.26 发布按钮先执行txt功能")
+        self.root.title("Jblogpro奕豪WebBuilder v-3.06.1036  Email:uulov@qq.com (c)2026.10.04")
         self.root.geometry("1200x850"); self.root.configure(bg='#E6E6FA')
         self._ui(); self._bind(); self._load()
         self._apply(); self.root.protocol("WM_DELETE_WINDOW",self._quit)
@@ -601,7 +613,7 @@ class App:
     def _time(self):
         self._ins(datetime.now().strftime('%Y.%m.%d %H:%M:%S'))
     def _org(self):
-        f=os.path.join(PROGRAM_DIR,'整理.txt')
+        f=os.path.join(CONFIG_DIR,'整理.txt')
         if not os.path.exists(f): Msg.info("整理","整理.txt 不存在"); return
         try:
             ct = read_file(f)
@@ -631,7 +643,7 @@ class App:
         if not title:
             fl = c.split('\n')[0].strip()
             title = sfn(fl) or '未命名'
-        title = sfn(title) or '未命名'
+        title = clean_title(title) or '未命名'
         author = self.av.get().strip() or '未知'
         cat_val = self.cv.get().strip()
         category = self.cav.get().strip() or '未知'
@@ -672,7 +684,7 @@ class App:
                 Msg.info("保存",f"标题「{title}」已存在，跳过保存: {fn}")
                 return
         try:
-            write_file(os.path.join(txt_dir,fn), c)
+            write_file(os.path.join(txt_dir,fn), strip_html(c))
             Msg.info("保存",f"已保存: {fn}")
             self._last_txt_fn=os.path.join(txt_dir,fn)
         except: pass
@@ -707,10 +719,15 @@ class App:
         self.hb=self._mkb(r,'首页','生成首页',self._home,w=6,bg='#FAEBD7')
         self.wb=self._mkb(r,'字数','统计字数并生成链接',self._wcnt,w=6,bg='#9ACD32')
         self.vb=self._mkb(r,'撤销发布','撤销最近一次发布',self._unpub,w=6,bg='#808080')
+        self.li_checked=tk.BooleanVar(self.root, value=True)
+        self.li_cb=tk.Checkbutton(r,text='li',variable=self.li_checked,font=('宋体',9),
+                                  bg='#9400D3',activebackground='#9400D3',selectcolor='#FFFFDD',
+                                  fg='#FFFFFF',offrelief=tk.RAISED,indicatoron=True)
         self.pb.pack(side=tk.LEFT,padx=1,pady=1)
         self.hb.pack(side=tk.LEFT,padx=1,pady=1)
         self.wb.pack(side=tk.LEFT,padx=1,pady=1)
         self.vb.pack(side=tk.LEFT,padx=1,pady=1)
+        self.li_cb.pack(side=tk.LEFT,padx=1,pady=1)
     def _wangtu(self):
         cat=self.cv.get().strip()
         if not cat:
@@ -974,7 +991,7 @@ class App:
         pu=f'{dom.rstrip("/")}/{cat}/{fb}.html' if dom else f'/{cat}/{fb}.html'
         desc=get_first_words(ct,20,30).replace('<p>&nbsp&nbsp','').replace('</p>','')
         md_entry=f'[{t}]({pu} "{desc}")'
-        url_file=os.path.join(PROGRAM_DIR,f'{cat}_url.txt')
+        url_file=self._cfgp(f'{cat}_url.txt')
         existing=''
         if os.path.exists(url_file):
             existing=read_file(url_file) or ''
@@ -1142,7 +1159,7 @@ class App:
         chosen_kw = []
         kw_file = self.kv.get().strip()
         if kw_file:
-            kp = os.path.join(PROGRAM_DIR, kw_file)
+            kp = self._cfgp(kw_file)
             if os.path.exists(kp):
                 try:
                     c_kw = read_file(kp, errors='replace')
@@ -1301,7 +1318,7 @@ class App:
         # 确保有.txt后缀
         if not kw.endswith('.txt'):
             kw = kw + '.txt'
-        kp=os.path.join(PROGRAM_DIR,kw)
+        kp=self._cfgp(kw)
         if not os.path.exists(kp): Msg.info("提示","文件不存在"); return
         try:
             c_kw = read_file(kp, errors='replace')
@@ -1351,7 +1368,7 @@ class App:
             '分类.txt': 'cav'
         }
         for fn, key in config_files.items():
-            fp = os.path.join(PROGRAM_DIR, fn)
+            fp = self._cfgp(fn)
             vals = []
             if os.path.exists(fp):
                 try:
@@ -1367,7 +1384,7 @@ class App:
                 cb.set(vals[0])
 
         # 动态加载关键词文件内容到下拉框（去掉.txt后缀）
-        kw_fp = os.path.join(PROGRAM_DIR, '关键词.txt')
+        kw_fp = self._cfgp('关键词.txt')
         kw_vals = []
         if os.path.exists(kw_fp):
             try:
@@ -1432,7 +1449,7 @@ class App:
     def _get_date_str(self):
         return datetime.now().strftime('%Y年%m月%d日')
     def _get_domain_list(self):
-        fp = os.path.join(PROGRAM_DIR, 'domain.txt')
+        fp = self._cfgp('domain.txt')
         dl = []
         if os.path.exists(fp):
             dl = [l.strip() for l in (read_file(fp, errors='replace') or '').split('\n') if l.strip()]
@@ -1440,15 +1457,18 @@ class App:
         if dl and self.dv.get().strip() not in dl:
             self.dv.set(dl[0])
         return dl
+    def _cfgp(self, fn):
+        """config_file 目录下数据文件路径"""
+        return os.path.join(CONFIG_DIR, fn)
 
     def _pubbtn(self):
         self.published=False
         self.pb.config(bg='#FF8C00')
         c=self.t.get('1.0','end-1c').strip()
-        if c and is_markdown_text(c):
-            self._md2html()
         self._stxt()
-        self._pub()
+        if c and is_markdown_text(c):
+            self._md2html(strip_title=True)
+        self._pub(skip_stxt=True)
     def _pub(self, pub_date=None, skip_stxt=False, skip_orgf=False):
         """发布文章 - 先执行txt和整理功能"""
         c=self.t.get('1.0','end-1c').strip()
@@ -1506,7 +1526,9 @@ class App:
             ht=ht.replace('<h1>文章标题</h1>',f'<h1>{t}</h1><span class="article-date" style="font-size:14px">{pub_date}|作者:{self.av.get().strip()}|栏目:{cat}|分类:{self.cav.get().strip()}</span>')
             desc = get_first_words(c, 25, 30).replace('<p>&nbsp&nbsp','').replace('</p>','')
             ht=ht.replace('描述',desc)
-            iuf_cat=os.path.join(PROGRAM_DIR,f'{cat}_url.txt')
+            web_url = f'{dom.rstrip("/")}/{cat}/{hfn}' if dom else f'/{cat}/{hfn}'
+            ht = ht.replace('{网页URL}', web_url)
+            iuf_cat=self._cfgp(f'{cat}_url.txt')
             if os.path.exists(iuf_cat):
                 try:
                     cat_lines=[l.strip() for l in read_file(iuf_cat,errors='replace').split('\n') if l.strip() and l.strip().startswith('<a')]
@@ -1520,8 +1542,10 @@ class App:
                 kw_str = '，'.join(top_words)
                 ht=ht.replace('{关键词}',kw_str)
                 ht=ht.replace('关键词',kw_str)
+            # 去掉正文开头的第一个 <h1>，避免与模板自动插入的 <h1>{t}</h1> 重复
             if '<p>' in c:
                 formatted_article = c.strip().replace('{','').replace('}','')
+                formatted_article = re.sub(r'^<p>\s*&nbsp&*nbsp*\s*<h1>\s*[^<]*\s*</h1>\s*</p>\s*', '', formatted_article, flags=re.MULTILINE)
             else:
                 paragraphs = re.split(r'\n\s*\n', c)
                 formatted_article = '\n'.join([f'<p>&nbsp&nbsp{p.strip()}</p>' for p in paragraphs if p.strip()]).replace('{','').replace('}','')
@@ -1534,7 +1558,7 @@ class App:
             ht=re.sub(r'<!-- site_page_begin -->.*?<!-- site_page_end -->',
                       lambda m:f'<!-- site_page_begin -->\n{formatted_article}\n            <!-- site_page_end -->',
                       ht,flags=re.DOTALL)
-            uf5=os.path.join(PROGRAM_DIR,f'{cat}_url.txt')
+            uf5=self._cfgp(f'{cat}_url.txt')
             uls5=[]
             if os.path.exists(uf5):
                 c_urls5 = read_file(uf5, errors='replace')
@@ -1543,14 +1567,18 @@ class App:
             if uls5:
                 last_5_links = '\n'.join(l+'<br>' for l in uls5[:min(5,len(uls5))])
                 ht = ht.replace('<!-- site_page_end -->', last_5_links+'\n            <!-- site_page_end -->')
-            uf=os.path.join(PROGRAM_DIR,f'{cat}_url.txt')
+            uf=self._cfgp(f'{cat}_url.txt')
             uls=[]
             if os.path.exists(uf):
                 c_urls = read_file(uf, errors='replace')
                 if c_urls:
                     uls=[l.strip() for l in c_urls.split('\n') if l.strip()]
             if uls:
-                link_content = '\n'.join(l+'<br>' for l in uls[:min(8,len(uls))])
+                uls_out = uls[:min(8,len(uls))]
+                if self.li_checked.get():
+                    link_content = '\n'.join(f'<li>{l}</li>' for l in uls_out)
+                else:
+                    link_content = '\n'.join(l+'<br>' for l in uls_out)
             else:
                 link_content = ''
             if not link_content:
@@ -1558,8 +1586,8 @@ class App:
             else:
                 ht=re.sub(r'<!-- new_link_name_start-->.*?<!-- new_link_name_end-->',
                           lambda m:f'<!-- new_link_name_start-->\n{link_content}\n<!-- new_link_name_end-->', ht, flags=re.DOTALL)
-            ium=os.path.join(PROGRAM_DIR,f'{cat}_index_url.md')
-            ium_old=os.path.join(PROGRAM_DIR,f'{cat}-index_url.md')
+            ium=self._cfgp(f'{cat}_index_url.md')
+            ium_old=self._cfgp(f'{cat}-index_url.md')
             existing_md=read_file(ium) if os.path.exists(ium) else ''
             dup_title=False; dup_content=False
             if existing_md:
@@ -1590,11 +1618,11 @@ class App:
                     if hfn in line: return True
                 return False
             dup_files = []
-            if file_has_hfn(os.path.join(PROGRAM_DIR, f'{cat}_index_url.txt')):
+            if file_has_hfn(self._cfgp(f'{cat}_index_url.txt')):
                 dup_files.append(f'{cat}_index_url.txt')
-            if file_has_hfn(os.path.join(PROGRAM_DIR, f'{cat}_index_url.md')):
+            if file_has_hfn(self._cfgp(f'{cat}_index_url.md')):
                 dup_files.append(f'{cat}_index_url.md')
-            if file_has_hfn(os.path.join(PROGRAM_DIR, f'{cat}_url.txt')):
+            if file_has_hfn(self._cfgp(f'{cat}_url.txt')):
                 dup_files.append(f'{cat}_url.txt')
             if dup_files:
                 Msg.warn("文件名重复",f"文件名「{hfn}」已在以下文件中存在，跳过写入: {', '.join(dup_files)}")
@@ -1603,14 +1631,17 @@ class App:
             about_begin='<!-- about_link_list_begin -->'
             about_end='<!-- about_link_list_end -->'
             if about_begin in ht and about_end in ht:
-                cat_url_file=os.path.join(PROGRAM_DIR,f'{cat}_url.txt')
+                cat_url_file=self._cfgp(f'{cat}_url.txt')
                 about_links=[]
                 if os.path.exists(cat_url_file):
                     alines=[l.strip() for l in read_file(cat_url_file, errors='replace').split('\n') if l.strip() and l.strip().startswith('<a')]
                     if alines:
                         n=min(6,len(alines))
                         about_links=random.sample(alines,n) if len(alines)>n else alines
-                about_block=''.join(link+'<br>\n' for link in about_links)
+                if self.li_checked.get():
+                    about_block=''.join(f'<li>{link}</li>' for link in about_links)
+                else:
+                    about_block=''.join(link+'<br>\n' for link in about_links)
                 ht=re.sub(r'<!-- about_link_list_begin -->.*?<!-- about_link_list_end -->',
                           lambda m:about_begin+'\n'+about_block+about_end,
                           ht,flags=re.DOTALL)
@@ -1618,11 +1649,11 @@ class App:
             pu=f'{dom.rstrip("/")}/{cat}/{hfn}' if dom else f'/{cat}/{hfn}'
             title_text_clean = re.sub(r'<[^>]+>', '', title_text).strip()
             lh=f'<a href="{pu}" target="_blank" title="{title_text_clean}" style="color:#555860">{t}</a>'
-            ruf=os.path.join(PROGRAM_DIR,'url.txt')
+            ruf=self._cfgp('url.txt')
             er=read_file(ruf) or ''
             lines=[lh]+[l for l in er.split('\n') if l.strip() and l!=lh]
             write_file(ruf, '\n'.join(lines))
-            iuf=os.path.join(PROGRAM_DIR,f'{cat}_index_url.txt')
+            iuf=self._cfgp(f'{cat}_index_url.txt')
             ei=''
             if not os.path.exists(iuf):
                 write_file(iuf, pu)
@@ -1632,13 +1663,13 @@ class App:
                 if pu not in elines:
                     elines.insert(0, pu)
                 write_file(iuf, '\n'.join(elines))
-            udf=os.path.join(PROGRAM_DIR,f'{cat}_url.txt')
+            udf=self._cfgp(f'{cat}_url.txt')
             ed=read_file(udf) or ''
             ulines=[lh]+[l for l in ed.split('\n') if l.strip() and l!=lh]
             write_file(udf, '\n'.join(ulines))
             if os.path.exists(ium_old) and not os.path.exists(ium):
                 write_file(ium, read_file(ium_old))
-            ciu=os.path.join(PROGRAM_DIR,f'{cat}_index_url.txt')
+            ciu=self._cfgp(f'{cat}_index_url.txt')
             fun=''
             if os.path.exists(ciu):
                 c_ciu = read_file(ciu)
@@ -1670,7 +1701,7 @@ class App:
                 em = read_file(ium)
             ium_new=md_entry+'\n'+em
             write_file(ium, ium_new)
-            iuall=os.path.join(PROGRAM_DIR,'index_url_all.md')
+            iuall=self._cfgp('index_url_all.md')
             iall=read_file(iuall) if os.path.exists(iuall) else ''
             write_file(iuall, ium_new+'\n'+iall if iall else ium_new)
             self.published=True; self.pb.config(bg='#00FF00')
@@ -1722,10 +1753,10 @@ class App:
         hfn=rec.get('hfn',''); cat=rec.get('cat','')
         if hfn:
             for f in [f'/{cat}_index_url.txt',f'/{cat}_url.txt','/url.txt']:
-                rmline(os.path.join(PROGRAM_DIR,f.lstrip('/')),hfn)
+                rmline(self._cfgp(f.lstrip('/')),hfn)
         if hfn and cat:
-            rm_md_path(os.path.join(PROGRAM_DIR,f'{cat}_index_url.md'),hfn)
-            rm_md_path(os.path.join(PROGRAM_DIR,'index_url_all.md'),hfn)
+            rm_md_path(self._cfgp(f'{cat}_index_url.md'),hfn)
+            rm_md_path(self._cfgp('index_url_all.md'),hfn)
         os.remove(last)
         self.published=False; self.pb.config(bg='#FF0000')
         Msg.info("撤销发布",f"已撤销最近一次发布: {', '.join(removed) or rec.get('hfn','')}\n链接/索引文件中的对应条目已删除")
@@ -1742,8 +1773,8 @@ class App:
             ic=read_file(ih)
         else:
             ic=read_file(demo)
-        ium=os.path.join(PROGRAM_DIR,f'{cat}_index_url.md')
-        ium_old=os.path.join(PROGRAM_DIR,f'{cat}-index_url.md')
+        ium=self._cfgp(f'{cat}_index_url.md')
+        ium_old=self._cfgp(f'{cat}-index_url.md')
         if os.path.exists(ium_old) and not os.path.exists(ium):
             write_file(ium, read_file(ium_old))
         all_items=[]
@@ -1765,7 +1796,7 @@ class App:
         page_size=30; total=len(all_items); pages=(total+page_size-1)//page_size
         dom=self.dv.get().strip() or 'localhost'
         cat_safe=sfn(cat)
-        uf=os.path.join(PROGRAM_DIR,f'{cat}_url.txt')
+        uf=self._cfgp(f'{cat}_url.txt')
         side_links=''
         if os.path.exists(uf):
             try:
@@ -1773,7 +1804,11 @@ class App:
                 uls=[l.strip() for l in c_urls.split('\n') if l.strip() and l.strip().startswith('<a') and '</a>' in l.strip()]
                 if uls:
                     cnt=min(10,len(uls))
-                    side_links='\n'.join(l+'<br>' for l in random.sample(uls, cnt))
+                    sampled=random.sample(uls, cnt)
+                    if self.li_checked.get():
+                        side_links='\n'.join(f'<li>{l}</li>' for l in sampled)
+                    else:
+                        side_links='\n'.join(l+'<br>' for l in sampled)
             except: pass
         def fill_side(html):
             if not side_links: return html
@@ -1829,7 +1864,7 @@ class App:
         Msg.info("首页",f"已生成index.html+{pages-1}个分页文件（共{pages}页，{total}条内容）")
     def _program_home(self):
         """生成程序目录index.html及分页 - 基于index_url_all.md每30条分页"""
-        iuall=os.path.join(PROGRAM_DIR,'index_url_all.md')
+        iuall=self._cfgp('index_url_all.md')
         if not os.path.exists(iuall):
             Msg.error("程序首页","index_url_all.md 不存在"); return
         iuh=os.path.join(PROGRAM_DIR,'index.html')
@@ -1859,19 +1894,23 @@ class App:
         pages=(total+page_size-1)//page_size
         dom_raw=self.dv.get().strip()
         if not dom_raw:
-            dom_fp=os.path.join(PROGRAM_DIR,'domain.txt')
+            dom_fp=self._cfgp('domain.txt')
             if os.path.exists(dom_fp):
                 dl=[l.strip() for l in (read_file(dom_fp) or '').split('\n') if l.strip()]
                 dom_raw=dl[0] if dl else ''
         dom_safe=re.sub(r'^https?://','',dom_raw).split('/')[0].strip() if dom_raw else ''
         dom_safe=sfn(dom_safe) or 'localhost'
-        uf=os.path.join(PROGRAM_DIR,'url.txt')
+        uf=self._cfgp('url.txt')
         side_links=''
         if os.path.exists(uf):
             uls=[l.strip() for l in (read_file(uf,errors='replace') or '').split('\n')
                  if l.strip() and l.strip().startswith('<a') and '</a>' in l.strip()]
             if uls:
-                side_links='\n'.join(l+'<br>' for l in random.sample(uls, min(10,len(uls))))
+                sampled=random.sample(uls, min(10,len(uls)))
+                if self.li_checked.get():
+                    side_links='\n'.join(f'<li>{l}</li>' for l in sampled)
+                else:
+                    side_links='\n'.join(l+'<br>' for l in sampled)
         def fill(base, items_slice, nav_html):
             if not items_slice:
                 cards=''
@@ -1906,7 +1945,7 @@ class App:
                 except: pass
         Msg.info("程序首页",f"已生成index.html（最新{min(page_size,total)}条）"+(f"及{num_files}个分页文件" if num_files else "，未超30条不分页"))
     def gen_sitemap(self):
-        dom_fp=os.path.join(PROGRAM_DIR,'domain.txt')
+        dom_fp=self._cfgp('domain.txt')
         dom=''
         if os.path.exists(dom_fp):
             dl=[l.strip() for l in (read_file(dom_fp,errors='replace') or '').split('\n') if l.strip()]
@@ -1927,16 +1966,27 @@ class App:
             rel=h.replace('\\\\','/').lstrip('/')
             urls.add(f'{base}/{rel}' if base else f'/{rel}')
         urls=sorted(urls)
+        # 同步排除所有目录下的 index.html（sitemap.txt 与 sitemap.xml 共用）
+        urls=[u for u in urls if not u.rstrip('/').lower().endswith('/index.html')]
         if not urls:
-            Msg.info("sitemap","程序目录下未找到任何.html文件，sitemap.txt 已清空")
+            Msg.info("sitemap","程序目录下未找到任何.html文件（或全部为index.html），sitemap.txt 已清空")
             write_file(os.path.join(PROGRAM_DIR,'sitemap.txt'),'')
+            # sitemap.xml 同样无内容可写
+            write_file(os.path.join(PROGRAM_DIR,'sitemap.xml'),'')
             return
         lines=[]
         for u in urls:
             lines.append(u)
         out='\n'.join(lines)
         write_file(os.path.join(PROGRAM_DIR,'sitemap.txt'),out)
-        Msg.info("sitemap",f"已生成 sitemap.txt，共 {len(urls)} 条URL")
+        # 同时生成标准 sitemap.xml
+        xml_body='\n'.join(f'  <url>\n    <loc>{u}</loc>\n  </url>' for u in urls)
+        xml=('<?xml version="1.0" encoding="UTF-8"?>\n'
+             '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+             f'{xml_body}\n'
+             '</urlset>\n')
+        write_file(os.path.join(PROGRAM_DIR,'sitemap.xml'),xml)
+        Msg.info("sitemap",f"已生成 sitemap.txt 及 sitemap.xml，共 {len(urls)} 条URL（已排除index.html）")
     def _add_log(self, icon, msg, level='info'):
         ts=datetime.now().strftime('%H:%M:%S')
         entry=f'[{ts}] {icon} {msg}'

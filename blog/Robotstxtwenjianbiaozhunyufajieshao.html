@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <!-- 支持多编码解析，优先UTF-8 -->
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="Content-Language" content="zh-CN">
+   <!-- 链接在新标签跳转 -->
+    <base target="_blank">
+    <!-- 移动设备视口适配 -->
+ <!-- 移动端视口，必备 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=no">
+    <!-- SEO核心Meta关-键-词标签 -->
+    <meta name="keywords" content="Disallow，匹配，agent，User，爬虫">
+     <!-- SEO核心内容标签 -->
+    <meta name="description" content="Robotstxt文件标准语法介绍匹配 URL 结尾。最长匹配优先；Allow 和 Disallow 冲突时最具体规则（最长路...">
+    <!-- 作者/网站名称 -->
+    <meta name="author" content="靳好宝科技博客">
+    <!-- https://chleeken.github.io/blog/Robotstxtwenjianbiaozhunyufajieshao.html-->
+    <meta property="og:url" content="https://chleeken.github.io/blog/Robotstxtwenjianbiaozhunyufajieshao.html">   
+    <link rel="canonical" href="https://chleeken.github.io/blog/Robotstxtwenjianbiaozhunyufajieshao.html">  
+    <meta name="robots" content="index, follow">
+    <!-- 禁止移动端识别手机号/邮箱 -->
+    <meta name="format-detection" content="telephone=no, email=no">
+     <!-- 网页图标 favicon -->
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <!-- {浏览器显示标题-网站名称-网站描-述}--> 
+    <title>Robotstxt文件标准语法介绍-靳好宝博客-一个关注python编程，Web建站，网络营销，seo优化的科技博客</title>   
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- 头部导航 -->
+    <header>
+        <nav class="nav-links">
+            <a href="https://chleeken.github.io/" target="_self">首页</a>
+            <a href="https://chleeken.github.io/webes/about.html" target="_blank">关于</a>
+            <a href="https://chleeken.github.io/webes/product.html" target="_blank">服务</a>
+            <a href="https://chleeken.github.io/webes/contact.html" target="_blank">联系我们</a> 
+        </nav>
+    </header>
+
+    <!-- 左侧悬浮广告位 -->
+    <aside class="left-sidebar" id="leftAd">
+        <!-- 左侧广告位：由JavaScript动态加载 -->
+    </aside>
+
+    <!-- 主体内容 -->
+    <div class="container">
+        <main class="main-content">
+        <article>
+            <h1>Robots.txt文件标准语法介绍</h1><span class="article-date" style="font-size:14px">2026年10月11日|作者:靳好宝|栏目:blog|分类:互联网络</span>
+            <!-- 以下为文章正文编辑区 -->
+            <!-- site_page_begin -->
+<p>  Robots.txt文件标准语法介绍
+匹配 URL 结尾。最长匹配优先；Allow 和 Disallow 冲突时最具体规则（最长路径）胜出；相同长度 Allow 优先。Google 说最具体规则，若同等具体则 allow 优先？RFC 9309: 最匹配的路径长度，如果 allow/disallow 相同长度，allow 优先？让我回忆。RFC 9309 §2.2.2: most specific match; if same length, allow 优先。Google: 如果规则长度相同，则使用限制较少的规则（Allow）？实际上 Google 文档：在冲突规则中，最具体的规则（最长路径）优先。如果规则长度相同，则使用较不严格的规则。Allow 通常较不严格。所以可以说 Allow 优先。但有些爬虫可能不同。</p>
+
+<p>  需要介绍文件位置：https://chleeken.github.io/robots.txt，只能放在网站根目录，子目录中的 robots.txt 无效。必须可公开访问，HTTP 200，text/plain。对于子域名：每个子域名独立。协议/端口？爬虫通常只检查同协议同主机同端口？robots.txt URL：scheme://host:port/robots.txt。如果网站有多个协议/端口，分别。</p>
+
+<p>  大小写：robots.txt 文件名通常小写，但 URL 路径通常区分大小写，最好小写。指令字段名不区分大小写？User-agent 值：例如 User-agent: Googlebot。特殊值 * 表示所有其他爬虫。多个 User-agent 可共享规则。</p>
+
+<p>  指令：</p>
+
+<p>  User-agent: 指定爬虫，必须。一个组内可多个 User-agent。</p>
+
+<p>  Disallow: 禁止访问的路径。空 Disallow 表示允许所有。Disallow: / 禁止整个站点。</p>
+
+<p>  Allow: 允许访问的路径。用于覆盖 Disallow。非标准但广泛支持。Google 支持。</p>
+
+<p>  Sitemap: 绝对 URL，指向 sitemap。非组内指令，不受 User-agent 影响。可多个。</p>
+
+<p>  Crawl-delay: 请求间隔秒数。非标准，Yandex/Bing? Google 不支持。可提及。</p>
+
+<p>  Host: 非标准，Yandex 用于指定主域名。</p>
+
+<p>  其他：Clean-param, Noindex? 不支持 noindex。noindex 需 meta 或 HTTP 头。robots.txt 不阻止索引？如果 Disallow 阻止抓取，URL 可能仍被索引（无摘要）。要防止索引用 noindex，但若被 disallow 爬虫看不到 noindex。需要小心。</p>
+
+<p>  匹配规则：</p>
+
+<p>  路径以 / 开头。规则相对于根。</p>
+
+<p>  通配符匹配任意字符序列。</p>
+
+<p>  $ 匹配 URL 结尾。</p>
+
+<p>  路径匹配是前缀匹配？没有通配符时，Disallow: /private 会匹配 /private, /private/, /private.html? 实际上前缀匹配：/private 匹配以 /private 开头的路径。是的。规则 /fish 匹配 /fish, /fish.html, /fish/salmon.html。因此如果要精确目录，用 /private/ 或 $。</p>
+
+<p>  URL 编码：非 ASCII 需编码？robots.txt 中路径使用 UTF-8？RFC 9309 说路径按 URL 编码？匹配时百分号编码可能。最好说明。</p>
+
+<p>  组规则：</p>
+
+<p>  一个 User-agent 行开始一个组，后续 Allow/Disallow 直到下一个 User-agent。多个 User-agent 可连续。</p>
+
+<p>  空行分隔组？通常空行不结束组？RFC：组由 user-agent 行和规则行组成，空行可忽略？实际解析：空行可能分隔记录，但通常下一个 User-agent 开始新组。注释行忽略。</p>
+
+<p>  文件可包含多个组。爬虫选择最匹配自己的 User-agent 组。若没有，使用 * 组。选择最具体的 user-agent 匹配：例如 Googlebot-News 匹配 Googlebot? 用户代理匹配是子串？Google 说 user-agent 匹配不区分大小写，基于产品令牌。爬虫选择最具体的匹配。如果多个组匹配，可能合并？Google 仅遵循最具体组的规则，不会合并？需要准确。RFC 9309: 爬虫必须选择最匹配的 user-agent 组；如果多个组匹配，应使用最具体的。如果无匹配，使用 <em>。如果多个相同具体？合并？最好简单：选择与自身名称最匹配的组，否则 </em>。</p>
+
+<p>  示例：</p>
+
+<p>  text
+User-agent: *
+Disallow: /admin/
+Allow: /admin/public/
+Disallow: /*.pdf$
+Sitemap: https://chleeken.github.io/sitemap.xml
+注意 Sitemap 不是组规则。</p>
+
+<p>  可能提及通配符示例：</p>
+
+<p>  Disallow: /*.php$ 禁止所有 .php 结尾。</p>
+
+<p>  Disallow: /private* 禁止 /private 开头。</p>
+
+<p>  Allow: /private/public/ 覆盖。</p>
+
+<p>  常见问题：</p>
+
+<p>  robots.txt 不是安全措施，敏感内容用认证/权限。</p>
+
+<p>  不阻止页面被索引，只阻止抓取。要移除索引用 noindex 或删除。</p>
+
+<p>  不适用于所有爬虫，恶意爬虫可能忽略。</p>
+
+<p>  不要用 Disallow 阻止 CSS/JS，会影响 Google 渲染。</p>
+
+<p>  爬虫可能缓存 robots.txt，更新不一定立即生效。</p>
+
+<p>  文件大小限制：Google 最大 500 KiB？RFC 建议至少 500 KiB。Disallow可以提 Google 限制 500KB。</p>
+
+<p>  若 robots.txt 返回 4xx，爬虫通常视为允许所有；5xx 可能暂时停止抓取？Google：4xx 视为无限制，5xx 视为暂时错误，停止抓取？可以简略。</p>
+
+<p>  重定向：Google 跟随最多 5 跳？不同爬虫不同。最好不深入。</p>
+
+<p>  需要以中文回答。可以标题、分节。用户请求“Robots.txt文件语法介绍”，可能期望教程。应该直接介绍。要控制长度，但足够全面。Desired oververbosity 5。我们可以写约 800-1200 中文字。可以加示例。不要问问题。最终只回答。</p>
+
+<p>  需要确保准确性。我们一步步构建。</p>
+
+<p>  结构：</p>
+
+<p>  简介：robots.txt 是放在网站根目录的纯文本文件，用于告诉爬虫哪些可抓取。协议 RFC 9309。URL: https://chleeken.github.io/robots.txt。</p>
+
+<p>  基本语法规则：</p>
+
+<p>  每行一条指令，格式 字段: 值</p>
+<h1>注释</h1>
+
+<p>  字段名不区分大小写，路径值区分大小写</p>
+
+<p>  空行分隔组，但通常下一个 User-agent 开始新组</p>
+
+<p>  必须根目录、可公开访问、UTF-8 纯文本</p>
+
+<p>  常用指令：</p>
+
+<p>  User-agent</p>
+
+<p>  Disallow</p>
+
+<p>  Allow</p>
+
+<p>  Sitemap</p>
+
+<p>  Crawl-delay（非标准）</p>
+
+<p>  Host（非标准）</p>
+
+<p>  匹配规则与优先级：</p>
+<ul>
+<li>通配符，$ 结尾</li>
+</ul>
+
+<p>  路径前缀匹配</p>
+
+<p>  最长匹配优先；相同长度 Allow 优先（广泛实现）</p>
+
+<p>  选择最匹配的 User-agent 组，否则 *</p>
+
+<p>  示例</p>
+
+<p>  注意事项/常见误区。</p>
+
+<p>  需要提及通配符支持：Google、Bing、Yandex 支持 * 和 $；并非所有爬虫都支持。Allow 也非原始标准但广泛支持。RFC 9309 包括 Allow? RFC 9309 定义了 allow/disallow? 是的 RFC 9309 包括 allow 和 disallow。Crawl-delay 不是 RFC 标准。Sitemap 也不是 RFC 9309? Sitemap 是扩展。可以。</p>
+
+<p>  关于组：多个 User-agent：</p>
+
+<p>  text
+User-agent: Googlebot
+User-agent: Bingbot
+Disallow: /private/
+表示两个爬虫都适用。</p>
+
+<p>  关于 User-agent: * 和特定组：如果爬虫匹配特定组，则忽略 * 组。例如：</p>
+
+<p>  text
+User-agent: *
+Disallow: /
+User-agent: Googlebot
+Disallow:
+Googlebot 允许所有。这个示例好。</p>
+
+<p>  关于 Disallow: 空值：允许所有。在特定组中 Disallow: 表示不禁止任何路径。如果 Allow: 空值？无意义？可以忽略。</p>
+
+<p>  关于 Sitemap：可放在任意位置，不属于某个 User-agent 组，必须是绝对 URL，可多个。示例：</p>
+
+<p>  text
+Sitemap: https://chleeken.github.io/sitemap.xml
+关于 Crawl-delay：Crawl-delay: 10 表示两次请求间隔至少 10 秒。Google 不支持，使用 Search Console 设置。Bing 可能支持。非标准。</p>
+
+<p>  关于 Host：Yandex 用于指定主域名，非标准。</p>
+
+<p>  常见误区：</p>
+
+<p>  robots.txt 不能保护隐私，恶意爬虫忽略。</p>
+
+<p>  Disallow 不保证不被索引：如果其他页面链接，URL 可能出现在搜索结果，但无摘要。要 noindex，但 noindex 需要允许抓取。</p>
+
+<p>  不要阻止 CSS/JS 以免影响渲染。</p>
+
+<p>  更新后爬虫可能缓存，不一定立即。</p>
+
+<p>  文件位置必须在根目录，子目录 robots.txt 无效。</p>
+
+<p>  大小写：文件名通常小写，路径区分大小写。</p>
+
+<p>  返回状态码影响：200 正常；4xx 视为允许所有；5xx 可能暂时停止。可以提。</p>
+
+<p>  需要最终以 Markdown 格式。可以加代码块。确保示例正确。</p>
+
+<p>  让我们考虑是否有任何微妙：Disallow: /admin 会匹配 /admin, /admin/, /administrator 因为前缀。所以建议 Disallow: /admin/ 和 Disallow: /admin$？User，实际上 /admin/ 匹配目录，但不匹配 /admin 本身。通常用 Disallow: /admin/。如果想禁止 /admin 和子路径，用 Disallow: /admin 会匹配 /administrator，可能过度。可以用 Disallow: /admin/ 和 Disallow: /admin$ 两条。或者 Disallow: /admin 简单但可能误伤。可以示例。</p>
+
+<p>  通配符：</p>
+
+<p>  Disallow: /*.pdf$ 禁止所有 .pdf 结尾。</p>
+
+<p>  Disallow: /search* 禁止 /search 开头。</p>
+
+<p>  Allow: /search/about 覆盖。</p>
+
+<p>  匹配规则中，<em> 可以匹配任意字符包括 /。$ 表示结束。URL 查询字符串也参与匹配？Google 说路径和查询字符串？robots.txt 规则匹配 URL 的路径和查询字符串？实际上 Google 匹配 URL 的路径和查询参数？规则可包含 ?。例如 Disallow: /</em>? 禁止带查询参数。可以提一句。agent，</p>
+
+<p>  关于大小写：字段名不区分大小写，但路径区分。User-agent 值不区分大小写？Google 说 user-agent 匹配不区分大小写。可以写“字段名和 User-agent 值通常不区分大小写，路径和文件名区分大小写”。</p>
+
+<p>  关于文件编码：UTF-8，非 ASCII 路径需 URL 编码？RFC 9309 说爬虫必须支持 UTF-8，路径按 UTF-8 字节匹配？可以简略“建议 UTF-8”。</p>
+
+<p>  关于文件大小：Google 最多 500 KiB，RFC 建议至少 500 KiB。可以提“Google 限制 500 KiB，超出部分忽略”。</p>
+
+<p>  关于状态码：可以提“如果 robots.txt 不存在（404），爬虫通常认为允许抓取全部；如果 5xx，部分爬虫会暂停抓取”。</p>
+
+<p>  关于协议：RFC 9309 是 2022 年？可以提“现行标准 RFC 9309”。</p>
+
+<p>  现在构建回答。需要中文。可以标题“Robots.txt 文件语法介绍”。然后分节。</p>
+
+<p>  可能最终：</p>
+
+<p>  text
+robots.txt 是放在网站根目录的纯文本文件，用于告诉爬虫哪些 URL 可以抓取。地址必须是：
+https://chleeken.github.io/robots.txt
+子目录中的无效。
+基本格式：</p>
+
+<p>  text</p>
+<h1>注释</h1>
+
+<p>  User-agent: *
+Disallow: /private/
+Allow: /private/public/
+Sitemap: https://chleeken.github.io/sitemap.xml
+指令说明表格：
+| 指令 | 作用 | 示例 |
+User-agent, Disallow, Allow, Sitemap, Crawl-delay, Host.</p>
+
+<p>  匹配规则：</p>
+<ul>
+<li>任意字符，$ 结尾</li>
+</ul>
+
+<p>  无通配符时前缀匹配</p>
+
+<p>  最长匹配优先；相同长度 Allow 优先</p>
+
+<p>  选择最具体 User-agent 组，否则 *</p>
+
+<p>  路径区分大小写，字段名不区分</p>
+
+<p>  示例：</p>
+
+<p>  text
+User-agent: *
+Disallow: /admin/
+Disallow: /tmp/
+Allow: /admin/public/
+Disallow: /<em>.pdf$
+Disallow: /</em>?*   # 禁止带查询参数？ 这可能太严格
+Sitemap: https://chleeken.github.io/sitemap.xml</p>
+
+<p>  User-agent: Googlebot
+Disallow: /no-google/
+注意：Disallow: /<em>?</em> 中 * 匹配任意，? 是字面量？在 robots.txt 中 ? 是普通字符，匹配查询字符串开始。/<em>?</em> 匹配任何包含 ? 的 URL。可以。</p>
+
+<p>  注意事项：</p>
+
+<p>  不是安全机制</p>
+
+<p>  不保证不被索引</p>
+
+<p>  不阻止 CSS/JS</p>
+
+<p>  更新缓存</p>
+
+<p>  状态码</p>
+
+<p>  文件大小</p>
+
+<p>  最后总结。</p>
+
+<p>  需要确保“Allow 优先”准确。根据 Google：如果规则冲突，最具体的规则（最长路径）优先。如果规则长度相同，则使用较不严格的规则（Allow）。但 RFC 9309 说如果 allow 和 disallow 相同长度，allow 优先。可以写“通常实现（Google 等）中，相同长度时 Allow 优先；但不同爬虫可能有差异。”</p>
+
+<p>  关于 User-agent 组选择：如果爬虫有特定组，是否还会合并 * 组？Google 说不合并，只使用最具体组。例如：</p>
+
+<p>  text
+User-agent: *
+Disallow: /
+User-agent: Googlebot
+Allow: /
+Googlebot 会忽略 * 组，允许所有。这个示例可以在注意事项或组规则中说明。</p>
+
+<p>  需要提及 Sitemap 可以放在任何位置，但最好在文件末尾。它不遵循 User-agent。Sitemap 指令不是组的一部分。</p>
+
+<p>  关于 Crawl-delay：Google 不支持，Bing 支持？Bing 可能支持。可以写“部分爬虫支持，Google 不支持”。</p>
+
+<p>  关于 Host：Yandex 支持。非标准。</p>
+
+<p>  关于文件位置：必须是根目录。例如 https://chleeken.github.io/robots.txt。如果网站是 https://www.example.com，放在 www 根。子域名独立。</p>
+
+<p>  关于协议/端口：https://example.com:8080/robots.txt。可以略。</p>
+
+<p>  关于大小写：文件名通常小写，URL 路径区分大小写，所以 /Robots.txt 可能不被识别。指令名不区分大小写。</p>
+
+<p>  关于注释：# 之后内容忽略，可整行或行尾。但值中的 #？通常注释从 # 开始，除非在值中？可以简单。</p>
+
+<p>  关于空行：空行可分隔记录，但解析器通常忽略。新 User-agent 开始新组。</p>
+
+<p>  关于通配符支持：* 和 $ 被 Google、Bing、Yandex 支持，但旧爬虫可能不支持。Allow 也非所有支持。可以提。</p>
+
+<p>  关于 URL 编码：如果路径包含非 ASCII，建议使用 URL 编码。例如 /café/ 写 /caf%C3%A9/？实际上 Google 支持 UTF-8，但建议编码。可以略。</p>
+
+<p>  关于状态码：404 允许全部；5xx 暂停。可以提。</p>
+
+<p>  关于 Disallow 空值：Disallow: 允许所有。Disallow: / 禁止所有。Allow: / 允许所有？可以。</p>
+
+<p>  需要最终回答不要过长。Desired oververbosity 5。约 1000 字。可以。</p>
+
+<p>  让我们撰写最终。确保 Markdown 可读。</p>
+
+<p>  Robots.txt 文件语法介绍
+robots.txt 是放在网站根目录下的纯文本文件，用于告诉搜索引擎爬虫哪些 URL 可以抓取、哪些不可以。标准地址必须是：</p>
+
+<p>  text
+https://chleeken.github.io/robots.txt
+子目录中的 robots.txt 无效，例如 /blog/robots.txt 不会被识别。每个子域名也需要单独设置。</p>
+
+<p>  基本语法
+每行一条指令，格式为：</p>
+
+<p>  text
+字段: 值</p>
+<h1>表示注释，可整行或写在行尾。</h1>
+
+<p>  字段名通常不区分大小写，但路径值区分大小写。</p>
+
+<p>  空行可分隔记录，但通常以下一个 User-agent 开始新组。</p>
+
+<p>  建议使用 UTF-8 编码。</p>
+
+<p>  文件需可公开访问，返回 HTTP 200。</p>
+
+<p>  常用指令
+指令  作用  示例
+User-agent  指定规则适用的爬虫   User-agent: *
+Disallow    禁止抓取的路径 Disallow: /admin/
+Allow   允许抓取的路径，用于覆盖 Disallow   Allow: /admin/public/
+Sitemap 指定 Sitemap 地址，必须是绝对 URL Sitemap: https://chleeken.github.io/sitemap.xml
+Crawl-delay 请求间隔秒数，非标准，Google 不支持   Crawl-delay: 10
+Host    指定主域名，非标准，Yandex 支持 Host: example.com
+User-agent: * 表示所有未单独指定的爬虫。可以为一个爬虫或多个爬虫设置同一组规则：</p>
+
+<p>  text
+User-agent: Googlebot
+User-agent: Bingbot
+Disallow: /private/
+如果爬虫匹配了特定组，通常会忽略 * 组。例如：</p>
+
+<p>  text
+User-agent: *
+Disallow: /</p>
+
+<p>  User-agent: Googlebot
+Allow: /
+这表示除 Googlebot 外，其他爬虫禁止抓取全站；Googlebot 允许抓取全站。</p>
+
+<p>  路径匹配规则
+路径以 / 开头，相对于网站根目录。</p>
+
+<p>  不加通配符时，按前缀匹配。
+Disallow: /private 会匹配 /private、/private/、/private.html、/private123。</p>
+<ul>
+<li>匹配任意字符序列。
+Disallow: /*.pdf$ 禁止所有以 .pdf 结尾的 URL。</li>
+</ul>
+
+<p>  $ 匹配 URL 结尾。
+Disallow: /index.html$ 只禁止 /index.html，不禁止 /index.html?page=2。</p>
+
+<p>  冲突时，通常最长匹配优先；如果 Allow 和 Disallow 长度相同，广泛实现中 Allow 优先。</p>
+
+<p>  规则也常匹配查询字符串，例如 Disallow: /<em>?</em> 可禁止带查询参数的 URL。</p>
+
+<p>  示例
+text</p>
+<h1>所有爬虫</h1>
+
+<p>  User-agent: *
+Disallow: /admin/
+Disallow: /tmp/
+Allow: /admin/public/
+Disallow: /<em>.pdf$
+Disallow: /</em>?*</p>
+<h1>单独控制 Googlebot</h1>
+
+<p>  User-agent: Googlebot
+Disallow: /no-google/</p>
+
+<p>  Sitemap: https://chleeken.github.io/sitemap.xml
+其中：</p>
+
+<p>  /admin/ 禁止抓取，但 /admin/public/ 允许。</p>
+
+<p>  所有 .pdf 结尾文件禁止抓取。</p>
+
+<p>  带查询参数的 URL 禁止抓取。</p>
+
+<p>  Googlebot 额外禁止 /no-google/。</p>
+
+<p>  Sitemap 不属于某个 User-agent 组，可放在任意位置。</p>
+
+<p>  注意事项与常见误区
+robots.txt 不是安全机制
+它只是爬虫协议，恶意爬虫、采集程序可以完全忽略。敏感内容应使用登录、权限控制。</p>
+
+<p>  Disallow 不保证页面不被索引
+如果其他网站链接了该 URL，它仍可能出现在搜索结果中，只是没有摘要。要阻止索引，应使用 noindex，但 noindex 需要页面能被抓取。</p>
+
+<p>  不要阻止 CSS、JS
+搜索引擎需要抓取 CSS/JS 来渲染页面。阻止它们可能影响收录和排名。</p>
+
+<p>  文件位置必须正确
+只能是域名根目录下的 /robots.txt，子目录无效。</p>
+
+<p>  状态码有影响
+返回 404 通常被视为“允许抓取全部”；返回 5xx 时，部分爬虫会暂停抓取。</p>
+
+<p>  更新不一定立即生效
+爬虫会缓存 robots.txt，修改后可能需要一段时间才生效。</p>
+
+<p>  大小限制
+Google 等爬虫通常只处理前 500 KiB 内容，建议保持文件简洁。</p>
+
+<p>  简单说：robots.txt 用于爬虫抓取管理，核心是 User-agent、Disallow、Allow、Sitemap，配合 * 和 $ 做路径匹配，但不能当作安全或强制索引控制手段。</p>
+Disallow,匹配,agent,User,爬虫<br>
+Disallow,匹配,agent,User,爬虫<br>
+            <a href="https://chleeken.github.io/blog/GitHubPagesdecunchukongjiandaxiao.html" target="_blank" title="GitHub Pages的存储空间大小GitHub Pages 的存储空间有明确的大小限制，主要分为源仓库和发布..." style="color:#555860">GitHubPages的存储空间大小</a><br>
+<a href="https://chleeken.github.io/blog/wangzhanshengchengsitemapxmlwenjianbiaozhungeshi.html" target="_blank" title="网站生成sitemapxml文件标准格式 ) urlset：普通网址列表) sitemapindex：多个 sitemap 的索引然后基本格式：xmlhttpswwwexamplecomdaily字段：loc 必..." style="color:#555860">网站生成sitemap.xml文件标准格式</a><br>
+<a href="https://chleeken.github.io/blog/weishenmenidedulizhanliuliangbushaoxunpanquehenshao.html" target="_blank" title="为什么你的独立站流量不少，询盘却很少？页面很多外贸工厂的独立站，后..." style="color:#555860">#为什么你的独立站流量不少，询盘却很少？</a><br>
+<a href="https://chleeken.github.io/blog/gugeSEOpanduannidewaimaodulizhanyoumeiyoupaimingqianli.html" target="_blank" title="谷歌SEO，判断你的外贸独立站有没有排名潜力做外贸独立站，不少人会踩一..." style="color:#555860">谷歌SEO，判断你的外贸独立站有没有排名潜力</a><br>
+<a href="https://chleeken.github.io/blog/weishenmenidewangzhansoubudaoyifencongyumingdaofuwuqideGEOSEOpaichashouce.html" target="_blank" title="为什么你的网站搜不到？一份从域名到服务器的GEOSEO排查手册做了网站，投了..." style="color:#555860">为什么你的网站搜不到？一份从域名到服务器的GEO+SEO排查手册</a><br>
+            <!-- site_page_end -->
+            </article>
+        </main>
+    </div>
+
+    <!-- 右侧悬浮侧边栏 -->
+    <aside class="right-sidebar">
+        <!-- 右上广告位 -->
+        <div class="ad-placeholder" id="topRightAd">
+            <!-- 右上广告位：由JavaScript动态加载 -->
+        </div>
+
+        <!-- 右下链接侧边栏（纯CSS定义） -->
+        <div class="link-sidebar">
+        <!-- new_link_name_start-->
+<li><a href="https://chleeken.github.io/blog/GitHubPagesdecunchukongjiandaxiao.html" target="_blank" title="GitHub Pages的存储空间大小GitHub Pages 的存储空间有明确的大小限制，主要分为源仓库和发布..." style="color:#555860">GitHubPages的存储空间大小</a></li>
+<li><a href="https://chleeken.github.io/blog/wangzhanshengchengsitemapxmlwenjianbiaozhungeshi.html" target="_blank" title="网站生成sitemapxml文件标准格式 ) urlset：普通网址列表) sitemapindex：多个 sitemap 的索引然后基本格式：xmlhttpswwwexamplecomdaily字段：loc 必..." style="color:#555860">网站生成sitemap.xml文件标准格式</a></li>
+<li><a href="https://chleeken.github.io/blog/weishenmenidedulizhanliuliangbushaoxunpanquehenshao.html" target="_blank" title="为什么你的独立站流量不少，询盘却很少？页面很多外贸工厂的独立站，后..." style="color:#555860">#为什么你的独立站流量不少，询盘却很少？</a></li>
+<li><a href="https://chleeken.github.io/blog/gugeSEOpanduannidewaimaodulizhanyoumeiyoupaimingqianli.html" target="_blank" title="谷歌SEO，判断你的外贸独立站有没有排名潜力做外贸独立站，不少人会踩一..." style="color:#555860">谷歌SEO，判断你的外贸独立站有没有排名潜力</a></li>
+<li><a href="https://chleeken.github.io/blog/weishenmenidewangzhansoubudaoyifencongyumingdaofuwuqideGEOSEOpaichashouce.html" target="_blank" title="为什么你的网站搜不到？一份从域名到服务器的GEOSEO排查手册做了网站，投了..." style="color:#555860">为什么你的网站搜不到？一份从域名到服务器的GEO+SEO排查手册</a></li>
+<li><a href="https://chleeken.github.io/blog/wangzhanzhuabujinlaibushouludiyupaimingpiaobaGEOSEOdedicenggongchengyicizuodui.html" target="_blank" title="网站抓不进来、不收录、地域排名飘？把 GEOSEO 的底层工程一次做对做技术博客写..." style="color:#555860">#网站抓不进来、不收录、地域排名飘？把GEO+SEO的底层工程一次做对</a></li>
+<li><a href="https://chleeken.github.io/blog/chaijieGEOdicengluojiweishenmenideneirongmeiyoubeiAItuijian.html" target="_blank" title="拆解 GEO 底层逻辑：为什么你的内容没有被 AI 推荐先问一个问题：你上一次在 AI 助..." style="color:#555860">拆解GEO底层逻辑：为什么你的内容没有被AI推荐</a></li>
+<li><a href="https://chleeken.github.io/blog/dulizhanyouliuliangmeixunpanchaijieyitaokefuxiandexunpanzhuanhualujing.html" target="_blank" title="独立站有流量没询盘？拆解一套可复现的询盘转化路径一个反复出现的..." style="color:#555860">#独立站有流量没询盘？拆解一套可复现的询盘转化路径</a></li>
+<!-- new_link_name_end-->
+        </div>
+    </aside>
+    <nav class="pagination" aria-label="分页导航" style="color:#4B0082;text-align:center">
+     下一页 <span><a href="https://chleeken.github.io/blog/GitHubPagesdecunchukongjiandaxiao.html" target="_blank" title="GitHub Pages的存储空间大小GitHub Pages 的存储空间有明确的大小限制，主要分为源仓库和发布..." style="color:#555860">GitHubPages的存储空间大小</a></span>   
+</nav>  
+    <!-- 底部版权信息 -->
+    <footer class="site-footer">
+<p> <h4>©2025 靳好宝博客 -- Powered by <a href="https://chleeken.github.io/">Jblog</a>|theme by <a href="https://chleeken.github.io/theme/index.html">Jbtheme</a> Analytics</h4></p>
+    </footer>
+	<script src="js/Analytics.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

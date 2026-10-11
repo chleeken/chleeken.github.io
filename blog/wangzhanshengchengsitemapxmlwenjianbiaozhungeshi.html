@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <!-- 支持多编码解析，优先UTF-8 -->
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="Content-Language" content="zh-CN">
+   <!-- 链接在新标签跳转 -->
+    <base target="_blank">
+    <!-- 移动设备视口适配 -->
+ <!-- 移动端视口，必备 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=no">
+    <!-- SEO核心Meta关-键-词标签 -->
+    <meta name="keywords" content="sitemap，xml，https，格式，www">
+     <!-- SEO核心内容标签 -->
+    <meta name="description" content="网站生成sitemapxml文件标准格式 ) urlset：普通网址列表) sitemapindex：多个 sitemap 的索引然后基本格式：xmlhttpswwwexamplecomdaily字段：loc 必...">
+    <!-- 作者/网站名称 -->
+    <meta name="author" content="靳好宝科技博客">
+    <!-- https://chleeken.github.io/blog/wangzhanshengchengsitemapxmlwenjianbiaozhungeshi.html-->
+    <meta property="og:url" content="https://chleeken.github.io/blog/wangzhanshengchengsitemapxmlwenjianbiaozhungeshi.html">   
+    <link rel="canonical" href="https://chleeken.github.io/blog/wangzhanshengchengsitemapxmlwenjianbiaozhungeshi.html">  
+    <meta name="robots" content="index, follow">
+    <!-- 禁止移动端识别手机号/邮箱 -->
+    <meta name="format-detection" content="telephone=no, email=no">
+     <!-- 网页图标 favicon -->
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <!-- {浏览器显示标题-网站名称-网站描-述}--> 
+    <title>网站生成sitemapxml文件标准格式-靳好宝博客-一个关注python编程，Web建站，网络营销，seo优化的科技博客</title>   
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- 头部导航 -->
+    <header>
+        <nav class="nav-links">
+            <a href="https://chleeken.github.io/" target="_self">首页</a>
+            <a href="https://chleeken.github.io/webes/about.html" target="_blank">关于</a>
+            <a href="https://chleeken.github.io/webes/product.html" target="_blank">服务</a>
+            <a href="https://chleeken.github.io/webes/contact.html" target="_blank">联系我们</a> 
+        </nav>
+    </header>
+
+    <!-- 左侧悬浮广告位 -->
+    <aside class="left-sidebar" id="leftAd">
+        <!-- 左侧广告位：由JavaScript动态加载 -->
+    </aside>
+
+    <!-- 主体内容 -->
+    <div class="container">
+        <main class="main-content">
+        <article>
+            <h1>网站生成sitemap.xml文件标准格式</h1><span class="article-date" style="font-size:14px">2026年10月11日|作者:靳好宝|栏目:blog|分类:互联网络</span>
+            <!-- 以下为文章正文编辑区 -->
+            <!-- site_page_begin -->
+<p>  网站生成sitemap.xml文件标准格式 
+1) urlset：普通网址列表
+2) sitemapindex：多个 sitemap 的索引
+然后基本格式：</p>
+
+<p>  xml</p>
+<?xml version="1.0" encoding="UTF-8"?>
+
+<p>  <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<url>
+<loc>https://www.example.com/</loc>
+<lastmod>2026-09-25</lastmod>
+<changefreq>daily</changefreq>
+<priority>1.0</priority>
+</url>
+</urlset>
+字段：</p>
+
+<p>  loc 必填，绝对 URL，长度 &lt; 2048，转义 &amp; 为 &amp;</p>
+
+<p>  lastmod 可选，W3C Datetime，YYYY-MM-DD 或 YYYY-MM-DDThh:mm:ss+时区</p>
+
+<p>  changefreq 可选，always/hourly/daily/weekly/monthly/yearly/never</p>
+
+<p>  priority 可选，0.0-1.0，默认 0.5，仅提示</p>
+
+<p>  索引格式：</p>
+
+<p>  xml</p>
+<?wwwxml version="1.0" encoding="UTF-8"?>
+
+<p>  <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<sitemap>
+<loc>https://www.example.com/sitemap1.xml</loc>
+<lastmod>2026-09-25</lastmod>
+</sitemap>
+<sitemap>
+<loc>https://www.example.com/sitemap2.xml</loc>
+<lastmod>2026-09-25</lastmod>
+</sitemap>
+</sitemapindex>
+约束：</p>
+
+<p>  UTF-8</p>
+
+<p>  单个 sitemap 最多 50,000 URL，未压缩 &lt;= 50MB</p>
+
+<p>  可 gzip 成 .xml.gz</p>
+
+<p>  放在网站根目录或 robots.txt 声明：Sitemap: https://www.example.com/sitemap.xml</p>
+
+<p>  索引文件最多 50,000 个 sitemap，未压缩 &lt;= 50MB</p>
+
+<p>  所有 URL 必须同域。Sitemap 中的 URL 通常必须与 sitemap 所在主机相同？协议：sitemap 中列出的 URL 必须与 sitemap 位于同一主机。但可以包含子域？实际上 cross-host 提交需要验证？在 sitemap 中，所有 URL 必须与 sitemap 位于同一网站（same host）。Google 说 sitemap 中所有 URL 必须来自同一网站。最好说“通常要求同域，具体以搜索引擎为准”。可以不提，避免错误。</p>
+
+<p>  标签顺序：loc, lastmod, changefreq, priority。</p>
+
+<p>  不要包含被 robots.txt 禁止的 URL？可以包含但可能不被抓取。</p>
+
+<p>  最后可以给一个“最小格式”和“完整格式”。这应该够了。</p>
+
+<p>  需要确保没有违反任何。最终回答要直接。</p>
+
+<p>  另外，可能用户问“sitemap.xml文件标准格式”可能期待 XML 格式，不解释太多。可以开头给最小示例。</p>
+
+<p>  我们可以在回答中包含“官方协议：sitemaps.org”。引用命名空间。</p>
+
+<p>  需要提“如果使用图片/视频/新闻，需要扩展命名空间”，但非标准基础。可以一句带过。https，</p>
+
+<p>  注意日期示例：当前日期 2026-09-25。格式，可以用 2026-09-25。没问题。</p>
+
+<p>  可以提 changefreq 和 priority 已被搜索引擎弱化/忽略，但仍是标准字段。Google 忽略 priority 和 changefreq。可说明。</p>
+
+<p>  需要不要写“必须 UTF-8”但 XML 声明 encoding="UTF-8" 是标准。是的。</p>
+
+<p>  最终回答长度适中。可以。</p>
+
+<p>  可能还需要说明 xmlns 必须写在根元素。<urlset> 可包含多个 <url>。<url> 中 <loc> 必须。<sitemapindex> 可包含多个 <sitemap>。</p>
+
+<p>  可以提“文件扩展名 .xml，gzip 后 .xml.gz”。</p>
+
+<p>  可以提“URL 中不能有中文？可以，但需 URL 编码。loc 中应使用转义后的 URL”。可以提。</p>
+
+<p>  好，最终。</p>
+
+<p>  sitemap.xml 有两种标准根格式：普通网址列表 <urlset> 和 索引文件 <sitemapindex>。</p>
+<ol>
+<li>普通 sitemap 标准格式
+xml</li>
+</ol>
+<?xml version="1.0" encoding="UTF-8"?>
+
+<p>  <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<url>
+<loc>https://www.example.com/</loc>
+<lastmod>2026-09-25</lastmod>
+<changefreq>daily</changefreq>
+<priority>1.0</priority>
+</url>
+<url>
+<loc>https://www.example.com/about.html</loc>
+<lastmod>2026-09-20T10:30:00+08:00</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.8</priority>
+</url>
+</urlset>
+字段说明
+标签  是否必填    说明
+<loc>   必填  页面绝对 URL，必须包含 https:// 或 http://
+<lastmod>   可选  最后修改时间，格式为 W3C Datetime，如 2026-09-25 或 2026-09-25T10:30:00+08:00
+<changefreq>    可选  更新频率：always、hourly、daily、weekly、monthly、yearly、never
+<priority>  可选  优先级，0.0 到 1.0，默认 0.5，只是提示，搜索引擎可能忽略
+注意：</p>
+
+<p>  <loc> 中的 &amp; 必须写成 &amp;，例如：
+https://www.example.com/page?a=1&amp;b=2</p>
+
+<p>  标签顺序建议为：loc → lastmod → changefreq → priority</p>
+
+<p>  文件必须使用 UTF-8 编码</p>
+
+<p>  单个 sitemap 最多包含 50,000 个 URL，未压缩大小不超过 50MB</p>
+
+<p>  可以使用 gzip 压缩，文件名如 sitemap.xml.gz</p>
+<ol start="2">
+<li>sitemap 索引格式
+如果网址很多，可以拆成多个 sitemap，再用索引文件引用：</li>
+</ol>
+
+<p>  xml</p>
+<?xml version="1.0" encoding="UTF-8"?>
+
+<p>  <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<sitemap>
+<loc>https://www.example.com/sitemap1.xml</loc>
+<lastmod>2026-09-25</lastmod>
+</sitemap>
+<sitemap>
+<loc>https://www.example.com/sitemap2.xml</loc>
+<lastmod>2026-09-25</lastmod>
+</sitemap>
+</sitemapindex>
+索引文件中 <loc> 填的是 sitemap 文件的地址，不是页面地址。</p>
+<ol start="3">
+<li>最小可用格式
+xml</li>
+</ol>
+<?xml version="1.0" encoding="UTF-8"?>
+
+<p>  <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<url>
+<loc>https://www.example.com/</loc>
+</url>
+</urlset>
+4. 放置与声明
+通常放在网站根目录：</p>
+
+<p>  text
+https://www.example.com/sitemap.xml
+并在 robots.txt 中声明：</p>
+
+<p>  text
+Sitemap: https://www.example.com/sitemap.xml
+如果有多个 sitemap，可以声明索引文件：</p>
+
+<p>  text
+Sitemap: https://www.example.com/sitemap_index.xml
+标准命名空间固定为：</p>
+
+<p>  text
+http://www.sitemaps.org/schemas/sitemap/0.9
+以上是基础 sitemap.xml 的标准格式。图片、视频、新闻等 sitemap 需要额外扩展命名空间。</p>
+sitemap,xml,https,www,格式<br>
+sitemap,xml,https,格式,www<br>
+            <a href="https://chleeken.github.io/blog/weishenmenidedulizhanliuliangbushaoxunpanquehenshao.html" target="_blank" title="为什么你的独立站流量不少，询盘却很少？页面很多外贸工厂的独立站，后..." style="color:#555860">#为什么你的独立站流量不少，询盘却很少？</a><br>
+<a href="https://chleeken.github.io/blog/gugeSEOpanduannidewaimaodulizhanyoumeiyoupaimingqianli.html" target="_blank" title="谷歌SEO，判断你的外贸独立站有没有排名潜力做外贸独立站，不少人会踩一..." style="color:#555860">谷歌SEO，判断你的外贸独立站有没有排名潜力</a><br>
+<a href="https://chleeken.github.io/blog/weishenmenidewangzhansoubudaoyifencongyumingdaofuwuqideGEOSEOpaichashouce.html" target="_blank" title="为什么你的网站搜不到？一份从域名到服务器的GEOSEO排查手册做了网站，投了..." style="color:#555860">为什么你的网站搜不到？一份从域名到服务器的GEO+SEO排查手册</a><br>
+<a href="https://chleeken.github.io/blog/wangzhanzhuabujinlaibushouludiyupaimingpiaobaGEOSEOdedicenggongchengyicizuodui.html" target="_blank" title="网站抓不进来、不收录、地域排名飘？把 GEOSEO 的底层工程一次做对做技术博客写..." style="color:#555860">#网站抓不进来、不收录、地域排名飘？把GEO+SEO的底层工程一次做对</a><br>
+<a href="https://chleeken.github.io/blog/chaijieGEOdicengluojiweishenmenideneirongmeiyoubeiAItuijian.html" target="_blank" title="拆解 GEO 底层逻辑：为什么你的内容没有被 AI 推荐先问一个问题：你上一次在 AI 助..." style="color:#555860">拆解GEO底层逻辑：为什么你的内容没有被AI推荐</a><br>
+            <!-- site_page_end -->
+            </article>
+        </main>
+    </div>
+
+    <!-- 右侧悬浮侧边栏 -->
+    <aside class="right-sidebar">
+        <!-- 右上广告位 -->
+        <div class="ad-placeholder" id="topRightAd">
+            <!-- 右上广告位：由JavaScript动态加载 -->
+        </div>
+
+        <!-- 右下链接侧边栏（纯CSS定义） -->
+        <div class="link-sidebar">
+        <!-- new_link_name_start-->
+<li><a href="https://chleeken.github.io/blog/weishenmenidedulizhanliuliangbushaoxunpanquehenshao.html" target="_blank" title="为什么你的独立站流量不少，询盘却很少？页面很多外贸工厂的独立站，后..." style="color:#555860">#为什么你的独立站流量不少，询盘却很少？</a></li>
+<li><a href="https://chleeken.github.io/blog/gugeSEOpanduannidewaimaodulizhanyoumeiyoupaimingqianli.html" target="_blank" title="谷歌SEO，判断你的外贸独立站有没有排名潜力做外贸独立站，不少人会踩一..." style="color:#555860">谷歌SEO，判断你的外贸独立站有没有排名潜力</a></li>
+<li><a href="https://chleeken.github.io/blog/weishenmenidewangzhansoubudaoyifencongyumingdaofuwuqideGEOSEOpaichashouce.html" target="_blank" title="为什么你的网站搜不到？一份从域名到服务器的GEOSEO排查手册做了网站，投了..." style="color:#555860">为什么你的网站搜不到？一份从域名到服务器的GEO+SEO排查手册</a></li>
+<li><a href="https://chleeken.github.io/blog/wangzhanzhuabujinlaibushouludiyupaimingpiaobaGEOSEOdedicenggongchengyicizuodui.html" target="_blank" title="网站抓不进来、不收录、地域排名飘？把 GEOSEO 的底层工程一次做对做技术博客写..." style="color:#555860">#网站抓不进来、不收录、地域排名飘？把GEO+SEO的底层工程一次做对</a></li>
+<li><a href="https://chleeken.github.io/blog/chaijieGEOdicengluojiweishenmenideneirongmeiyoubeiAItuijian.html" target="_blank" title="拆解 GEO 底层逻辑：为什么你的内容没有被 AI 推荐先问一个问题：你上一次在 AI 助..." style="color:#555860">拆解GEO底层逻辑：为什么你的内容没有被AI推荐</a></li>
+<li><a href="https://chleeken.github.io/blog/dulizhanyouliuliangmeixunpanchaijieyitaokefuxiandexunpanzhuanhualujing.html" target="_blank" title="独立站有流量没询盘？拆解一套可复现的询盘转化路径一个反复出现的..." style="color:#555860">#独立站有流量没询盘？拆解一套可复现的询盘转化路径</a></li>
+<li><a href="https://chleeken.github.io/blog/ruanzhudengjijinruyingmenkanshidainidedaimazhendejingdeqishenchama.html" target="_blank" title="软著登记进入"硬门槛"时代：你的代码真的经得起审查吗？引言最近技术圈..." style="color:#555860">软著登记进入"硬门槛"时代：你的代码真的经得起审查吗？</a></li>
+<li><a href="https://chleeken.github.io/blog/sousuoyinqingliuliangduanyaxiadieAIzhengzairuhezhongxindingyiyueduderukou.html" target="_blank" title="搜索引擎流量断崖下跌：AI正在如何重新定义"阅读"的入口靳好宝科技博客..." style="color:#555860">#搜索引擎流量断崖下跌：AI正在如何重新定义"阅读"的入口</a></li>
+<!-- new_link_name_end-->
+        </div>
+    </aside>
+    <nav class="pagination" aria-label="分页导航" style="color:#4B0082;text-align:center">
+     下一页 <span><a href="https://chleeken.github.io/blog/weishenmenidedulizhanliuliangbushaoxunpanquehenshao.html" target="_blank" title="为什么你的独立站流量不少，询盘却很少？页面很多外贸工厂的独立站，后..." style="color:#555860">#为什么你的独立站流量不少，询盘却很少？</a></span>   
+</nav>  
+    <!-- 底部版权信息 -->
+    <footer class="site-footer">
+<p> <h4>©2025 靳好宝博客 -- Powered by <a href="https://chleeken.github.io/">Jblog</a>|theme by <a href="https://chleeken.github.io/theme/index.html">Jbtheme</a> Analytics</h4></p>
+    </footer>
+	<script src="js/Analytics.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
