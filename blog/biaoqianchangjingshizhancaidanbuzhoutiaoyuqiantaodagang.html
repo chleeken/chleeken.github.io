@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <!-- 支持多编码解析，优先UTF-8 -->
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="Content-Language" content="zh-CN">
+   <!-- 链接在新标签跳转 -->
+    <base target="_blank">
+    <!-- 移动设备视口适配 -->
+ <!-- 移动端视口，必备 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=no">
+    <!-- SEO核心Meta关-键-词标签 -->
+    <meta name="keywords" content="li，step，none，menu，display">
+     <!-- SEO核心内容标签 -->
+    <meta name="description" content="标签场景实战：菜单、步骤条与嵌套大纲 本身只是"列表项"这个语义容器，真...">
+    <!-- 作者/网站名称 -->
+    <meta name="author" content="靳好宝科技博客">
+    <!-- https://chleeken.github.io/blog/biaoqianchangjingshizhancaidanbuzhoutiaoyuqiantaodagang.html-->
+    <meta property="og:url" content="https://chleeken.github.io/blog/biaoqianchangjingshizhancaidanbuzhoutiaoyuqiantaodagang.html">   
+    <link rel="canonical" href="https://chleeken.github.io/blog/biaoqianchangjingshizhancaidanbuzhoutiaoyuqiantaodagang.html">  
+    <meta name="robots" content="index, follow">
+    <!-- 禁止移动端识别手机号/邮箱 -->
+    <meta name="format-detection" content="telephone=no, email=no">
+     <!-- 网页图标 favicon -->
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <!-- {浏览器显示标题-网站名称-网站描-述}--> 
+    <title>标签场景实战菜单步骤条与嵌套大纲-靳好宝博客-一个关注python编程，Web建站，网络营销，seo优化的科技博客</title>   
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- 头部导航 -->
+    <header>
+        <nav class="nav-links">
+            <a href="https://chleeken.github.io/" target="_self">首页</a>
+            <a href="https://chleeken.github.io/webes/about.html" target="_blank">关于</a>
+            <a href="https://chleeken.github.io/webes/product.html" target="_blank">服务</a>
+            <a href="https://chleeken.github.io/webes/contact.html" target="_blank">联系我们</a> 
+        </nav>
+    </header>
+
+    <!-- 左侧悬浮广告位 -->
+    <aside class="left-sidebar" id="leftAd">
+        <!-- 左侧广告位：由JavaScript动态加载 -->
+    </aside>
+
+    <!-- 主体内容 -->
+    <div class="container">
+        <main class="main-content">
+        <article>
+            <h1>#``标签场景实战：菜单、步骤条与嵌套大纲</h1><span class="article-date" style="font-size:14px">2026年10月12日|作者:靳好宝|栏目:blog|分类:互联网络</span>
+            <!-- 以下为文章正文编辑区 -->
+            <!-- site_page_begin -->
+<p>&nbsp&nbsp# `<li>` 标签场景实战：菜单、步骤条与嵌套大纲</p>
+
+<p>&nbsp&nbsp`<li>` 本身只是"列表项"这个语义容器，真正决定它长什么样、能不能交互的，是它的**上下文**——被放在 `<ul>` / `<ol>` 里、被 CSS 怎么改、被 JS 怎么挂事件。下面按三个最典型的场景展开，每个场景都给出**最小可用结构 → 生产级写法 → 常见坑**。</p>
+
+<p>&nbsp&nbsp---</p>
+
+<p>&nbsp&nbsp## 一、导航菜单（Nav / Dropdown / Sidebar）</p>
+
+<p>&nbsp&nbsp### 1.1 最小可用结构</p>
+
+<p>&nbsp&nbsp```html</p>
+<p>&nbsp&nbsp<nav class="menu"></p>
+<p>&nbsp&nbsp<ul></p>
+<p>&nbsp&nbsp<li><a href="/">首页</a></li></p>
+<p>&nbsp&nbsp<li><a href="/products">产品</a></li></p>
+<p>&nbsp&nbsp<li><a href="/about">关于</a></li></p>
+<p>&nbsp&nbsp</ul></p>
+<p>&nbsp&nbsp</nav></p>
+<p>&nbsp&nbsp```</p>
+
+<p>&nbsp&nbsp要点：</p>
+<p>&nbsp&nbsp- 菜单一定放在 `<nav>` 里，`<nav>` 是 landmark，屏幕阅读器能直接跳到"导航区域"。</p>
+<p>&nbsp&nbsp- `<li>` 里放 `<a>`，**不要**直接给 `<li>` 加 `href`（`<li>` 不支持该属性，会被忽略）。</p>
+<p>&nbsp&nbsp- 每个 `<li>` 对应一个菜单项，`<a>` 是真正的交互目标。</p>
+
+<p>&nbsp&nbsp### 1.2 横向菜单栏 + 下拉子菜单（生产级）</p>
+
+<p>&nbsp&nbspHTML（两级嵌套，第二层用 `<ul>` 包 `<li>`）：</p>
+
+<p>&nbsp&nbsp```html</p>
+<p>&nbsp&nbsp<nav class="menu"></p>
+<p>&nbsp&nbsp<ul class="menu-root"></p>
+<p>&nbsp&nbsp<li class="has-sub"></p>
+<p>&nbsp&nbsp<a href="/products" aria-haspopup="true">产品</a></p>
+<p>&nbsp&nbsp<ul class="menu-sub"></p>
+<p>&nbsp&nbsp<li><a href="/products/cloud">云服务</a></li></p>
+<p>&nbsp&nbsp<li><a href="/products/edge">边缘计算</a></li></p>
+<p>&nbsp&nbsp</ul></p>
+<p>&nbsp&nbsp</li></p>
+<p>&nbsp&nbsp<li><a href="/pricing">价格</a></li></p>
+<p>&nbsp&nbsp<li><a href="/docs">文档</a></li></p>
+<p>&nbsp&nbsp</ul></p>
+<p>&nbsp&nbsp</nav></p>
+<p>&nbsp&nbsp```</p>
+
+<p>&nbsp&nbspCSS 关键片段（桌面 hover 展开；移动端换成 JS 点击）：</p>
+
+<p>&nbsp&nbsp```css</p>
+<p>&nbsp&nbsp.menu-root </p>
+<p>&nbsp&nbspdisplay: flex;</p>
+<p>&nbsp&nbspgap: 4px;</p>
+<p>&nbsp&nbsplist-style: none;</p>
+<p>&nbsp&nbsppadding: 0;</p>
+<p>&nbsp&nbspmargin: 0;</p>
+<p>&nbsp&nbsp</p>
+
+<p>&nbsp&nbsp.menu-root > li  position: relative; </p>
+
+<p>&nbsp&nbsp.menu-root > li > a </p>
+<p>&nbsp&nbspdisplay: block;</p>
+<p>&nbsp&nbsppadding: 12px 16px;</p>
+<p>&nbsp&nbsptext-decoration: none;</p>
+<p>&nbsp&nbspcolor: inherit;</p>
+<p>&nbsp&nbsp</p>
+
+<p>&nbsp&nbsp/* 子菜单默认隐藏 */</p>
+<p>&nbsp&nbsp.menu-sub </p>
+<p>&nbsp&nbspposition: absolute;</p>
+<p>&nbsp&nbsptop: 100%;</p>
+<p>&nbsp&nbspleft: 0;</p>
+<p>&nbsp&nbspmin-width: 10rem;</p>
+<p>&nbsp&nbsplist-style: none;</p>
+<p>&nbsp&nbspmargin: 0;</p>
+<p>&nbsp&nbsppadding: 4px 0;</p>
+<p>&nbsp&nbspbackground: #fff;</p>
+<p>&nbsp&nbspbox-shadow: 0 4px 12px rgba(0,0,0,.08);</p>
+<p>&nbsp&nbspopacity: 0;</p>
+<p>&nbsp&nbsppointer-events: none;</p>
+<p>&nbsp&nbsptransition: opacity .15s;</p>
+<p>&nbsp&nbsp</p>
+
+<p>&nbsp&nbsp.menu-root > li:hover .menu-sub,</p>
+<p>&nbsp&nbsp.menu-root > li:focus-within .menu-sub </p>
+<p>&nbsp&nbspopacity: 1;</p>
+<p>&nbsp&nbsppointer-events: auto;</p>
+<p>&nbsp&nbsp</p>
+
+<p>&nbsp&nbsp.menu-sub li a </p>
+<p>&nbsp&nbspdisplay: block;</p>
+<p>&nbsp&nbsppadding: 8px 16px;</p>
+<p>&nbsp&nbsptext-decoration: none;</p>
+<p>&nbsp&nbsp</p>
+<p>&nbsp&nbsp```</p>
+
+<p>&nbsp&nbspJS（键盘可访问 + 移动端降级）：</p>
+
+<p>&nbsp&nbsp```js</p>
+<p>&nbsp&nbspconst hasSub = document.querySelectorAll('.has-sub');</p>
+<p>&nbsp&nbsphasSub.forEach(li => </p>
+<p>&nbsp&nbspconst btn = li.querySelector(':scope > a');</p>
+<p>&nbsp&nbspbtn.addEventListener('click', e => </p>
+<p>&nbsp&nbsp// 移动端：阻止默认跳转，只做开关</p>
+<p>&nbsp&nbspif (window.matchMedia('(max-width: 768px)').matches) </p>
+<p>&nbsp&nbspe.preventDefault();</p>
+<p>&nbsp&nbspli.classList.toggle('open');</p>
+<p>&nbsp&nbsp</p>
+<p>&nbsp&nbsp);</p>
+<p>&nbsp&nbsp// 键盘：Esc 关闭</p>
+<p>&nbsp&nbspbtn.addEventListener('keydown', e => </p>
+<p>&nbsp&nbspif (e.key === 'Escape') li.classList.menuremove('open');</p>
+<p>&nbsp&nbsp);</p>
+<p>&nbsp&nbsp);</p>
+<p>&nbsp&nbsp```</p>
+
+<p>&nbsp&nbsp### 1.3 侧边栏（Sidebar）菜单</p>
+
+<p>&nbsp&nbsp结构与上面一致，差别在 CSS 布局：</p>
+
+<p>&nbsp&nbsp```css</p>
+<p>&nbsp&nbsp.sidebar .menu-root </p>
+<p>&nbsp&nbspflex-direction: column;   /* 纵向堆叠 */</p>
+<p>&nbsp&nbsp</p>
+<p>&nbsp&nbsp.sidebar .menu-sub </p>
+<p>&nbsp&nbspposition: static;         /* 侧边栏常用折叠而非浮层 */</p>
+<p>&nbsp&nbspdisplay: none;</p>
+<p>&nbsp&nbsppadding-left: 1rem;</p>
+<p>&nbsp&nbsp</p>
+<p>&nbsp&nbsp.sidebar li.open > .menu-sub </p>
+<p>&nbsp&nbspdisplay: block;</p>
+<p>&nbsp&nbsp</p>
+<p>&nbsp&nbsp```</p>
+
+<p>&nbsp&nbsp### 1.4 常见坑</p>
+
+<p>&nbsp&nbsp| 坑 | 后果 | 正确做法 |</p>
+<p>&nbsp&nbsp|---|---|---|</p>
+<p>&nbsp&nbsp| `<li>` 直接写 `href` | 属性无效，链接点击 404 | `<li>` 里放 `<a>` |</p>
+<p>&nbsp&nbsp| 子菜单用 `<div>` 包 | 屏幕阅读器读不出嵌套层级 | 子菜单仍用 `<ul><li>` |</p>
+<p>&nbsp&nbsp| hover 触发但无 `focus-within` | 键盘用户无法展开 | `:hover, :focus-within` 双触发 |</p>
+<p>&nbsp&nbsp| `list-style` 没重置 | 出现默认圆点/数字 | `list-style: none` |</p>
+<p>&nbsp&nbsp| 子菜单 `z-index` 没设 | 被兄弟元素遮挡 | 给 `.menu-sub` 加 `z-index: 10` |</p>
+<p>&nbsp&nbsp| 移动端 hover 不生效 | 点开不了 | JS 点击 + `matchMedia` 切换 |</p>
+
+<p>&nbsp&nbsp---</p>
+
+<p>&nbsp&nbsp## 二、步骤条（Step Indicator / Wizard）</p>
+
+<p>&nbsp&nbsp步骤条本质是**有序列表**——"第一步、第二步……"是有先后顺序的，语义上必须用 `<ol>`，不能用 `<ul>`。</p>
+
+<p>&nbsp&nbsp### 2.1 最小可用结构</p>
+
+<p>&nbsp&nbsp```html</p>
+<p>&nbsp&nbsp<ol class="steps"></p>
+<p>&nbsp&nbsp<li class="step done"></p>
+<p>&nbsp&nbsp<span class="step-num">1</span></p>
+<p>&nbsp&nbsp<span class="step-label">填写信息</span></p>
+<p>&nbsp&nbsp</li></p>
+<p>&nbsp&nbsp<li class="step active"></p>
+<p>&nbsp&nbsp<span class="step-num">2</span></p>
+<p>&nbsp&nbsp<span class="step-label">支付</span></p>
+<p>&nbsp&nbsp</li></p>
+<p>&nbsp&nbsp<li class="step"></p>
+<p>&nbsp&nbsp<span class="step-num">3</span></p>
+<p>&nbsp&nbsp<span class="step-label">完成</span></p>
+<p>&nbsp&nbsp</li></p>
+<p>&nbsp&nbsp</ol></p>
+<p>&nbsp&nbsp```</p>
+
+<p>&nbsp&nbsp### 2.2 水平步骤条（带连接线，生产级）</p>
+
+<p>&nbsp&nbspCSS：用 `::before` 画连接横线，用 `:last-child` 隐藏尾线。</p>
+
+<p>&nbsp&nbsp```css</p>
+<p>&nbsp&nbsp.steps </p>
+<p>&nbsp&nbspdisplay: flex;</p>
+<p>&nbsp&nbspcounter-reset: step;</p>
+<p>&nbsp&nbsplist-style: none;</p>
+<p>&nbsp&nbsppadding: 0;</p>
+<p>&nbsp&nbspmargin: 0;</p>
+<p>&nbsp&nbsp</p>
+
+<p>&nbsp&nbsp.step </p>
+<p>&nbsp&nbspposition: relative;</p>
+<p>&nbsp&nbspflex: 1;</p>
+<p>&nbsp&nbsptext-align: center;</p>
+<p>&nbsp&nbspcounter-increment: step;</p>
+<p>&nbsp&nbsp</p>
+
+<p>&nbsp&nbsp/* 连接横线 */</p>
+<p>&nbsp&nbsp.step:not(:first-child)::before </p>
+<p>&nbsp&nbspcontent: '';</p>
+<p>&nbsp&nbspposition: absolute;</p>
+<p>&nbsp&nbsptop: 50%;</p>
+<p>&nbsp&nbspleft: calc(-50% + 1rem);</p>
+<p>&nbsp&nbspright: calc(50% + 1rem);</p>
+<p>&nbsp&nbspheight: 2px;</p>
+<p>&nbsp&nbspbackground: #e0e0e0;</p>
+<p>&nbsp&nbsp</p>
+
+<p>&nbsp&nbsp.step.done::before,</p>
+<p>&nbsp&nbsp.step.none，active::before </p>
+<p>&nbsp&nbspbackground: var(--accent, #4f46e5);</p>
+<p>&nbsp&nbsp</p>
+
+<p>&nbsp&nbsp/* 圆点 */</p>
+<p>&nbsp&nbsp.step-num </p>
+<p>&nbsp&nbspdisplay: inline-flex;</p>
+<p>&nbsp&nbspalign-items: center;</p>
+<p>&nbsp&nbspjustify-content: center;</p>
+<p>&nbsp&nbspwidth: 2.5rem;</p>
+<p>&nbsp&nbspheight: 2.5rem;</p>
+<p>&nbsp&nbspborder-radius: 50%;</p>
+<p>&nbsp&nbspbackground: #e0e0e0;</p>
+<p>&nbsp&nbspcolor: #666;</p>
+<p>&nbsp&nbspfont-weight: 600;</p>
+<p>&nbsp&nbsp</p>
+
+<p>&nbsp&nbsp.step.done .step-num </p>
+<p>&nbsp&nbspbackground: var(--accent, #4f46e5);</p>
+<p>&nbsp&nbspcolor: #fff;</p>
+<p>&nbsp&nbsp</p>
+
+<p>&nbsp&nbsp.step.active .step-num </p>
+<p>&nbsp&nbspbackground: var(--accent, #4f46e5);</p>
+<p>&nbsp&nbspcolor: #fff;</p>
+<p>&nbsp&nbspbox-shadow: 0 0 0 4px rgba(79,70,229,.25);</p>
+<p>&nbsp&nbsp</p>
+
+<p>&nbsp&nbsp.step-label </p>
+<p>&nbsp&nbspdisplay: block;</p>
+<p>&nbsp&nbspmargin-top: .5rem;</p>
+<p>&nbsp&nbspfont-size: .875rem;</p>
+<p>&nbsp&nbspcolor: #666;</p>
+<p>&nbsp&nbsp</p>
+
+<p>&nbsp&nbsp.step.active .step-label  color: #111; </p>
+<p>&nbsp&nbsp```</p>
+
+<p>&nbsp&nbspJS（切换步骤高亮）：</p>
+
+<p>&nbsp&nbsp```js</p>
+<p>&nbsp&nbspfunction setStep(stepsEl, current) </p>
+<p>&nbsp&nbspstepsEl.querySelectorAll('.step').forEach((li, i) => </p>
+<p>&nbsp&nbspli.classList.toggle('done',   i <  current);</p>
+<p>&nbsp&nbspli.classList.toggle('active', i === current);</p>
+<p>&nbsp&nbsp);</p>
+<p>&nbsp&nbsp</p>
+<p>&nbsp&nbsp// setStep(document.querySelector('.steps'), 1)  // 当前在第 2 步</p>
+<p>&nbsp&nbsp```</p>
+
+<p>&nbsp&nbsp### 2.3 垂直步骤条</p>
+
+<p>&nbsp&nbsp```css</p>
+<p>&nbsp&nbsp.steps-vertical </p>
+<p>&nbsp&nbspflex-direction: column;</p>
+<p>&nbsp&nbspalign-items: flex-start;</p>
+<p>&nbsp&nbspgap: 1.5rem;</p>
+<p>&nbsp&nbsp</p>
+<p>&nbsp&nbsp.steps-vertical .step </p>
+<p>&nbsp&nbspdisplay: flex;</p>
+<p>&nbsp&nbspalign-items: center;</p>
+<p>&nbsp&nbspgap: .75rem;</p>
+<p>&nbsp&nbsp</p>
+<p>&nbsp&nbsp/* 垂直连接改用左侧竖线 */</p>
+<p>&nbsp&nbsp.steps-vertical .step:not(:first-child)::before </p>
+<p>&nbsp&nbsptop: calc(-1.5rem + .5rem);</p>
+<p>&nbsp&nbspleft: 1.25rem;</p>
+<p>&nbsp&nbspright: auto;</p>
+<p>&nbsp&nbspwidth: 2px;</p>
+<p>&nbsp&nbspheight: calc(1.5rem + .5rem);</p>
+<p>&nbsp&nbsp</p>
+<p>&nbsp&nbsp```</p>
+
+<p>&nbsp&nbsp### 2.4 可点击步骤（允许回跳）</p>
+
+<p>&nbsp&nbsp```js</p>
+<p>&nbsp&nbspstepsEl.querySelectorAll('.step').forEach((li, i) => </p>
+<p>&nbsp&nbspli.addEventListener('click', () => </p>
+<p>&nbsp&nbspif (i <= maxReached) gotoStep(i);</p>
+<p>&nbsp&nbsp);</p>
+<p>&nbsp&nbspli.style.cursor = 'pointer';</p>
+<p>&nbsp&nbspli.setAttribute('tabindex', '0');</p>
+<p>&nbsp&nbspli.setAttribute('role', 'button');</p>
+<p>&nbsp&nbsp);</p>
+<p>&nbsp&nbsp```</p>
+
+<p>&nbsp&nbsp> 可点击的 `<li>` 需要 `tabindex` + `role="button"` + `keydown`（Enter/Space）三件套，否则键盘用户无法操作。</p>
+
+<p>&nbsp&nbsp### 2.5 常见坑</p>
+
+<p>&nbsp&nbsp| 坑 | 后果 | 正确做法 |</p>
+<p>&nbsp&nbsp|---|---|---|</p>
+<p>&nbsp&nbsp| 用 `<ul>` 写步骤 | 丢失"有序"语义，读屏器不报"第 N 步" | 必须 `<ol>` |</p>
+<p>&nbsp&nbsp| 连接横线用 `<hr>` | 布局错位，响应式难调 | `::before` 伪元素 |</p>
+<p>&nbsp&nbsp| `flex: 1` 但圆点没 `margin: auto` | 圆点偏左 | `text-align:center` + `inline-flex` |</p>
+<p>&nbsp&nbsp| 可点击但没 `tabindex` | 键盘无法操作 | 加 `tabindex="0"` + `role` + `keydown` |</p>
+<p>&nbsp&nbsp| `counter` 没 reset | 多组步骤条编号连续 | 每组 `<ol>` 各加 `counter-reset: step` |</p>
+
+<p>&nbsp&nbsp---</p>
+
+<p>&nbsp&nbsp## 三、嵌套大纲（Nested Outline / 树形目录）</p>
+
+<p>&nbsp&nbsp典型场景：文档目录（TOC）、思维导图节点、配置项树。</p>
+
+<p>&nbsp&nbsp### 3.1 最小可用结构</p>
+
+<p>&nbsp&nbsp```html</p>
+<p>&nbsp&nbsp<ul class="outline"></p>
+<p>&nbsp&nbsp<li></p>
+<p>&nbsp&nbsp<span class="node-title">第一章 引言</span></p>
+<p>&nbsp&nbsp<ul></p>
+<p>&nbsp&nbsp<li></p>
+<p>&nbsp&nbsp<span class="node-title">1.1 背景</span></p>
+<p>&nbsp&nbsp<ul></p>
+<p>&nbsp&nbsp<li></p>
+<p>&nbsp&nbsp<span class="node-title">1.1.1 问题陈述</span></p>
+<p>&nbsp&nbsp<!display，-- 可继续嵌套 --></p>
+<p>&nbsp&nbsp</li></p>
+<p>&nbsp&nbsp</ul></p>
+<p>&nbsp&nbsp</li></p>
+<p>&nbsp&nbsp<li><span class="node-title">1.2 目标</span></li></p>
+<p>&nbsp&nbsp</ul></p>
+<p>&nbsp&nbsp</li></p>
+<p>&nbsp&nbsp<li><span class="node-title">第二章 方法</span></li></p>
+<p>&nbsp&nbsp</ul></p>
+<p>&nbsp&nbsp```</p>
+
+<p>&nbsp&nbsp### 3.2 可折叠树（生产级）</p>
+
+<p>&nbsp&nbspHTML：每层 `<li>` 带 `class="toggle"` 和 `aria-expanded`，`<button>` 控制展开。</p>
+
+<p>&nbsp&nbsp```html</p>
+<p>&nbsp&nbsp<ul class="outline" role="tree"></p>
+<p>&nbsp&nbsp<li role="treeitem" aria-expanded="true"></p>
+<p>&nbsp&nbsp<button class="toggle" aria-expanded="true">▸ 第一章</button></p>
+<p>&nbsp&nbsp<span class="node-title">引言</span></p>
+<p>&nbsp&nbsp<ul role="group"></p>
+<p>&nbsp&nbsp<li role="treeitem" aria-expanded="false"></p>
+<p>&nbsp&nbsp<button class="toggle" aria-expanded="false">▸</button></p>
+<p>&nbsp&nbsp<span class="node-title">1.1 背景</span></p>
+<p>&nbsp&nbsp<ul role="group" hidden></p>
+<p>&nbsp&nbsp<li role="treeitem"><span class="node-title">1.1.1 问题</span></li></p>
+<p>&nbsp&nbsp<li role="treeitem"><span class="node-title">1.1.2 现状</span></li></p>
+<p>&nbsp&nbsp</ul></p>
+<p>&nbsp&nbsp</li></p>
+<p>&nbsp&nbsp</ul></p>
+<p>&nbsp&nbsp</li></p>
+<p>&nbsp&nbsp</ul></p>
+<p>&nbsp&nbsp```</p>
+
+<p>&nbsp&nbsp> `role="tree"` 系列 ARIA 较重，简单场景可省略 `role` 只留 `aria-expanded`。</p>
+
+<p>&nbsp&nbspCSS：</p>
+
+<p>&nbsp&nbsp```css</p>
+<p>&nbsp&nbsp.outline  list-style: none; padding-left: 0; </p>
+<p>&nbsp&nbsp.outline ul  list-style: none; padding-left: 1.5rem; </p>
+
+<p>&nbsp&nbsp.outline li </p>
+<p>&nbsp&nbspdisplay: flex;</p>
+<p>&nbsp&nbspalign-items: center;</p>
+<p>&nbsp&nbspgap: .375rem;</p>
+<p>&nbsp&nbsppadding: .25rem 0;</p>
+<p>&nbsp&nbsp</p>
+
+<p>&nbsp&nbsp.toggle </p>
+<p>&nbsp&nbspwidth: 1.25rem;</p>
+<p>&nbsp&nbspheight: 1.25rem;</p>
+<p>&nbsp&nbspborder: none;</p>
+<p>&nbsp&nbspbackground: transparent;</p>
+<p>&nbsp&nbspcursor: pointer;</p>
+<p>&nbsp&nbspfont-size: .8rem;</p>
+<p>&nbsp&nbsp</p>
+
+<p>&nbsp&nbspli[aria-expanded="false"] > .toggle  transform: rotate(0deg); </p>
+<p>&nbsp&nbspli[aria-expanded="true"]  > .toggle  transform: rotate(90deg); </p>
+<p>&nbsp&nbsp```</p>
+
+<p>&nbsp&nbspJS（折叠/展开，事件委托）：</p>
+
+<p>&nbsp&nbsp```js</p>
+<p>&nbsp&nbspdocument.querySelector('.outline').addEventListener('click', e => </p>
+<p>&nbsp&nbspconst btn = e.target.closest('.toggle');</p>
+<p>&nbsp&nbspif (!btn) return;</p>
+<p>&nbsp&nbspconst li  = btn.closest('li');</p>
+<p>&nbsp&nbspconst sub = li.querySelector(':scope > ul');</p>
+<p>&nbsp&nbspconst open = li.getAttribute('aria-expanded') === 'true';</p>
+
+<p>&nbsp&nbspli.setAttribute('aria-expanded', String(!open));</p>
+<p>&nbsp&nbspbtn.setAttribute('aria-expanded', String(!open));</p>
+<p>&nbsp&nbspsub?.toggleAttribute('hidden');</p>
+<p>&nbsp&nbsp);</p>
+<p>&nbsp&nbsp```</p>
+
+<p>&nbsp&nbsp### 3.3 纯 CSS 折叠（零 JS 版，适合内容少）</p>
+
+<p>&nbsp&nbsp```html</p>
+<p>&nbsp&nbsp<li></p>
+<p>&nbsp&nbsp<input type="checkbox" id="ch1" class="chk" checked></p>
+<p>&nbsp&nbsp<label for="ch1">▸ 第一章</label></p>
+<p>&nbsp&nbsp<ul> … </ul></p>
+<p>&nbsp&nbsp</li></p>
+<p>&nbsp&nbsp```</p>
+
+<p>&nbsp&nbsp```css</p>
+<p>&nbsp&nbsp.chk  display: none; </p>
+<p>&nbsp&nbsp.chk:not(:checked) ~ ul  display: none; </p>
+<p>&nbsp&nbsp```</p>
+
+<p>&nbsp&nbsp> 零 JS 方案优点：无状态管理；缺点：`<input>` 状态不持久化、深层嵌套选择器难写。</p>
+
+<p>&nbsp&nbsp### 3.4 动态生成（JS 渲染嵌套树）</p>
+
+<p>&nbsp&nbsp```js</p>
+<p>&nbsp&nbspfunction renderOutline(nodes, parentEl) </p>
+<p>&nbsp&nbspconst ul = document.createElement('ul');</p>
+<p>&nbsp&nbspul.classList.add('outline');</p>
+<p>&nbsp&nbspfor (const node of nodes) </p>
+<p>&nbsp&nbspconst li = document.createElement('li');</p>
+<p>&nbsp&nbspli.textContent = node.title;</p>
+<p>&nbsp&nbspif (node.children?.length) </p>
+<p>&nbsp&nbsprenderOutline(node.children, li);</p>
+<p>&nbsp&nbspli.setAttribute('aria-expanded', 'true');</p>
+<p>&nbsp&nbsp</p>
+<p>&nbsp&nbspul.appendChild(li);</p>
+<p>&nbsp&nbsp</p>
+<p>&nbsp&nbspparentEl.appendChild(ul);</p>
+<p>&nbsp&nbsp</p>
+<p>&nbsp&nbsp```</p>
+
+<p>&nbsp&nbsp### 3.5 常见坑</p>
+
+<p>&nbsp&nbsp| 坑 | 后果 | 正确做法 |</p>
+<p>&nbsp&nbsp|---|---|---|</p>
+<p>&nbsp&nbsp| 嵌套用 `<div>` | 读屏器不报层级 | 每层 `<ul><li>` |</p>
+<p>&nbsp&nbsp| `padding-left` 每层固定 1.5rem | 深层右移过多 | 用 `indent` 或每层递增 `calc(var(--depth) * 1rem)` |</p>
+<p>&nbsp&nbsp| `hidden` 属性没加在 `<ul>` 上 | 折叠后仍占空间 | `sub.hidden = true` |</p>
+<p>&nbsp&nbsp| 纯 CSS 方案 `<label>` 没 `for` | 点击不触发 | `label[for]` 必须对应 `input[id]` |</p>
+<p>&nbsp&nbsp| 动态渲染没 `role` | 键盘导航缺 | 按 WCAG 给 `tree/treeitem` role |</p>
+
+<p>&nbsp&nbsp---</p>
+
+<p>&nbsp&nbsp## 四、三场景横向对比</p>
+
+<p>&nbsp&nbsp| 维度 | 菜单 | 步骤条 | 嵌套大纲 |</p>
+<p>&nbsp&nbsp|---|---|---|---|</p>
+<p>&nbsp&nbsp| 列表类型 | `<ul>`（无序） | `<ol>`（有序） | `<ul>`（无序） |</p>
+<p>&nbsp&nbsp| 外层语义标签 | `<nav>` | 无（或直接 `<section>`） | 无（或 `<section>`） |</p>
+<p>&nbsp&nbsp| 嵌套深度 | 2 层（主 + 子） | 1 层（平铺） | 任意深 |</p>
+<p>&nbsp&nbsp| 交互核心 | hover/focus 展开 + 点击跳转 | 状态高亮 + 可点击回跳 | 折叠/展开 |</p>
+<p>&nbsp&nbsp| 关键 ARIA | `aria-haspopup` | `tabindex` + `role=button` | `aria-expanded` + `role=tree` |</p>
+<p>&nbsp&nbsp| 是否必须 JS | 移动端必须 | 是（状态管理） | 可选（纯 CSS 也能做） |</p>
+
+<p>&nbsp&nbsp---</p>
+
+<p>&nbsp&nbsp## 五、通用原则（三个场景都适用）</p>
+
+<p>&nbsp&nbsp1. **`<li>` 里不写交互属性**。`href`、`onclick`、`data-*` 都挂在内部 `<a>` / `<button>` 上。</p>
+<p>&nbsp&nbsp2. **每层嵌套都用 `<ul>` / `<ol>` + `<li>`**，不用 `<div>` 冒充列表。</p>
+<p>&nbsp&nbsp3. **`list-style: none` 只重置视觉**，不破坏语义。</p>
+<p>&nbsp&nbsp4. **键盘可访问**：可交互的 `<li>` 必须 `tabindex` + `role` + `keydown`。</p>
+<p>&nbsp&nbsp5. **响应式断点**：桌面 hover 展开，移动端点击展开，用 `matchMedia` 切换而非纯 CSS。</p>
+li,step,none,menu,display<br>
+li,step,none,menu,display<br>
+            <a href="https://chleeken.github.io/blog/Robotstxtwenjianbiaozhunyufajieshao.html" target="_blank" title="Robotstxt文件标准语法介绍匹配 URL 结尾。最长匹配优先；Allow 和 Disallow 冲突时最具体规则（最长路..." style="color:#555860">Robots.txt文件标准语法介绍</a><br>
+<a href="https://chleeken.github.io/blog/GitHubPagesdecunchukongjiandaxiao.html" target="_blank" title="GitHub Pages的存储空间大小GitHub Pages 的存储空间有明确的大小限制，主要分为源仓库和发布..." style="color:#555860">GitHubPages的存储空间大小</a><br>
+<a href="https://chleeken.github.io/blog/wangzhanshengchengsitemapxmlwenjianbiaozhungeshi.html" target="_blank" title="网站生成sitemapxml文件标准格式 ) urlset：普通网址列表) sitemapindex：多个 sitemap 的索引然后基本格式：xmlhttpswwwexamplecomdaily字段：loc 必..." style="color:#555860">网站生成sitemap.xml文件标准格式</a><br>
+<a href="https://chleeken.github.io/blog/weishenmenidedulizhanliuliangbushaoxunpanquehenshao.html" target="_blank" title="为什么你的独立站流量不少，询盘却很少？页面很多外贸工厂的独立站，后..." style="color:#555860">#为什么你的独立站流量不少，询盘却很少？</a><br>
+<a href="https://chleeken.github.io/blog/gugeSEOpanduannidewaimaodulizhanyoumeiyoupaimingqianli.html" target="_blank" title="谷歌SEO，判断你的外贸独立站有没有排名潜力做外贸独立站，不少人会踩一..." style="color:#555860">谷歌SEO，判断你的外贸独立站有没有排名潜力</a><br>
+            <!-- site_page_end -->
+            </article>
+        </main>
+    </div>
+
+    <!-- 右侧悬浮侧边栏 -->
+    <aside class="right-sidebar">
+        <!-- 右上广告位 -->
+        <div class="ad-placeholder" id="topRightAd">
+            <!-- 右上广告位：由JavaScript动态加载 -->
+        </div>
+
+        <!-- 右下链接侧边栏（纯CSS定义） -->
+        <div class="link-sidebar">
+        <!-- new_link_name_start-->
+<li><a href="https://chleeken.github.io/blog/Robotstxtwenjianbiaozhunyufajieshao.html" target="_blank" title="Robotstxt文件标准语法介绍匹配 URL 结尾。最长匹配优先；Allow 和 Disallow 冲突时最具体规则（最长路..." style="color:#555860">Robots.txt文件标准语法介绍</a></li>
+<li><a href="https://chleeken.github.io/blog/GitHubPagesdecunchukongjiandaxiao.html" target="_blank" title="GitHub Pages的存储空间大小GitHub Pages 的存储空间有明确的大小限制，主要分为源仓库和发布..." style="color:#555860">GitHubPages的存储空间大小</a></li>
+<li><a href="https://chleeken.github.io/blog/wangzhanshengchengsitemapxmlwenjianbiaozhungeshi.html" target="_blank" title="网站生成sitemapxml文件标准格式 ) urlset：普通网址列表) sitemapindex：多个 sitemap 的索引然后基本格式：xmlhttpswwwexamplecomdaily字段：loc 必..." style="color:#555860">网站生成sitemap.xml文件标准格式</a></li>
+<li><a href="https://chleeken.github.io/blog/weishenmenidedulizhanliuliangbushaoxunpanquehenshao.html" target="_blank" title="为什么你的独立站流量不少，询盘却很少？页面很多外贸工厂的独立站，后..." style="color:#555860">#为什么你的独立站流量不少，询盘却很少？</a></li>
+<li><a href="https://chleeken.github.io/blog/gugeSEOpanduannidewaimaodulizhanyoumeiyoupaimingqianli.html" target="_blank" title="谷歌SEO，判断你的外贸独立站有没有排名潜力做外贸独立站，不少人会踩一..." style="color:#555860">谷歌SEO，判断你的外贸独立站有没有排名潜力</a></li>
+<li><a href="https://chleeken.github.io/blog/weishenmenidewangzhansoubudaoyifencongyumingdaofuwuqideGEOSEOpaichashouce.html" target="_blank" title="为什么你的网站搜不到？一份从域名到服务器的GEOSEO排查手册做了网站，投了..." style="color:#555860">为什么你的网站搜不到？一份从域名到服务器的GEO+SEO排查手册</a></li>
+<li><a href="https://chleeken.github.io/blog/wangzhanzhuabujinlaibushouludiyupaimingpiaobaGEOSEOdedicenggongchengyicizuodui.html" target="_blank" title="网站抓不进来、不收录、地域排名飘？把 GEOSEO 的底层工程一次做对做技术博客写..." style="color:#555860">#网站抓不进来、不收录、地域排名飘？把GEO+SEO的底层工程一次做对</a></li>
+<li><a href="https://chleeken.github.io/blog/chaijieGEOdicengluojiweishenmenideneirongmeiyoubeiAItuijian.html" target="_blank" title="拆解 GEO 底层逻辑：为什么你的内容没有被 AI 推荐先问一个问题：你上一次在 AI 助..." style="color:#555860">拆解GEO底层逻辑：为什么你的内容没有被AI推荐</a></li>
+<!-- new_link_name_end-->
+        </div>
+    </aside>
+    <nav class="pagination" aria-label="分页导航" style="color:#4B0082;text-align:center">
+     下一页 <span><a href="https://chleeken.github.io/blog/Robotstxtwenjianbiaozhunyufajieshao.html" target="_blank" title="Robotstxt文件标准语法介绍匹配 URL 结尾。最长匹配优先；Allow 和 Disallow 冲突时最具体规则（最长路..." style="color:#555860">Robots.txt文件标准语法介绍</a></span>   
+</nav>  
+    <!-- 底部版权信息 -->
+    <footer class="site-footer">
+<p> <h4>©2025 靳好宝博客 -- Powered by <a href="https://chleeken.github.io/">Jblog</a>|theme by <a href="https://chleeken.github.io/theme/index.html">Jbtheme</a> Analytics</h4></p>
+    </footer>
+	<script src="js/Analytics.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
